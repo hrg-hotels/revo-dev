@@ -1,21 +1,28 @@
-name: Deploy to Kinsta
+name: Deploy to Server
 
 on:
   push:
     branches:
-      - main
+      - main  # Ändere den Branchnamen, falls notwendig
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Deploy to Kinsta
-      run: |
-        ssh -o StrictHostKeyChecking=no hrgredesigndevelopment "
-        cd /www/hrgredesigndevelopment_703/public &&
-        git pull origin main &&
-        npm install &&
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to Server
+        run: |
+          ssh -o StrictHostKeyChecking=no hrgredesigndevelopment << EOF
+            cd /www/hrgredesigndevelopment_703/public
+            git pull origin main
+            npm install
+          EOF
+
