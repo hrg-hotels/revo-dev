@@ -20,5 +20,6 @@ jobs:
         target-server: 35.198.113.119
         remote-user: hrgredesigndevelopment
         private-ssh-key: ${{ secrets.SSH_KEY }}
-        destination-path: /www/hrgredesign20242025_364/public
+        destination-path: /www/hrgredesigndevelopment_703/public
+
 
