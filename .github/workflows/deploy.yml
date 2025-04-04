@@ -19,10 +19,6 @@ jobs:
       with:
         target-server: 35.198.113.119
         remote-user: hrgredesigndevelopment
-        private-ssh-key: b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACAr7uolHxRjmpPf/fHyWtD7IrLkFNosWyOl29BgKqVadQAAAKDax0iU2sdI
-lAAAAAtzc2gtZWQyNTUxOQAAACAr7uolHxRjmpPf/fHyWtD7IrLkFNosWyOl29BgKqVadQ
-AAAEDI4ivOLuOOLSWPISNJDC6fhgLvyNYAl4ORgJh8rryouivu6iUfFGOak9/98fJa0Psi
-suQU2ixbI6Xb0GAqpVp1AAAAHHN0ZXBoYW4ubGVpbnNAaHJnLWhvdGVscy5jb20B
+        private-ssh-key: ${{ secrets.SSH_KEY }}
         destination-path: /www/hrgredesign20242025_364/public
 
