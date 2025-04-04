@@ -1,0 +1,31 @@
+msgid "country"
+msgstr "Country"
+
+msgid "city"
+msgstr "City"
+
+msgid "brand"
+msgstr "Brand"
+
+msgid "category"
+msgstr "Category"
+
+
+msgid "no-result"
+msgstr "The search did not match any results"
+
+msgid "search-resultet"
+msgstr "The search resulted in"
+
+msgid "hits"
+msgstr "hits"
+
+msgid "area"
+msgstr "Conference space"
+
+msgid "people"
+msgstr "Number of participants"
+
+msgid "your-selection"
+msgstr "Your selection" 
+

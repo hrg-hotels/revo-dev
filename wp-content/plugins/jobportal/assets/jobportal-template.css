@@ -1,0 +1,210 @@
+/**************************
+red:var(--awb-color5);
+text:var(--awb-text-color);
+custom-black: var(--awb-text-color);
+
+*******************************************/
+#hotel-portfolio-container {
+    display: flex;
+    justify-content: start;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-left: -20px;
+    margin-right: -20px;
+}
+.card-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+}
+@media only screen and (min-width: 768px) {
+    .card-wrapper {
+        width: 33%;
+    }
+    #hotel-portfolio-container {
+        margin-right: -32px;
+    }
+}
+.innerCard{
+    width: 100%;
+}
+.innerCard p{
+    margin: 0 !important;
+}
+.titleCard{
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+.titleCard h4{
+font-family: var(--h4_typography-font-family);
+font-weight: var(--h4_typography-font-weight);
+line-height: var(--h4_typography-line-height);
+letter-spacing: var(--h4_typography-letter-spacing);
+text-transform: var(--h4_typography-text-transform);
+font-style: var(--h4_typography-font-style, normal);
+}
+.card-sl {
+    font-family: 'Work Sans', sans-serif !important;
+    width: 100%;
+    background: white;
+    overflow: hidden;
+    text-align: left;
+    min-height: 380px; /* Gleiche Höhe für alle Karten */
+}
+.card-sl p {
+    font-family: var(--body_typography-font-family)!important;
+    font-size: var(--body_typography-font-size)!important;
+    text-transform: capitalize;
+    line-height: 2.2rem;
+}
+.hotel-phone{
+    color: var(--awb-color5)  !important;
+}
+.hotel-address{
+    color: var(--body_typography-color) !important;
+}
+.card-sl p a{
+    font-size: var(--body_typography-font-size)!important;
+    color:var(--awb-color5) !important;
+    text-decoration: none;
+}
+.hotel-address,
+.hotel-send-mail,
+.hotel-phone {
+    display: flex;
+    align-items: center; /* Vertikale Ausrichtung */
+    gap: 8px; /* Abstand zwischen Icon und Text */
+}
+
+/* Gemeinsame Icon-Styles für alle ::before-Elemente */
+.hotel-address::before,
+.hotel-send-mail::before,
+.hotel-phone::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    flex-shrink: 0; /* Verhindert, dass das Icon skaliert */
+    margin-right:8px;
+}
+
+/* Icon für Adresse */
+.hotel-address::before {
+    background-image: url('img/location_on.svg');
+    margin-left: 3px;
+    margin-right: 5px;
+}
+
+/* Icon für E-Mail */
+.hotel-send-mail::before {
+    background-image: url('img/mail.svg');
+}
+
+/* Icon für Telefon */
+.hotel-phone::before {
+    background-image: url('img/call.svg');
+    width: 18px;
+    margin-left: 2px;
+}
+
+.imgHotel {
+    overflow: hidden;
+    display: inline-block;
+}
+
+.imgHotel img {
+    transition: transform 0.5s ease-in-out;
+    width: 100%; /* Damit das Bild sich anpasst */
+    display: block;
+    min-height: 260px; 
+    object-fit: cover;
+}
+
+.imgHotel:hover img {
+    transform: scale(1.1); /* Vergrößerung auf 110% */
+}
+
+.hotel-address, .hotel-phone, .hotel-email {
+    font-size: 0.9rem;
+    margin: 5px 0;
+}
+.hotel-email a {
+    text-decoration: none;
+}
+.btn-container {
+    margin-top:20px;
+    width: 100%;
+}
+.btn-card img{
+    margin-right: 10px;
+    margin-top: 9px;
+}
+.btn-container a {
+    color:var(--h4_typography-color);
+    position: relative;
+    text-decoration: none;
+    display: inline-block;
+    padding-bottom: 5px;
+    overflow: hidden;
+    width: 50%;
+}
+.btn-container a:hover {
+    color:var(--link_color);
+}
+.btn-container a::after {
+    content: "";
+    position: absolute;
+    left: 32px;
+    bottom: 0;
+    width: 0;
+    height: 1px; /* Ausgangshöhe */
+    background-color:var(--awb-color5);
+
+    transform-origin: center;
+    transition: width 0.3s ease-in-out;
+}
+.btn-container a:hover::after {
+    width: 100%;
+}
+
+
+
+/************************Pagination*******************************************/
+.portfolio-pagination{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px 0 33px;
+}
+.pag-item{
+    border-radius: 100%;
+    border: 3px solid white;
+    width: 30px;
+    background: white;
+    height: 30px;
+    text-align: center;
+    margin: 0 10px;
+}
+.pag-center{
+    border: 1px solid var(--body_typography-color);
+    background-color:var(--body_typography-color);
+    color: white !important;
+}
+.pop-logo img{
+    width: 100px;
+    }
+.arrow-pag{
+    cursor: pointer;
+}
+.pag-left{
+  transform: rotate(180deg);
+}
+#next-page {
+    user-select: none;
+}
+#prev-page {
+    user-select: none;
+}

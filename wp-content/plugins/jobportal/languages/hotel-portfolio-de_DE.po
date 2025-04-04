@@ -1,0 +1,29 @@
+msgid "country"
+msgstr "Land"
+
+msgid "city"
+msgstr "Stadt"
+
+msgid "brand"
+msgstr "Marke"
+
+msgid "category"
+msgstr "Kategorie"
+
+msgid "no-result"
+msgstr "Die Suche ergab keine Treffer"
+
+msgid "search-resultet"
+msgstr "Die Suche ergab"
+
+msgid "hits"
+msgstr "Treffer"
+
+msgid "area"
+msgstr "Konferenzfläche"
+
+msgid "people"
+msgstr "Teilnehmeranzahl"
+
+msgid "your-selection"
+msgstr "Ihre Auswahl"
