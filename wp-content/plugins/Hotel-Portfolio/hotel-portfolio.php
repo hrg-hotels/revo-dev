@@ -109,7 +109,7 @@ add_action('wp_ajax_nopriv_hotel_portfolio_fetch', 'hotel_portfolio_fetch_data')
  * JavaScript und Styles sicher einbinden.
  */
 function hotel_portfolio_enqueue_scripts() {
-    if (is_page(array('portfolio', 'portfolio-en','portfolio/hotels/'))) {
+    if (is_page(array('hotels'))) {
         wp_enqueue_style('hotel-portfolio-style', HOTEL_PORTFOLIO_URL . 'assets/portfolio-template.css', array(), HOTEL_PORTFOLIO_VERSION);
         wp_enqueue_script('hotel-portfolio-ajax', HOTEL_PORTFOLIO_URL . 'assets/portfolio-template.js', array('jquery'), null, true);
         
