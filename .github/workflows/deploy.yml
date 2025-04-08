@@ -19,24 +19,9 @@ jobs:
           ssh-private-key: |
             ${{ secrets.KINSTASSH }}
 
-      - name: Fix SSH Key Permissions and Format
-        run: |
-          echo "${{ secrets.KINSTASSH }}" > /tmp/deploy_key
-          chmod 600 /tmp/deploy_key
-
-          # Überprüfung des Formats
-          if grep -q "BEGIN OPENSSH PRIVATE KEY" /tmp/deploy_key; then
-            echo "Converting OpenSSH format to PEM format"
-            ssh-keygen -p -m PEM -f /tmp/deploy_key -N "" -q
-          fi
-
-          # Sicherstellen, dass die Berechtigungen korrekt sind
-          chmod 600 /tmp/deploy_key
-          ssh-add /tmp/deploy_key
-
       - name: Deploy to Server
         run: |
-          ssh -o StrictHostKeyChecking=no kinsta@35.198.113.119 << EOF
+          ssh -o StrictHostKeyChecking=no stephan.leins@35.198.113.119 << EOF
             cd /www/hrgredesigndevelopment_703/public
             git pull origin main
             npm install
