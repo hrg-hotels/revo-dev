@@ -1,4 +1,5 @@
 #hotel-portfolio-container {
+    background:red;
     display: flex;
     justify-content: start;
     flex-wrap: wrap;
