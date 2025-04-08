@@ -1,5 +1,4 @@
 #hotel-portfolio-container {
-    background:red;
     display: flex;
     justify-content: start;
     flex-wrap: wrap;
@@ -8,7 +7,7 @@
     margin-right: -20px;
 }
 .card-wrapper {
-    background:black !important;
+    background:green !important;
     display: flex;
     justify-content: center;
     width: 100%;
