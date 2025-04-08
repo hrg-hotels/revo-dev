@@ -17,13 +17,13 @@ jobs:
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: |
-            ${{ secrets.SSH_PRIVATE_KEY }}
+            ${{ secrets.KINSTASSH }}
 
       - name: Fix SSH Key Format (if necessary)
         run: |
-          if grep -q "BEGIN OPENSSH PRIVATE KEY" <<< "${{ secrets.SSH_PRIVATE_KEY }}"; then
+          if grep -q "BEGIN OPENSSH PRIVATE KEY" <<< "${{ secrets.KINSTASSH }}"; then
             echo "Converting OpenSSH format to PEM format"
-            echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/temp_key
+            echo "${{ secrets.KINSTASSH }}" > /tmp/temp_key
             ssh-keygen -p -m PEM -f /tmp/temp_key -N "" -q
             mv /tmp/temp_key /tmp/deploy_key
             chmod 600 /tmp/deploy_key
