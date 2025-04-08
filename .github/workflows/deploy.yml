@@ -36,7 +36,7 @@ jobs:
 
       - name: Deploy to Server
         run: |
-          ssh -o StrictHostKeyChecking=no root@35.198.113.119 << EOF
+          ssh -o StrictHostKeyChecking=no kinsta@35.198.113.119 << EOF
             cd /www/hrgredesigndevelopment_703/public
             git pull origin main
             npm install
