@@ -26,7 +26,7 @@ jobs:
             # Navigate to the live site directory
             cd /www/hrgredesign20242025_364/public
             # Pull the latest changes from the GitHub repository            
-            # git fetch origin main             
-            # git reset --hard origin/main  
+            git fetch origin main             
+            git reset --hard origin/main  
 
 
