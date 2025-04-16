@@ -6,6 +6,7 @@
 # Note: if you want to stage/commit WP core files
 # you can delete this whole section/until Configuration.
 /wp-admin/
+/AA_local_temp_files/
 /wp-content/index.php
 /wp-content/languages
 /wp-content/updraft
