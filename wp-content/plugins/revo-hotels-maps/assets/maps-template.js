@@ -71,7 +71,6 @@ function initRevoHotelsMap() {
 
             generateDropdownOptions(allHotels);
             renderMarkers(allHotels);
-            bindDropdownListeners();
         });
 }
 
@@ -130,9 +129,11 @@ function loadMarkerClusterer(callback) {
 
 
 // Verstecke die Dropdown-Optionen initial
-document.querySelectorAll(".select-options").forEach(el => el.style.display = "none");
+const optionLists = document.querySelectorAll(".select-options");
+optionLists.forEach(el => el.style.display = "none");
 
 allHotels = []; // make sure this is assigned when data loads
+let currentFocusIndex = -1;
 
 function generateDropdownOptions(hotels) {
     const unique = key =>
@@ -143,179 +144,241 @@ function generateDropdownOptions(hotels) {
         const list = document.getElementById(id);
         if (!list) return;
         list.innerHTML = values.map(v => `<li data-value="${v}">${v}</li>`).join('');
+
+        // Add event listeners again each time
+        list.querySelectorAll('li').forEach(item => {
+            item.addEventListener('click', function (e) {
+                const input = document.getElementById(id.replace("-options", "-header"));
+                if (input) {
+                    input.value = this.textContent;
+                    filterMarkers();
+                }
+                list.style.display = "none";
+            });
+        });
     };
 
+    fillOptions('country-options', unique('country'));
     fillOptions('city-options', unique('city'));
+    fillOptions('parent-brand-options', unique('parent_brand'));
     fillOptions('brand-options', unique('brand'));
 }
 
-function setupDropdown(headerId, optionsId) {
-    const header = document.getElementById(headerId);
+// Dropdown visibility toggle on header click
+const allInputs = document.querySelectorAll(".select-header input");
+allInputs.forEach(input => {
+    const optionsId = input.id.replace("-header", "-options");
     const options = document.getElementById(optionsId);
 
-    if (!header.nextElementSibling || !header.nextElementSibling.classList.contains("clear-button")) {
-        const btn = document.createElement('button');
-        btn.className = 'clear-button';
-        btn.textContent = '✕';
-        btn.setAttribute('data-input', headerId);
-        header.insertAdjacentElement('afterend', btn);
-    }
-
-    header.addEventListener("click", function (e) {
-        e.stopPropagation();
-        document.querySelectorAll(".select-options").forEach(el => {
-            if (el !== options) el.style.display = "none";
-        });
-        options.style.display = options.style.display === "block" ? "none" : "block";
+    input.addEventListener("focus", () => {
+        if (options) {
+            optionLists.forEach(list => { if (list !== options) list.style.display = "none"; });
+            options.style.display = "block";
+        }
     });
 
-    header.addEventListener("input", function () {
-        const searchTerm = this.value.toLowerCase();
-        const children = options.querySelectorAll("li");
+    input.addEventListener("input", () => {
+        if (!options) return;
+        const term = input.value.toLowerCase();
+        const listItems = options.querySelectorAll("li");
         let matchFound = false;
 
-        children.forEach(li => {
-            if (li.textContent.toLowerCase().startsWith(searchTerm)) {
+        listItems.forEach(li => {
+            const text = li.textContent.toLowerCase();
+            if (text.startsWith(term)) {
                 li.style.display = "block";
                 matchFound = true;
             } else {
                 li.style.display = "none";
             }
+            li.classList.remove("highlighted");
         });
 
         if (!matchFound) {
             if (!options.querySelector(".no-results")) {
-                const noRes = document.createElement("li");
-                noRes.className = "no-results";
-                noRes.textContent = "Keine Ergebnisse gefunden";
-                options.appendChild(noRes);
+                const noResult = document.createElement("li");
+                noResult.className = "no-results";
+                noResult.textContent = "Keine Ergebnisse gefunden";
+                options.appendChild(noResult);
             }
         } else {
-            const noRes = options.querySelector(".no-results");
-            if (noRes) options.removeChild(noRes);
+            const existing = options.querySelector(".no-results");
+            if (existing) existing.remove();
         }
+
+        currentFocusIndex = -1;
         options.style.display = "block";
     });
 
-    options.addEventListener("click", function (e) {
-        if (e.target.tagName === "LI") {
-            header.value = e.target.textContent;
-            options.style.display = "none";
-            filterMarkers();
-        }
-    });
-}
-
-// Clear-Button Event
-document.addEventListener("click", function (e) {
-    if (e.target.classList.contains("clear-button")) {
-        const inputId = e.target.getAttribute("data-input");
-        document.getElementById(inputId).value = "";
-        filterMarkers();
-    }
-});
-
-let currentFocus = -1;
-document.querySelectorAll(".select-header input").forEach(input => {
-    input.addEventListener("keydown", function (e) {
-        const optionsList = input.closest(".selection-hr").querySelector(".select-options");
-        const allOptions = Array.from(optionsList.querySelectorAll("li"));
-        const visibleOptions = allOptions.filter(li => li.offsetParent !== null);
+    input.addEventListener("keydown", (e) => {
+        if (!options) return;
+        const items = Array.from(options.querySelectorAll("li:not([style*='display: none'])"));
 
         if (e.key === "ArrowDown") {
             e.preventDefault();
-            if (optionsList.style.display !== "block") {
-                optionsList.style.display = "block";
-                allOptions.forEach(li => li.style.display = "block");
-            }
-            currentFocus++;
-            if (currentFocus >= visibleOptions.length) currentFocus = 0;
-            highlightOption(visibleOptions.length ? visibleOptions : allOptions);
+            currentFocusIndex = (currentFocusIndex + 1) % items.length;
+            setActiveItem(items);
         } else if (e.key === "ArrowUp") {
             e.preventDefault();
-            currentFocus--;
-            if (currentFocus < 0) currentFocus = visibleOptions.length - 1;
-            highlightOption(visibleOptions.length ? visibleOptions : allOptions);
+            currentFocusIndex = (currentFocusIndex - 1 + items.length) % items.length;
+            setActiveItem(items);
         } else if (e.key === "Enter") {
             e.preventDefault();
-            const options = visibleOptions.length ? visibleOptions : allOptions;
-            if (currentFocus > -1 && options[currentFocus]) {
-                options[currentFocus].click();
-            } else {
-                filterMarkers();
-                optionsList.style.display = "none";
+            if (currentFocusIndex > -1 && items[currentFocusIndex]) {
+                items[currentFocusIndex].click();
+                currentFocusIndex = -1;
             }
         }
     });
+
+    // Create and insert clear buttons if missing
+    if (!input.nextElementSibling || !input.nextElementSibling.classList.contains("clear-button")) {
+        const clearBtn = document.createElement("button");
+        clearBtn.className = "clear-button";
+        clearBtn.textContent = "✕";
+        clearBtn.setAttribute("data-input", input.id);
+        input.parentNode.insertBefore(clearBtn, input.nextSibling);
+    }
 });
 
-function highlightOption(options) {
-    options.forEach(li => li.classList.remove("highlighted"));
-    if (currentFocus >= 0 && currentFocus < options.length) {
-        options[currentFocus].classList.add("highlighted");
+function setActiveItem(items) {
+    items.forEach(item => item.classList.remove("highlighted"));
+    if (currentFocusIndex >= 0 && currentFocusIndex < items.length) {
+        items[currentFocusIndex].classList.add("highlighted");
+        items[currentFocusIndex].scrollIntoView({ block: "nearest" });
     }
 }
 
-// Klick außerhalb schließt Dropdowns
-document.addEventListener("click", function (e) {
-    if (!e.target.closest(".selection-hr")) {
-        document.querySelectorAll(".select-options").forEach(el => {
-            el.style.display = "none";
-            el.querySelectorAll("li").forEach(li => li.classList.remove("highlighted"));
-        });
-        currentFocus = -1;
-    }
-});
-
-// Enter auf dem Dokument
-document.addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
+// Reset single field
+function clearField(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = "";
         filterMarkers();
-        document.querySelectorAll(".select-options").forEach(el => el.style.display = "none");
+    }
+}
+
+document.addEventListener("click", e => {
+    if (e.target.classList.contains("clear-button")) {
+        e.preventDefault();
+        const inputId = e.target.getAttribute("data-input");
+        clearField(inputId);
+        return;
+    }
+
+    if (!e.target.closest(".selection-hr")) {
+        optionLists.forEach(list => list.style.display = "none");
     }
 });
 
-// Feldänderungen berücksichtigen
-document.querySelectorAll("#city-header, #brand-header").forEach(input => {
-    input.addEventListener("blur", function () {
-        if (this.value.trim() !== "") {
-            const value = this.value;
-            this.readOnly = false;
-            this.disabled = false;
-            setTimeout(() => this.focus(), 100);
-        }
+// Reset ALL fields
+const resetBtn = document.getElementById("btn-reset");
+if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+        ["country-header", "city-header", "parent-brand-header", "brand-header"].forEach(id => {
+            const input = document.getElementById(id);
+            if (input) input.value = "";
+        });
+        filterMarkers();
     });
-    input.addEventListener("change", function () {
-        if (this.value.trim() !== "") {
-            const value = this.value;
-            this.readOnly = false;
-            this.disabled = false;
-            setTimeout(() => this.focus(), 100);
-        }
-    });
-});
+}
 
-// Initialisiere nur City und Brand Dropdowns
-setupDropdown("city-header", "city-options");
-setupDropdown("brand-header", "brand-options");
+function updateResultMessage(count, filteredHotels) {
+    const wrapper = document.getElementById("message-wrapper");
+    if (!wrapper) return;
+
+    document.getElementById("message-wrapper").innerHTML = "";
+
+    const messageContainer = document.createElement("div");
+    messageContainer.id = "message-container";
+
+    if (count === 0) {
+        const img = document.createElement("img");
+        img.src = "https://www.hrg-hotels.com/path/to/not-found-graphic.png"; // replace with actual path
+        img.alt = "not found graphic";
+        img.className = "not-found-graphic";
+
+        const nfgDiv = document.createElement("div");
+        nfgDiv.className = "nfg";
+        nfgDiv.appendChild(img);
+
+        messageContainer.innerHTML = `<div class="message-txt red">Keine Hotels gefunden</div>`;
+        messageContainer.style.backgroundColor = "var(--awb-color5)";
+        messageContainer.style.color = "white";
+
+        wrapper.appendChild(messageContainer);
+        wrapper.appendChild(nfgDiv);
+    } else {
+        let country = document.getElementById('country-header').value.trim();
+        let city = document.getElementById('city-header').value.trim();
+        let parentBrand = document.getElementById('parent-brand-header').value.trim();
+        let brand = document.getElementById('brand-header').value.trim();
+
+        messageContainer.innerHTML = `
+        <div class="message-txt green">
+            <h4 id="message-headline">Ihre Auswahl: </h4>
+            <div class="message-filter-result">
+                <div class="result-title" id="title-country"><span class="txt-black">Land:</span><span class="txt-gray"> ${country}</span></div>
+                <div class="result-title" id="title-city"><span class="txt-black">Stadt:</span><span class="txt-gray"> ${city}</span></div>
+                <div class="result-title" id="title-parent-brand"><span class="txt-black">Franchise Partner:</span><span class="txt-gray"> ${parentBrand}</span></div>
+                <div class="result-title" id="title-brand"><span class="txt-black">Marke:</span><span class="txt-gray"> ${brand}</span></div>
+            </div>
+            <div><p class="result-message">Gefunden: <span class="txt-black"> ${count} </span> Hotels.</p></div>
+        </div>`;
+
+        wrapper.appendChild(messageContainer);
+        updateMessageContainer();
+    }
+}
+
+function updateMessageContainer() {
+    removeShowClass();
+
+    if (document.getElementById("country-header").value.trim()) {
+        document.getElementById("title-country")?.classList.add("show");
+    }
+    if (document.getElementById("city-header").value.trim()) {
+        document.getElementById("title-city")?.classList.add("show");
+    }
+    if (document.getElementById("brand-header").value.trim()) {
+        document.getElementById("title-brand")?.classList.add("show");
+    }
+    if (document.getElementById("parent-brand-header").value.trim()) {
+        document.getElementById("title-parent-brand")?.classList.add("show");
+    }
+    if (!document.getElementById("country-header").value && !document.getElementById("city-header").value && !document.getElementById("brand-header").value && !document.getElementById("parent-brand-header").value) {
+        document.getElementById("message-headline")?.style.setProperty("display", "none");
+    }
+}
+
+function removeShowClass() {
+    const ids = ['country', 'city', 'brand', 'parent-brand'];
+    ids.forEach(id => {
+        document.getElementById(`title-${id}`)?.classList.remove("show");
+    });
+}
 
 // ✳️ Expected filterMarkers implementation placeholder:
 function filterMarkers() {
+    const countryFilter = document.getElementById('country-header').value.trim().toLowerCase();
     const cityFilter = document.getElementById('city-header').value.trim().toLowerCase();
     const brandFilter = document.getElementById('brand-header').value.trim().toLowerCase();
+    const parentBrandFilter = document.getElementById('parent-brand-header').value.trim().toLowerCase();
 
     const filtered = allHotels.filter(hotel => {
+        const matchCountry = !countryFilter || hotel.country.toLowerCase().includes(countryFilter);
         const matchCity = !cityFilter || hotel.city.toLowerCase().includes(cityFilter);
         const matchBrand = !brandFilter || hotel.brand.toLowerCase().includes(brandFilter);
-        return matchCity && matchBrand;
+        const matchParentBrand = !parentBrandFilter || hotel.parent_brand.toLowerCase().includes(parentBrandFilter);
+        return matchCountry && matchCity && matchBrand && matchParentBrand;
     });
 
-    // Call your map marker rendering logic here...
-    renderMarkers(filtered);
-
-    // Update dropdowns to reflect current filtered list
+    renderMarkers(filtered); // Your rendering logic
     generateDropdownOptions(filtered);
-} 
+    updateResultMessage(filtered.length, filtered);
+}
+
+
 
 
 
