@@ -41,40 +41,40 @@
   /*************Filter**************************************************/                
                 //Dropdown-Werte setzen
                 function generateDropdownOptions(resultHotelArr) {
-
-                  const getUniqueSortedValues = (key) => {
+                  const getUniqueSortedValues = (keys) => {
                       return [...new Set(
                           resultHotelArr
-                              .map(h => h[key])
-                              .filter(Boolean)
-                              .map(v => v.trim())
-                      )];
+                              .flatMap(h => keys.map(key => h[key])) // Collect values from both keys
+                              .filter(Boolean) // Remove undefined or null values
+                              .map(v => v.trim()) // Remove extra spaces
+                      )].sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
                   };
-
-                  const countries = getUniqueSortedValues('country').sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
-                  const cities = getUniqueSortedValues('city').sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
-                  const brand = getUniqueSortedValues('brand').sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
-                  const parentBrand = getUniqueSortedValues('parent_brand').sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
-
+              
+                  // Collecting unique values for dropdowns
+                  const countries = getUniqueSortedValues(['country']);
+                  const cities = getUniqueSortedValues(['city', 'county_town']); // Includes both city and county_town
+                  const brand = getUniqueSortedValues(['brand']);
+                  const parentBrand = getUniqueSortedValues(['parent_brand']);
+              
                   const populateDropdown = (id, values) => {
-                    const dropdown = document.getElementById(id);
-                    if (!dropdown) {
-                      console.warn(`Dropdown with ID "${id}" not found.`);
-                      return;
-                    }
-
-                    dropdown.innerHTML = values
-                      .map(v => `<li data-value="${v}">${v}</li>`)
-                      .join('');
+                      const dropdown = document.getElementById(id);
+                      if (!dropdown) {
+                          console.warn(`Dropdown with ID "${id}" not found.`);
+                          return;
+                      }
+              
+                      dropdown.innerHTML = values
+                          .map(v => `<li data-value="${v}">${v}</li>`)
+                          .join('');
                   };
-
-                  // Populiere Dropdowns
+              
+                  // Populating Dropdowns
                   populateDropdown("country-options", countries);
                   populateDropdown("city-options", cities);
                   populateDropdown("brand-options", brand);
                   populateDropdown("parent-brand-options", parentBrand);
-
-                }
+              }
+              
 
                 // Verstecke die Dropdown-Optionen initial
                 $(".select-options").hide(); 
@@ -477,6 +477,7 @@
                     }
                     renderPageCont(splittResult[0].pageArray);
                     updatePagination();
+                    console.log("splittResult", splittResult);
                 }
                 //renderPagination
                 function renderPageCont(arr) {
@@ -613,41 +614,68 @@
                     filterListByParams(params);
                 }  
 
-  /*************FILTER LIST WITH PARAMETER*******************/  
-                function filterListByParams(params) {
-                    resultHotelArr = [];
-                    for (let hotel of fetchedHotels) {
-                      let matchesHotel= true;
+/*************FILTER LIST WITH PARAMETER*******************/  
+            function filterListByParams(params) {
+              resultHotelArr = [];
 
-                      // Check hotel_country parameter is set and matches
-                      if (params.country?.toLowerCase() && !hotel.country.toLowerCase().includes(params.country.toLowerCase())) {
-                        matchesHotel = false;
-                    }
-                    if (params.city?.toLowerCase() && !hotel.city.toLowerCase().includes(params.city.toLowerCase())) {
-                        matchesHotel = false;
-                    }
-                    if (params.brand?.toLowerCase() && !hotel.brand.toLowerCase().includes(params.brand.toLowerCase())) {
-                        matchesHotel = false;
-                    }
-                    if (params.parent_brand?.toLowerCase() && !hotel.parent_brand.toLowerCase().includes(params.parent_brand.toLowerCase())) {
-                        matchesHotel = false;
-                    }
-                    
-                      // If all parameters are set and matches, add hotel to resultHotelArr
-                      if (matchesHotel) {
-                        resultHotelArr.push(hotel);
-                      }
+              for (let hotel of fetchedHotels) {
+                  let matchesHotel = true;
 
-                }
-                globalParams = params;
-                message(resultHotelArr.length);
-                if (resultHotelArr.length > 0) {
-                splittArray(resultHotelArr);
-                generateDropdownOptions(resultHotelArr);
-                }else{
+                  // Check hotel_country parameter is set and matches
+                  if (params.country?.toLowerCase() && !hotel.country.toLowerCase().includes(params.country.toLowerCase())) {
+                      matchesHotel = false;
+                  }
+
+                  // Check city or county_town match
+                  if (
+                      params.city?.toLowerCase() && 
+                      !(
+                          hotel.city?.toLowerCase().includes(params.city.toLowerCase()) || 
+                          hotel.county_town?.toLowerCase().includes(params.city.toLowerCase())
+                      )
+                  ) {
+                      matchesHotel = false;
+                  }
+
+                  // Check brand parameter is set and matches
+                  if (params.brand?.toLowerCase() && !hotel.brand.toLowerCase().includes(params.brand.toLowerCase())) {
+                      matchesHotel = false;
+                  }
+
+                  // Check parent_brand parameter is set and matches
+                  if (params.parent_brand?.toLowerCase() && !hotel.parent_brand.toLowerCase().includes(params.parent_brand.toLowerCase())) {
+                      matchesHotel = false;
+                  }
+                  
+                  // If all parameters are set and match, add hotel to resultHotelArr
+                  if (matchesHotel) {
+                      resultHotelArr.push(hotel);
+                  }
+              }
+
+              globalParams = params;
+              message(resultHotelArr.length);
+
+              if (resultHotelArr.length > 0) {
+                  splittArray(resultHotelArr);
+                  generateDropdownOptions(resultHotelArr);
+              } else {
                   window.history.pushState({}, document.title, window.location.pathname);
-                }
-                }
+              }
+            }
+  
+                  // Event Listener für Filter-Buttons
+                  $(".btn-filter").click(function () {
+                    const filterId = $(this).data("filter");
+                    const filterValue = $(this).data("value");
+  
+                    // Setze den Wert ins Input-Feld
+                    $(`#${filterId}-header`).val(filterValue);
+                    $(`#${filterId}-options li`).show();
+                    $(`.selection-hr input[name="${filterId.replace("-", " ")}"]`).val(filterValue);
+  
+                    handleEvent(); // Aktualisiert die Suche
+                  });
 
   //************CHECK PARAMETERS*****************************/ 
                 function checkParams() {
