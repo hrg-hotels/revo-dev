@@ -25,11 +25,11 @@ if (typeof AvadaPrivacy !== 'undefined' && typeof AvadaPrivacy.registerScript ==
 }
 
 // === GLOBALS ===
-const defaultMarkerIcon = "https://www.hrg-hotels.com/hubfs/HR%20Group/Icons%20and%20Logos/HRG_Maps-Marker/HRG_maps_marker-1.svg";
+const defaultMarkerIcon = "http://localhost/hrgredesign/wp-content/uploads/2025/05/HRG_maps_marker.svg";
 const defaultHotelImage = "https://www.hrg-hotels.com/hubfs/HRG/Corporate%20Pages/Portfolio/Hotel-Images/Platzhalter.jpg";
 
 const brandIcons = {
-    "Vienna House by Wyndham": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/vienna_house_marker.png" },
+    "Vienna House by Wyndham": { url: "http://localhost/hrgredesign/wp-content/uploads/2025/05/VH_maps_icon.svg" },
     "TrademarkCollectionbyWyndham": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/amedia_marker.png" },
     "Adagio Access": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/adagio_original_marker.png" },
     "ibis Styles": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/ibis_styles_marker.png" },
@@ -225,8 +225,13 @@ allInputs.forEach(input => {
         } else if (e.key === "Enter") {
             e.preventDefault();
             if (currentFocusIndex > -1 && items[currentFocusIndex]) {
-                items[currentFocusIndex].click();
-                currentFocusIndex = -1;
+                const value = items[currentFocusIndex].textContent;
+                input.value = value;
+                filterMarkers();
+                options.style.display = "none";
+            } else {
+                filterMarkers();
+                options.style.display = "none";
             }
         }
     });
@@ -377,8 +382,6 @@ function filterMarkers() {
     generateDropdownOptions(filtered);
     updateResultMessage(filtered.length, filtered);
 }
-
-
 
 
 
