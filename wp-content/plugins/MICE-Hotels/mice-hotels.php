@@ -71,7 +71,7 @@ function mice_hotels_admin_page() {
 function mice_hotels_fetch_data() {
     global $wpdb;
     $lang = isset($_GET['lang']) ? sanitize_text_field($_GET['lang']) : 'en';
-
+ 
     $query = "
     SELECT 
         h.image,
@@ -79,7 +79,8 @@ function mice_hotels_fetch_data() {
         h.mice_image,
         COALESCE(ct.translation, h.country_code, 'Unknown') AS country, 
         h.zip,
-        COALESCE(cty.translation, h.city, 'Unknown') AS city, 
+        COALESCE(cty.translation, h.city, 'Unknown') AS city,
+        COALESCE(ctt.translation, COALESCE(h.county_town, ''), 'Unknown') AS county_town,
         h.street,
         h.phone,
         h.email,
@@ -87,7 +88,6 @@ function mice_hotels_fetch_data() {
         h.mice_prio AS order_prio,
         COALESCE(h.brand, 'Unknown') AS brand, 
         COALESCE(h.parent_brand, 'Unknown') AS parent_brand, 
-        h.publication_status,
         h.mice_request,
         h.total_conference_space_in_m AS area,
         h.max_number_of_participants_total AS people
@@ -95,27 +95,31 @@ function mice_hotels_fetch_data() {
     LEFT JOIN {$wpdb->prefix}hotel_translation ct 
         ON ct.code = h.country_code AND ct.lang = %s AND ct.type = 'country'
     LEFT JOIN {$wpdb->prefix}hotel_translation cty 
-        ON cty.code = h.city AND cty.lang = %s AND cty.type = 'city'
+        ON cty.code = h.city AND cty.lang = %s AND cty.type = 'city' 
+    LEFT JOIN {$wpdb->prefix}hotel_translation ctt 
+        ON ctt.code = COALESCE(h.county_town, '') AND ctt.lang = %s AND ctt.type = 'county_town'  
     WHERE h.mice_request = 'True'
     ORDER BY order_prio ASC, h.name ASC
-";
-
-
-    $results = $wpdb->get_results($wpdb->prepare($query, $lang, $lang), ARRAY_A);
-
+    ";
+ 
+    $results = $wpdb->get_results($wpdb->prepare($query, $lang, $lang, $lang), ARRAY_A);
+ 
+    if ($wpdb->last_error) {
+        error_log('MICE Hotels Query Error: ' . $wpdb->last_error);
+    }
+ 
     foreach ($results as &$hotel) {
-        // Falls `mice_image` existiert und nicht leer ist, ersetze `image`
         if (!empty($hotel['mice_image'])) {
             $hotel['image'] = $hotel['mice_image'];
         }
     }
-
+ 
     if ($results) {
         wp_send_json_success($results);
     } else {
         wp_send_json_error(__('Keine Daten gefunden.', 'mice-hotels'));
     }
-}
+ }
 
 
 

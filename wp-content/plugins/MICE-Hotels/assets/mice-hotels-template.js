@@ -42,55 +42,45 @@
       }
 
 /*************Filter**************************************************/                
-    function generateDropdownOptions(resultHotelArr) {
-      const getUniqueSortedValues = (key) => {
-          return [...new Set(
-              resultHotelArr
-                  .map(h => h[key])
-                  .filter(Boolean)
-                  .map(v => v.trim())
-          )];
-      };
+function generateDropdownOptions(resultHotelArr) {
+  const getUniqueSortedValues = (keys) => {
+      return [...new Set(
+          resultHotelArr
+              .flatMap(h => keys.map(key => h[key]))
+              .filter(Boolean)
+              .map(v => v.trim())
+      )];
+  };
 
-      const countries = getUniqueSortedValues('country').sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
-      const cities = getUniqueSortedValues('city').sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
-      const brand = getUniqueSortedValues('brand').sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
-      const parentBrand = getUniqueSortedValues('parent_brand').sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
-      let area = getUniqueSortedValues('area');
-      let people = getUniqueSortedValues('people');
+  // Collecting unique values for dropdowns
+  const countries = getUniqueSortedValues(['country']).sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
+  const cities = getUniqueSortedValues(['city', 'county_town']).sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
+  const brand = getUniqueSortedValues(['brand']).sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
+  const parentBrand = getUniqueSortedValues(['parent_brand']).sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
+  let area = getUniqueSortedValues(['area']).sort();
+  let people = getUniqueSortedValues(['people']).sort();
 
-      // 🔹 Sortierlogik für `area`
-      area.sort((a, b) => {
-          const order = ["<100", "100-500", "500-1000", "1000+"];
-          return order.indexOf(a) - order.indexOf(b);
-      });
+  const populateDropdown = (id, values) => {
+      const dropdown = document.getElementById(id);
+      if (!dropdown) {
+          console.warn(`Dropdown with ID "${id}" not found.`);
+          return;
+      }
 
-      // 🔹 Sortierlogik für `people`
-      people.sort((a, b) => {
-          const order = ["<150", "150-300", "300-500", "500-1000", "1000+"];
-          return order.indexOf(a) - order.indexOf(b);
-      });
+      dropdown.innerHTML = values
+          .map(v => `<li data-value="${v}">${v}</li>`)
+          .join('');
+  };
 
-      const populateDropdown = (id, values) => {
-          const dropdown = document.getElementById(id);
-          if (!dropdown) {
-              console.warn(`Dropdown with ID "${id}" not found.`);
-              return;
-          }
+  // Populating Dropdowns
+  populateDropdown("country-options", countries);
+  populateDropdown("city-options", cities); // Cities now include County Towns
+  populateDropdown("brand-options", brand);
+  populateDropdown("parent-brand-options", parentBrand);
+  populateDropdown("area-options", area);
+  populateDropdown("people-options", people);
+}
 
-          dropdown.innerHTML = values
-              .map(v => `<li data-value="${v}">${v}</li>`)
-              .join('');
-      };
-
-      // 🔹 Populiere Dropdowns
-      populateDropdown("country-options", countries);
-      populateDropdown("city-options", cities);
-      populateDropdown("brand-options", brand);
-      populateDropdown("parent-brand-options", parentBrand);
-      populateDropdown("area-options", area);
-      populateDropdown("people-options", people);
-    }
 
     // Verstecke die Dropdown-Optionen initial
     $(".select-options").hide(); 
@@ -731,9 +721,18 @@
           if (params.country != null && !hotel.country.toLowerCase().includes(params.country.toLowerCase())) {
             matchesHotel = false;
           }
-          if (params.city != null && !hotel.city.toLowerCase().includes(params.city.toLowerCase())) {
-            matchesHotel = false;
+          // Check city or county_town match
+          if (
+              params.city?.toLowerCase() && 
+              !(
+                  hotel.city?.toLowerCase().includes(params.city.toLowerCase()) || 
+                  hotel.county_town?.toLowerCase().includes(params.city.toLowerCase())
+              )
+          ) {
+              matchesHotel = false;
           }
+
+          // Check brand parameter is set and matches
           if (params.brand != null && !hotel.brand.toLowerCase().includes(params.brand.toLowerCase())) {
             matchesHotel = false;
           }
