@@ -73,27 +73,30 @@ function hotel_portfolio_fetch_data() {
     $lang = isset($_GET['lang']) ? sanitize_text_field($_GET['lang']) : 'en';
 
     $results = $wpdb->get_results($wpdb->prepare("
-        SELECT 
-            h.image,
-            h.name,
-           COALESCE(ct.translation, h.country_code, 'Unknown') AS country, 
-            h.zip,
-            COALESCE(cty.translation, h.city, 'Unknown') AS city, 
-            h.street,
-            h.phone,
-            h.email,
-            h.homepage AS website,
-            h.port_prio AS order_prio,
-            COALESCE(h.brand, 'Unknown') AS brand, 
-            COALESCE(h.parent_brand, 'Unknown') AS parent_brand, 
-            h.publication_status
-        FROM {$wpdb->prefix}hotel_portfolio_04 h
-        LEFT JOIN {$wpdb->prefix}hotel_translation ct 
-            ON ct.code = h.country_code AND ct.lang = %s AND ct.type = 'country'
-        LEFT JOIN {$wpdb->prefix}hotel_translation cty 
-            ON cty.code = h.city AND cty.lang = %s AND cty.type = 'city'
-            ORDER BY order_prio ASC, h.name ASC
-    ", $lang, $lang), ARRAY_A);
+    SELECT 
+        h.image,
+        h.name,
+        COALESCE(ct.translation, h.country_code, 'Unknown') AS country, 
+        h.zip,
+        COALESCE(cty.translation, h.city, 'Unknown') AS city, 
+        COALESCE(ctt.translation, COALESCE(h.county_town, ''), 'Unknown') AS county_town, 
+        h.street,
+        h.phone,
+        h.email,
+        h.homepage AS website,
+        h.port_prio AS order_prio,
+        COALESCE(h.brand, 'Unknown') AS brand, 
+        COALESCE(h.parent_brand, 'Unknown') AS parent_brand, 
+        h.publication_status
+    FROM {$wpdb->prefix}hotel_portfolio_04 h
+    LEFT JOIN {$wpdb->prefix}hotel_translation ct 
+        ON ct.code = h.country_code AND ct.lang = %s AND ct.type = 'country'
+    LEFT JOIN {$wpdb->prefix}hotel_translation cty 
+        ON cty.code = h.city AND cty.lang = %s AND cty.type = 'city'
+    LEFT JOIN {$wpdb->prefix}hotel_translation ctt 
+        ON ctt.code = COALESCE(h.county_town, '') AND ctt.lang = %s AND ctt.type = 'county_town'
+    ORDER BY order_prio ASC, h.name ASC 
+    ", $lang, $lang, $lang), ARRAY_A);
 
     if ($results) {
         wp_send_json_success($results);
