@@ -1,32 +1,9 @@
-// === GOOGLE MAPS LOADER with AVADA PRIVACY SUPPORT ===
-function loadGoogleMapsAPI(callback) {
-    if (window.google && window.google.maps) {
-        if (typeof callback === "function") callback();
-        return;
-    }
-    const script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBrGUx-sWW3nkDEL0CRoUYvA0MS95VCMlY&callback=' + callback.name + '&libraries=marker';
-    script.id = 'google-maps-api-js';
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
-}
 
-if (typeof AvadaPrivacy !== 'undefined' && typeof AvadaPrivacy.registerScript === 'function') {
-    AvadaPrivacy.registerScript({
-        type: 'gmaps',
-        src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBrGUx-sWW3nkDEL0CRoUYvA0MS95VCMlY&callback=initRevoHotelsMap&libraries=marker',
-        id: 'google-maps-api-js',
-        async: true,
-        defer: true
-    });
-} else {
-    loadGoogleMapsAPI(initRevoHotelsMap);
-}
 
 // === GLOBALS ===
 const defaultMarkerIcon = "http://localhost/hrgredesign/wp-content/uploads/2025/05/HRG_maps_marker.svg";
 const defaultHotelImage = "https://www.hrg-hotels.com/hubfs/HRG/Corporate%20Pages/Portfolio/Hotel-Images/Platzhalter.jpg";
+let map, markers = [], clusterer, allHotels = [];
 
 const brandIcons = {
     "Vienna House by Wyndham": { url: "http://localhost/hrgredesign/wp-content/uploads/2025/05/VH_maps_icon.svg" },
@@ -45,40 +22,8 @@ const brandIcons = {
     "HolidayInn": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/holiday_inn_marker.png" }
 };
 
-let map, markers = [], clusterer, allHotels = [];
-
-// === MAIN MAP FUNCTION ===
-function initRevoHotelsMap() {
-    const mapEl = document.getElementById('revo-hotels-map');
-    if (!mapEl) return;
-
-    fetch(`${revoHotelsMaps.ajax_url}?action=revo_hotels_maps_fetch&lang=${revoHotelsMaps.lang}`)
-        .then(res => res.json())
-        .then(data => {
-            if (!data.success || !Array.isArray(data.data)) {
-                alert("Keine Hotel-Daten gefunden.");
-                return;
-            }
-
-            allHotels = data.data;
-            console.log('allHotels:', allHotels);
-
-            map = new google.maps.Map(mapEl, {
-                center: { lat: 51, lng: 10 },
-                zoom: 5,
-                mapId: "b7d66f7add83f786"
-            });
-
-            generateDropdownOptions(allHotels);
-            renderMarkers(allHotels);
-        });
-}
-
 // === CREATE MARKERS AND CLUSTER ===
-function 
-
-
-renderMarkers(hotels) {
+function renderMarkers(hotels) {
     clearMarkers();
 
     hotels.forEach(hotel => {
@@ -127,7 +72,6 @@ function loadMarkerClusterer(callback) {
     document.body.appendChild(script);
 }
 
-
 // Verstecke die Dropdown-Optionen initial
 const optionLists = document.querySelectorAll(".select-options");
 optionLists.forEach(el => el.style.display = "none");
@@ -135,6 +79,141 @@ optionLists.forEach(el => el.style.display = "none");
 allHotels = []; // make sure this is assigned when data loads
 let currentFocusIndex = -1;
 
+// Load Google Maps API with Avada Privacy Integration
+function loadGoogleMapsAPI(callback) {
+    if (window.google && window.google.maps) {
+        if (typeof callback === "function") callback();
+        return;
+    }
+
+    if (typeof AvadaPrivacy !== 'undefined' && typeof AvadaPrivacy.registerScript === 'function') {
+        // Use Avada's privacy API to load the script
+        AvadaPrivacy.registerScript({
+            type: 'gmaps',
+            src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBrGUx-sWW3nkDEL0CRoUYvA0MS95VCMlY&callback=initRevoHotelsMap&libraries=marker',
+            id: 'google-maps-api-js',
+            async: true,
+            defer: true
+        });
+    } else {
+        // Directly load Google Maps API if Avada Privacy is not active
+        const script = document.createElement('script');
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBrGUx-sWW3nkDEL0CRoUYvA0MS95VCMlY&callback=' + callback.name + '&libraries=marker';
+        script.id = 'google-maps-api-js';
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script);
+    }
+}
+
+// GDPR (DSGVO) Consent Layer with Local Storage
+function showGDPRConsent() {
+    // Check if user has already given consent
+    if (localStorage.getItem("gdprConsent") === "true") {
+        loadGoogleMapsAPI(initRevoHotelsMap);
+        return;
+    }
+
+    const consentLayer = document.createElement("div");
+    consentLayer.id = "gdpr-consent-layer";
+    consentLayer.style.position = "fixed";
+    consentLayer.style.top = "0";
+    consentLayer.style.left = "0";
+    consentLayer.style.width = "100%";
+    consentLayer.style.height = "100%";
+    consentLayer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+    consentLayer.style.display = "flex";
+    consentLayer.style.alignItems = "center";
+    consentLayer.style.justifyContent = "center";
+    consentLayer.style.zIndex = "9999";
+    consentLayer.style.color = "white";
+
+    consentLayer.innerHTML = `
+        <div style="background: #333; padding: 20px; border-radius: 10px; text-align: center; max-width: 400px;">
+            <h2 style="margin-bottom: 15px;">Datenschutz-Einwilligung</h2>
+            <p>Um die Karte anzuzeigen, müssen Sie der Verwendung von Google Maps zustimmen.</p>
+            <button id="gdpr-consent-btn" style="margin-top: 15px; padding: 10px 20px; background-color: #4CAF50; border: none; cursor: pointer; color: white;">Karte anzeigen</button>
+            <button id="gdpr-withdraw-btn" style="margin-top: 15px; padding: 10px 20px; background-color: #f44336; border: none; cursor: pointer; color: white;">Einwilligung zurückziehen</button>
+        </div>
+    `;
+
+    document.body.appendChild(consentLayer);
+
+    document.getElementById("gdpr-consent-btn").addEventListener("click", function() {
+        localStorage.setItem("gdprConsent", "true"); // Save consent
+        document.body.removeChild(consentLayer);
+        loadGoogleMapsAPI(initRevoHotelsMap); // Load the map after consent
+    });
+
+    document.getElementById("gdpr-withdraw-btn").addEventListener("click", function() {
+        localStorage.removeItem("gdprConsent"); // Remove consent
+        alert("Ihre Einwilligung wurde zurückgezogen.");
+        location.reload();
+    });
+}
+
+// Initialize the map ONLY after consent
+document.addEventListener("DOMContentLoaded", () => {
+    showGDPRConsent();
+});
+
+
+
+// Load Google Maps API with Avada Privacy Integration
+function loadGoogleMapsAPI(callback) {
+    if (window.google && window.google.maps) {
+        if (typeof callback === "function") callback();
+        return;
+    }
+
+    if (typeof AvadaPrivacy !== 'undefined' && typeof AvadaPrivacy.registerScript === 'function') {
+        // Use Avada's privacy API to load the script
+        AvadaPrivacy.registerScript({
+            type: 'gmaps',
+            src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBrGUx-sWW3nkDEL0CRoUYvA0MS95VCMlY&callback=initRevoHotelsMap&libraries=marker',
+            id: 'google-maps-api-js',
+            async: true,
+            defer: true
+        });
+    } else {
+        // Directly load Google Maps API if Avada Privacy is not active
+        const script = document.createElement('script');
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBrGUx-sWW3nkDEL0CRoUYvA0MS95VCMlY&callback=' + callback.name + '&libraries=marker';
+        script.id = 'google-maps-api-js';
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script);
+    }
+}
+
+function initRevoHotelsMap() {
+    const mapEl = document.getElementById('revo-hotels-map');
+    if (!mapEl) return;
+
+    fetch(`${revoHotelsMaps.ajax_url}?action=revo_hotels_maps_fetch&lang=${revoHotelsMaps.lang}`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success || !Array.isArray(data.data)) {
+                alert("Keine Hotel-Daten gefunden.");
+                return;
+            }
+
+            allHotels = data.data;
+            console.log('allHotels:', allHotels);
+
+            map = new google.maps.Map(mapEl, {
+                center: { lat: 51, lng: 10 },
+                zoom: 5,
+                mapId: "b7d66f7add83f786"
+            });
+
+            generateDropdownOptions(allHotels);
+            renderMarkers(allHotels);
+        });
+}
+
+
+// Generate Dropdown Options (including County Town in City Dropdown)
 function generateDropdownOptions(hotels) {
     const unique = key =>
         [...new Set(hotels.map(h => h[key]).filter(Boolean).map(v => v.trim()))]
@@ -158,8 +237,13 @@ function generateDropdownOptions(hotels) {
         });
     };
 
+    // City Dropdown with additional County Town values
+    const cities = unique('city');
+    const countyTowns = hotels.map(h => h.county_town).filter(ct => ct && !cities.includes(ct));
+    const combinedCities = [...new Set([...cities, ...countyTowns])].sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
+
     fillOptions('country-options', unique('country'));
-    fillOptions('city-options', unique('city'));
+    fillOptions('city-options', combinedCities);
     fillOptions('parent-brand-options', unique('parent_brand'));
     fillOptions('brand-options', unique('brand'));
 }
@@ -372,7 +456,7 @@ function filterMarkers() {
 
     const filtered = allHotels.filter(hotel => {
         const matchCountry = !countryFilter || hotel.country.toLowerCase().includes(countryFilter);
-        const matchCity = !cityFilter || hotel.city.toLowerCase().includes(cityFilter);
+        const matchCity = !cityFilter || hotel.city.toLowerCase().includes(cityFilter) || hotel.county_town.toLowerCase().includes(cityFilter);
         const matchBrand = !brandFilter || hotel.brand.toLowerCase().includes(brandFilter);
         const matchParentBrand = !parentBrandFilter || hotel.parent_brand.toLowerCase().includes(parentBrandFilter);
         return matchCountry && matchCity && matchBrand && matchParentBrand;

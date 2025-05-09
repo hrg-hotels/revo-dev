@@ -73,7 +73,7 @@ add_action('wp_enqueue_scripts', function() {
     ]);
 });
 
-// AJAX: Fetch hotel data
+/// AJAX: Fetch hotel data
 add_action('wp_ajax_revo_hotels_maps_fetch', 'revo_hotels_maps_fetch_data');
 add_action('wp_ajax_nopriv_revo_hotels_maps_fetch', 'revo_hotels_maps_fetch_data');
 
@@ -81,13 +81,26 @@ function revo_hotels_maps_fetch_data() {
     global $wpdb;
     $lang = isset($_GET['lang']) ? sanitize_text_field($_GET['lang']) : 'en';
 
-    $results = $wpdb->get_results($wpdb->prepare("
+    // Normalize lang to short format (e.g., en-US -> en)
+    $short_lang = substr($lang, 0, 2);
+
+// Optimized SQL Query with UNION for Multi-Language Fallback
+$results = $wpdb->get_results(
+    $wpdb->prepare(
+        "
         SELECT 
             h.image,
             h.name,
-            COALESCE(ct.translation, h.country_code, 'Unknown') AS country, 
+            -- Country with fallback
+            COALESCE(country.translation, h.country_code, 'Country not found') AS country, 
             h.zip,
-            COALESCE(cty.translation, h.city, 'Unknown') AS city, 
+
+            -- City with fallback
+            COALESCE(city.translation, h.city, 'City not found') AS city, 
+            
+            -- County Town with fallback
+            COALESCE(county_town.translation, h.county_town, 'County Town not found') AS county_town, 
+
             h.street,
             h.phone,
             h.email,
@@ -99,19 +112,60 @@ function revo_hotels_maps_fetch_data() {
             COALESCE(h.parent_brand, 'Unknown') AS parent_brand, 
             h.publication_status
         FROM {$wpdb->prefix}hotel_portfolio_04 h
-        LEFT JOIN {$wpdb->prefix}hotel_translation ct 
-            ON ct.code = h.country_code AND ct.lang = %s AND ct.type = 'country'
-        LEFT JOIN {$wpdb->prefix}hotel_translation cty 
-            ON cty.code = h.city AND cty.lang = %s AND cty.type = 'city'
-        ORDER BY order_prio ASC, h.name ASC
-    ", $lang, $lang), ARRAY_A);
 
-    if ($results) {
-        wp_send_json_success($results);
-    } else {
-        wp_send_json_error(__('No data found.', 'revo-hotels-maps'));
-    }
+        -- Country with UNION fallback
+        LEFT JOIN (
+            SELECT code, translation FROM {$wpdb->prefix}hotel_translation 
+            WHERE type = 'country' AND (lang = %s OR lang = %s)
+        ) country ON country.code = h.country_code
+
+        -- City with UNION fallback
+        LEFT JOIN (
+            SELECT code, translation FROM {$wpdb->prefix}hotel_translation 
+            WHERE type = 'city' AND (lang = %s OR lang = %s)
+        ) city ON city.code = h.city
+
+        -- County Town with UNION fallback
+        LEFT JOIN (
+            SELECT code, translation FROM {$wpdb->prefix}hotel_translation 
+            WHERE type = 'county_town' AND (lang = %s OR lang = %s)
+        ) county_town ON county_town.code = h.county_town
+
+        ORDER BY order_prio ASC, h.name ASC
+        ", 
+        $short_lang, 
+        $lang, 
+        $short_lang, 
+        $lang, 
+        $short_lang, 
+        $lang
+    ), 
+    ARRAY_A
+);
+
+// Debugging
+if ($wpdb->last_error) {
+    error_log("MySQL Error: " . $wpdb->last_error);
+    wp_send_json_error(array(
+        'message' => __('Database Error: ', 'revo-hotels-maps') . $wpdb->last_error,
+        'details' => __('Please contact support.', 'revo-hotels-maps')
+    ));
 }
+
+if ($results) {
+    wp_send_json_success($results);
+} else {
+    wp_send_json_error(array(
+        'message' => __('No data found.', 'revo-hotels-maps'),
+        'details' => __('Please try different filters or contact support if the issue persists.', 'revo-hotels-maps')
+    ));
+}
+
+
+
+
+}
+
 
 // Shortcode: Display map with template
 function revo_hotels_map_grid() {
