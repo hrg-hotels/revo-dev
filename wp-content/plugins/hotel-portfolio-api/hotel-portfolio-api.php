@@ -39,7 +39,6 @@ function get_api_table_name() {
 /* READ ENDPOINTS */
 /* READ ENDPOINTS */
 /* READ ENDPOINTS */
-/*TEst*/
 
 // 1. Get all data from the table
 add_action('rest_api_init', function () {
@@ -75,13 +74,43 @@ function api_get_data_by_chronos_id(WP_REST_Request $request) {
     return new WP_REST_Response($results, 200);
 }
 
+// 3. Get all data from the table setup-hotel-portfolio
+add_action('rest_api_init', function () {
+    register_rest_route('setup-hotel-portfolio-api/v1', '/data/', array(
+        'methods'             => 'GET',
+        'callback'            => 'api_get_all_data_setup_hotel_portfolio',
+        'permission_callback' => '__return_true',
+    ));
+});
+function api_get_all_data_setup_hotel_portfolio() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'setup_hotel_portfolio';
+    $results    = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+    return new WP_REST_Response($results, 200);
+}
+
+// 4. Get all data from the table hotel-portfolio-changelog
+add_action('rest_api_init', function () {
+    register_rest_route('hotel-portfolio-changelog-api/v1', '/data/', array(
+        'methods' => 'GET',
+        'callback' => 'api_get_all_data_hotel_portfolio_changelog',
+        'permission_callback' => '__return_true',
+    ));
+});
+function api_get_all_data_hotel_portfolio_changelog() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'hotel_portfolio_changelog';
+    $results = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+    return new WP_REST_Response($results, 200);
+}
+
 /* WRITE ENDPOINTS */
 /* WRITE ENDPOINTS */
 /* WRITE ENDPOINTS */
 /* WRITE ENDPOINTS */
 /* WRITE ENDPOINTS */
 
-// 3. Update data (expects an array of objects, each with 'updatedData' and 'updateCriteria')
+// 1. Update data (expects an array of objects, each with 'updatedData' and 'updateCriteria')
 add_action('rest_api_init', function () {
     register_rest_route('hotel-portfolio-api/v1', '/data/update', array(
         'methods'             => 'POST',
@@ -98,16 +127,16 @@ function api_update_data(WP_REST_Request $request) {
         return new WP_Error('invalid_data', 'Data must be an array of update objects', array('status' => 400));
     }
 
-    $results = array();	
-	
+    $results = array(); 
+ 
     foreach ($updates as $update) {
         if (!isset($update['updatedData']) || !isset($update['updateCriteria'])) {
             $results[] = array('status' => 'failed', 'message' => 'Missing updatedData or updateCriteria');
             continue;
         }
-		
-		
-		
+  
+  
+  
         $update_result = $wpdb->update($table_name, $update['updatedData'], $update['updateCriteria']);
 
         if ($update_result === false) {
@@ -120,7 +149,7 @@ function api_update_data(WP_REST_Request $request) {
     return new WP_REST_Response($results, 200);
 }
 
-// 4. Insert data (expects an array of new row objects)
+// 2. Insert data (expects an array of new row objects)
 add_action('rest_api_init', function () {
     register_rest_route('hotel-portfolio-api/v1', '/data/insert', array(
         'methods'             => 'POST',
@@ -153,7 +182,7 @@ function api_insert_data(WP_REST_Request $request) {
     return new WP_REST_Response($results, 200);
 }
 
-// 5. Delete data (expects an array of criteria objects for the WHERE clause)
+// 3. Delete data (expects an array of criteria objects for the WHERE clause)
 add_action('rest_api_init', function () {
     register_rest_route('hotel-portfolio-api/v1', '/data/delete', array(
         'methods'             => 'DELETE',
@@ -184,18 +213,36 @@ function api_delete_data(WP_REST_Request $request) {
     return new WP_REST_Response($results, 200);
 }
 
-// 6. Get all data from the table setup-hotel-portfolio
+// 4. Insert data into the table hotel_portfolio_changelog (expects an array of new row objects)
 add_action('rest_api_init', function () {
-    register_rest_route('setup-hotel-portfolio-api/v1', '/data/', array(
-        'methods'             => 'GET',
-        'callback'            => 'api_get_all_data_setup_hotel_portfolio',
+    register_rest_route('hotel-portfolio-changelog-api/v1', '/data/insert', array(
+        'methods'             => 'POST',
+        'callback'            => 'api_insert_data_hotel_portfolio_changelog',
         'permission_callback' => '__return_true',
     ));
 });
-function api_get_all_data_setup_hotel_portfolio() {
+function api_insert_data_hotel_portfolio_changelog(WP_REST_Request $request) {
     global $wpdb;
-    $table_name = $wpdb->prefix . 'setup_hotel_portfolio';
-    $results    = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+    $table_name = $wpdb->prefix . 'hotel_portfolio_changelog';
+    $inserts    = $request->get_json_params(); // should be an array of insert objects
+
+    if (!is_array($inserts)) {
+        return new WP_Error('invalid_data', 'Data must be an array of insert objects', ['status' => 400]);
+    }
+
+    $results = [];
+
+    foreach ($inserts as $insert) {
+        $insert_result = $wpdb->insert($table_name, $insert);
+        if ($insert_result === false) {
+            $results[] = ['status' => 'failed', 'message' => $wpdb->last_error];
+        } elseif ($insert_result === 0) {
+            $results[] = ['status' => 'failed', 'message' => 'No rows inserted'];
+        } else {
+            $results[] = ['status' => 'success', 'insert_id' => $wpdb->insert_id];
+        }
+    }
+
     return new WP_REST_Response($results, 200);
 }
 
@@ -208,3 +255,4 @@ add_filter('rest_pre_serve_request', function ($value, $server, $request) {
     header('X-Cache-Bypass', 'true'); // Extra cache bypass signal
     return $value;
 }, 10, 3);
+ 
