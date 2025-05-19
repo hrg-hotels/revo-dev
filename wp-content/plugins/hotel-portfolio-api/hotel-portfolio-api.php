@@ -39,6 +39,7 @@ function get_api_table_name() {
 /* READ ENDPOINTS */
 /* READ ENDPOINTS */
 /* READ ENDPOINTS */
+/*TEst*/
 
 // 1. Get all data from the table
 add_action('rest_api_init', function () {
