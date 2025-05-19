@@ -256,3 +256,60 @@ add_filter('rest_pre_serve_request', function ($value, $server, $request) {
     return $value;
 }, 10, 3);
  
+
+// Admin page
+add_action('admin_menu', 'hotel_portfolio_admin_menu');
+
+function hotel_portfolio_admin_menu() {
+    add_menu_page(
+        'Hotel Portfolio Sync',
+        'Hotel Sync',
+        'manage_options',
+        'hotel-portfolio-sync',
+        'render_hotel_portfolio_sync_page',
+        'dashicons-update-alt', // Icon
+        25 // Position
+    );
+}
+function render_hotel_portfolio_sync_page() {
+    ?>
+    <div class="wrap">
+        <h1><?php esc_html_e('Hotel Portfolio Einstellungen', 'hotel-portfolio'); ?></h1>
+        <p><?php esc_html_e('Hier kommen die Einstellungen und die Dokumentation', 'hotel-portfolio'); ?></p>
+
+        <a target="blank" href="https://client-hrg-hotels-staging.wemakefuture.com/form/c89fd1f7-89cb-464c-ab1a-8cb0cc74973d?return_to=<?php echo urlencode(admin_url('admin.php?page=hotel-portfolio-sync&sync=started')); ?>" class="button button-primary">
+            <?php esc_html_e('Chronos Daten Sync', 'hotel-portfolio'); ?>
+        </a>
+        <div id="sync-status" style="margin-top: 20px;">
+            <?php
+                $status = isset($_GET['sync']) ? sanitize_text_field($_GET['sync']) : '';
+
+                if ($status === 'started') :
+             ?>
+                    <div class="notice notice-info is-dismissible">
+                        <p><?php esc_html_e('Synchronisation wurde gestartet. Bitte aktualisieren Sie die Seite später für Ergebnisse.', 'hotel-portfolio'); ?></p>
+                    </div>
+                <?php endif; ?>
+        </div>
+    </div>
+    <div style="background-color:green;height:500px;width:100%;"></div>
+    <?php
+}
+
+add_action('wp_ajax_run_hotel_sync', 'handle_hotel_data_sync');
+
+function handle_hotel_data_sync() {
+    // Example logic to fetch and update from your endpoint
+    $response = wp_remote_get(rest_url('hotel-portfolio-api/v1/data/'));
+
+    if (is_wp_error($response)) {
+        wp_send_json_error('Failed to fetch data from API.');
+    }
+
+    $data = json_decode(wp_remote_retrieve_body($response), true);
+
+    // You can process or save data here
+
+    // Return the result to JS
+    wp_send_json_success($data);
+}
