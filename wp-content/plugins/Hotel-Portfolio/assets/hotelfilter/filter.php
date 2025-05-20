@@ -2,15 +2,6 @@
 // Verhindere direkten Zugriff
 defined('ABSPATH') or die('No script kiddies please!');
 
-// Standardmäßig Deutsch setzen
-// $lang = 'de_DE';
-// if (strpos($_SERVER['REQUEST_URI'], '-en/') !== false) {
-//     $lang = 'en_US';
-// }
-
-// WordPress dazu zwingen, die Sprache zu wechseln
-switch_to_locale($lang);
-
 ?>
 <script>
     var hotelFilterTranslations = {
