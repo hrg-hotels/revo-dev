@@ -108,6 +108,7 @@ $results = $wpdb->get_results(
             h.port_prio AS order_prio,
             h.lat,
             h.lon AS lng,
+            CASE WHEN h.mice_request = 'True' THEN 'MICE' ELSE '' END AS object_type,
             COALESCE(h.brand, 'Unknown') AS brand, 
             COALESCE(h.parent_brand, 'Unknown') AS parent_brand, 
             h.publication_status

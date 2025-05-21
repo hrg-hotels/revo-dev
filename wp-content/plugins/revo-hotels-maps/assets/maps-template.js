@@ -53,6 +53,7 @@ function renderMarkers(hotels) {
         const { MarkerClusterer } = window.markerClusterer;
         clusterer = new MarkerClusterer({ map, markers });
     });
+
 }
 
 function clearMarkers() {
@@ -209,9 +210,99 @@ function initRevoHotelsMap() {
 
             generateDropdownOptions(allHotels);
             renderMarkers(allHotels);
+            checkParams();
         });
 }
+//check if there are URL parameters
+// Helper function to get URL parameters
+function getURLParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        city: params.get('city') || '',
+        country: params.get('country') || '',
+        brand: params.get('brand') || '',
+        parent_brand: params.get('parent_brand') || '',
+        object_type: params.get('object_type') || ''
+    };
+}
 
+// Step 1: Check for URL parameters and set values conditionally
+function checkParams() {
+    const urlParams = getURLParams();
+console.log('URL Parameters:', urlParams);
+    insertInput('city-header', urlParams.city);
+    insertInput('country-header', urlParams.country);
+    insertInput('brand-header', urlParams.brand);
+    insertInput('parent-brand-header', urlParams.parent_brand);
+    insertInput('object-type-header', urlParams.object_type);
+
+    if(!urlParams.city && !urlParams.country && !urlParams.brand && !urlParams.parent_brand && !urlParams.object_type) {
+        console.log('No URL parameters found');
+       renderMarkers(allHotels);
+    updateResultMessage(allHotels.length, allHotels);
+    }else{
+    filterMarkers(urlParams);
+    }
+
+
+}
+
+// Step 2: Insert values into dropdown input fields and return if value was inserted
+function insertInput(id, value) {
+    const input = document.getElementById(id);
+    if (input && value) {
+        input.value = decodeURIComponent(value);
+        return true;
+    }
+    return false;
+}
+
+// Update the URL based on current input values
+function updateURLParamsFromInputs() {
+    const params = new URLSearchParams();
+    const addParam = (id, key) => {
+        const el = document.getElementById(id);
+        if (el && el.value.trim()) {
+            params.set(key, el.value.trim());
+        }
+    };
+
+    addParam('city-header', 'city');
+    addParam('country-header', 'country');
+    addParam('brand-header', 'brand');
+    addParam('parent-brand-header', 'parent_brand');
+    addParam('object-type-header', 'object_type');
+
+    const paramStr = params.toString();
+    const newUrl = paramStr ? `${window.location.pathname}?${paramStr}` : window.location.pathname;
+    window.history.replaceState({}, '', newUrl);
+}
+
+// Push input values to URL and reapply them
+function pushToUrl() {
+    updateURLParamsFromInputs();
+    checkParams();
+}
+
+// Clear all input fields and URL params
+document.getElementById("btn-reset")?.addEventListener("click", resetAllFiltersAndUrl);
+function resetAllFiltersAndUrl() {
+    const ids = ['country-header', 'city-header', 'parent-brand-header', 'brand-header', 'object-type-header'];
+    ids.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.value = '';
+    });
+
+    window.history.replaceState({}, '', window.location.pathname);
+    filterMarkersWithUrlUpdate() 
+}
+
+// Hook into filtering trigger to also update URL
+function filterMarkersWithUrlUpdate() {
+    pushToUrl();
+    updateURLParamsFromInputs();
+    checkParams();
+}
 
 // Generate Dropdown Options (including County Town in City Dropdown)
 function generateDropdownOptions(hotels) {
@@ -230,7 +321,7 @@ function generateDropdownOptions(hotels) {
                 const input = document.getElementById(id.replace("-options", "-header"));
                 if (input) {
                     input.value = this.textContent;
-                    filterMarkers();
+                    filterMarkersWithUrlUpdate();
                 }
                 list.style.display = "none";
             });
@@ -242,10 +333,14 @@ function generateDropdownOptions(hotels) {
     const countyTowns = hotels.map(h => h.county_town).filter(ct => ct && !cities.includes(ct));
     const combinedCities = [...new Set([...cities, ...countyTowns])].sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
 
+    //mapping object types
+    const objectTypes = unique('object_type');
+
     fillOptions('country-options', unique('country'));
     fillOptions('city-options', combinedCities);
     fillOptions('parent-brand-options', unique('parent_brand'));
     fillOptions('brand-options', unique('brand'));
+    fillOptions('object-type-options', objectTypes);
 }
 
 // Dropdown visibility toggle on header click
@@ -311,10 +406,10 @@ allInputs.forEach(input => {
             if (currentFocusIndex > -1 && items[currentFocusIndex]) {
                 const value = items[currentFocusIndex].textContent;
                 input.value = value;
-                filterMarkers();
+                pushToUrl();
                 options.style.display = "none";
             } else {
-                filterMarkers();
+                pushToUrl();
                 options.style.display = "none";
             }
         }
@@ -343,8 +438,8 @@ function clearField(inputId) {
     const input = document.getElementById(inputId);
     if (input) {
         input.value = "";
-        filterMarkers();
-    }
+        pushToUrl();
+        checkParams();    }
 }
 
 document.addEventListener("click", e => {
@@ -360,17 +455,19 @@ document.addEventListener("click", e => {
     }
 });
 
-// Reset ALL fields
+// Reset ALL fields ***** there is a reset function on line 200 as well but if i delete one of them it will not work
+// so i will leave it as it is
 const resetBtn = document.getElementById("btn-reset");
 if (resetBtn) {
     resetBtn.addEventListener("click", () => {
-        ["country-header", "city-header", "parent-brand-header", "brand-header"].forEach(id => {
+        ["country-header", "city-header", "parent-brand-header", "brand-header","object-type"].forEach(id => {
             const input = document.getElementById(id);
             if (input) input.value = "";
         });
-        filterMarkers();
+        checkParams();
     });
 }
+
 
 function updateResultMessage(count, filteredHotels) {
     const wrapper = document.getElementById("message-wrapper");
@@ -402,6 +499,7 @@ function updateResultMessage(count, filteredHotels) {
         let city = document.getElementById('city-header').value.trim();
         let parentBrand = document.getElementById('parent-brand-header').value.trim();
         let brand = document.getElementById('brand-header').value.trim();
+        let objectType = document.getElementById('object-type-header').value.trim();
 
         messageContainer.innerHTML = `
         <div class="message-txt green">
@@ -411,6 +509,7 @@ function updateResultMessage(count, filteredHotels) {
                 <div class="result-title" id="title-city"><span class="txt-black">Stadt:</span><span class="txt-gray"> ${city}</span></div>
                 <div class="result-title" id="title-parent-brand"><span class="txt-black">Franchise Partner:</span><span class="txt-gray"> ${parentBrand}</span></div>
                 <div class="result-title" id="title-brand"><span class="txt-black">Marke:</span><span class="txt-gray"> ${brand}</span></div>
+                <div class="result-title" id="title-object-type"><span class="txt-black">Object type:</span><span class="txt-gray"> ${objectType}</span></div>
             </div>
             <div><p class="result-message">Gefunden: <span class="txt-black"> ${count} </span> Hotels.</p></div>
         </div>`;
@@ -432,35 +531,54 @@ function updateMessageContainer() {
     if (document.getElementById("brand-header").value.trim()) {
         document.getElementById("title-brand")?.classList.add("show");
     }
+    if (document.getElementById("object-type-header").value.trim()) {
+        document.getElementById("title-object-type")?.classList.add("show");
+    }
     if (document.getElementById("parent-brand-header").value.trim()) {
         document.getElementById("title-parent-brand")?.classList.add("show");
     }
-    if (!document.getElementById("country-header").value && !document.getElementById("city-header").value && !document.getElementById("brand-header").value && !document.getElementById("parent-brand-header").value) {
+    if (document.getElementById("object-type-header").value.trim()) {
+        document.getElementById("title-object-type")?.classList.add("show");
+    }
+    if (!document.getElementById("country-header").value 
+    && !document.getElementById("city-header").value 
+    && !document.getElementById("brand-header").value 
+    && !document.getElementById("parent-brand-header").value
+    && !document.getElementById("object-type-header").value) {
         document.getElementById("message-headline")?.style.setProperty("display", "none");
     }
 }
 
 function removeShowClass() {
-    const ids = ['country', 'city', 'brand', 'parent-brand'];
+    const ids = ['country', 'city', 'brand', 'parent-brand', 'object-type'];
     ids.forEach(id => {
         document.getElementById(`title-${id}`)?.classList.remove("show");
     });
 }
 
 // ✳️ Expected filterMarkers implementation placeholder:
-function filterMarkers() {
-    const countryFilter = document.getElementById('country-header').value.trim().toLowerCase();
-    const cityFilter = document.getElementById('city-header').value.trim().toLowerCase();
-    const brandFilter = document.getElementById('brand-header').value.trim().toLowerCase();
-    const parentBrandFilter = document.getElementById('parent-brand-header').value.trim().toLowerCase();
+function filterMarkers(urlParams) {
+    // Clear previous markers
+    clearMarkers();
+    const countryFilter= urlParams.country.trim().toLowerCase();
+
+    const cityFilter = urlParams.city.trim().toLowerCase();
+    const brandFilter = urlParams.brand.trim().toLowerCase();
+    const objectTypeFilter = urlParams.object_type.trim().toLowerCase();
+    const parentBrandFilter = urlParams.parent_brand.trim().toLowerCase();
+
+
+    // Filter hotels based on URL parameters
 
     const filtered = allHotels.filter(hotel => {
         const matchCountry = !countryFilter || hotel.country.toLowerCase().includes(countryFilter);
         const matchCity = !cityFilter || hotel.city.toLowerCase().includes(cityFilter) || hotel.county_town.toLowerCase().includes(cityFilter);
         const matchBrand = !brandFilter || hotel.brand.toLowerCase().includes(brandFilter);
+        const matchObjectType = !objectTypeFilter || hotel.object_type.toLowerCase().includes(objectTypeFilter);
         const matchParentBrand = !parentBrandFilter || hotel.parent_brand.toLowerCase().includes(parentBrandFilter);
-        return matchCountry && matchCity && matchBrand && matchParentBrand;
+        return matchCountry && matchCity && matchBrand && matchParentBrand&& matchObjectType;
     });
+    console.log('Filtered Hotels:', filtered);
 
     renderMarkers(filtered); // Your rendering logic
     generateDropdownOptions(filtered);
@@ -489,6 +607,7 @@ function createPopupContent(hotel) {
                 <p><strong>Telefon:</strong> ${hotel.phone}</p>
                 <p><strong>Email:</strong> ${hotel.email}</p>
                 <p><strong>Marke:</strong> ${hotel.brand}</p>
+                <p><strong>Object type:</strong> ${hotel.mice_request}</p>
                 <hr class="sep"/>
                 <div class="btnWrap">
                     <button class="btn btn-card btn-select btnMaps">

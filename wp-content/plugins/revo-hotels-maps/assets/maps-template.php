@@ -2,15 +2,6 @@
 // Verhindere direkten Zugriff
 defined('ABSPATH') or die('No script kiddies please!');
 
-// Standardmäßig Deutsch setzen
-// $lang = 'de_DE';
-// if (strpos($_SERVER['REQUEST_URI'], '-en/') !== false) {
-//     $lang = 'en_US';
-// }
-
-// WordPress dazu zwingen, die Sprache zu wechseln
-//switch_to_locale($lang);
-
 ?>
 <script>
     var hotelFilterTranslations = {
@@ -22,6 +13,8 @@ defined('ABSPATH') or die('No script kiddies please!');
         hits: "<?php echo esc_js(ucfirst(__('hits', 'hotel-portfolio'))); ?>",
         yourSelection: "<?php echo esc_js(ucfirst(__('your-selection', 'hotel-portfolio'))); ?>"
     };
+
+
 </script>
 
 
@@ -65,6 +58,16 @@ defined('ABSPATH') or die('No script kiddies please!');
                     <input name="brand" type="text" autocomplete="off" id="brand-header" maxlength="50" placeholder="<?php echo ucfirst(esc_html__('brand', 'hotel-portfolio'))?>"/>
                 </div>
                 <ul class="select-options" id="brand-options"></ul>
+            </div>
+        </div>	
+
+        <!-- MICE/All Hotels/Restaurants/some other objects Dropdown -->
+        <div class="selection-hr">
+            <div class="select-object-type" id="object-type-select">
+                <div class="select-header">
+                    <input name="object-type" type="text" autocomplete="off" id="object-type-header" maxlength="20" placeholder="All hotels"/>
+                </div>
+                <ul class="select-options" id="object-type-options"></ul>
             </div>
         </div>	
 
