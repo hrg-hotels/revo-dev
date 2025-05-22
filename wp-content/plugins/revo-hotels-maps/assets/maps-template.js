@@ -210,7 +210,6 @@ function initRevoHotelsMap() {
 
             generateDropdownOptions(allHotels);
             renderMarkers(allHotels);
-            checkParams();
         });
 }
 //check if there are URL parameters
@@ -229,21 +228,19 @@ function getURLParams() {
 // Step 1: Check for URL parameters and set values conditionally
 function checkParams() {
     const urlParams = getURLParams();
-console.log('URL Parameters:', urlParams);
-    insertInput('city-header', urlParams.city);
-    insertInput('country-header', urlParams.country);
-    insertInput('brand-header', urlParams.brand);
-    insertInput('parent-brand-header', urlParams.parent_brand);
-    insertInput('object-type-header', urlParams.object_type);
+    let anyParamSet = false;
 
-    if(!urlParams.city && !urlParams.country && !urlParams.brand && !urlParams.parent_brand && !urlParams.object_type) {
-        console.log('No URL parameters found');
-       renderMarkers(allHotels);
-    updateResultMessage(allHotels.length, allHotels);
-    }else{
-    filterMarkers(urlParams);
+    if (insertInput('city-header', urlParams.city)) anyParamSet = true;
+    if (insertInput('country-header', urlParams.country)) anyParamSet = true;
+    if (insertInput('brand-header', urlParams.brand)) anyParamSet = true;
+    if (insertInput('parent-brand-header', urlParams.parent_brand)) anyParamSet = true;
+    if (insertInput('object-type-header', urlParams.object_type)) anyParamSet = true;
+
+    if (anyParamSet) {
+        filterMarkers();
+    }else {
+        renderMarkers(allHotels);
     }
-
 
 }
 
@@ -286,6 +283,7 @@ function pushToUrl() {
 
 // Clear all input fields and URL params
 document.getElementById("btn-reset")?.addEventListener("click", resetAllFiltersAndUrl);
+
 function resetAllFiltersAndUrl() {
     const ids = ['country-header', 'city-header', 'parent-brand-header', 'brand-header', 'object-type-header'];
     ids.forEach(id => {
@@ -299,9 +297,8 @@ function resetAllFiltersAndUrl() {
 
 // Hook into filtering trigger to also update URL
 function filterMarkersWithUrlUpdate() {
-    pushToUrl();
     updateURLParamsFromInputs();
-    checkParams();
+    filterMarkers();
 }
 
 // Generate Dropdown Options (including County Town in City Dropdown)
@@ -321,7 +318,7 @@ function generateDropdownOptions(hotels) {
                 const input = document.getElementById(id.replace("-options", "-header"));
                 if (input) {
                     input.value = this.textContent;
-                    filterMarkersWithUrlUpdate();
+                    pushToUrl();
                 }
                 list.style.display = "none";
             });
@@ -455,8 +452,7 @@ document.addEventListener("click", e => {
     }
 });
 
-// Reset ALL fields ***** there is a reset function on line 200 as well but if i delete one of them it will not work
-// so i will leave it as it is
+// Reset ALL fields
 const resetBtn = document.getElementById("btn-reset");
 if (resetBtn) {
     resetBtn.addEventListener("click", () => {
@@ -557,18 +553,12 @@ function removeShowClass() {
 }
 
 // ✳️ Expected filterMarkers implementation placeholder:
-function filterMarkers(urlParams) {
-    // Clear previous markers
-    clearMarkers();
-    const countryFilter= urlParams.country.trim().toLowerCase();
-
-    const cityFilter = urlParams.city.trim().toLowerCase();
-    const brandFilter = urlParams.brand.trim().toLowerCase();
-    const objectTypeFilter = urlParams.object_type.trim().toLowerCase();
-    const parentBrandFilter = urlParams.parent_brand.trim().toLowerCase();
-
-
-    // Filter hotels based on URL parameters
+function filterMarkers() {
+    const countryFilter = document.getElementById('country-header').value.trim().toLowerCase();
+    const cityFilter = document.getElementById('city-header').value.trim().toLowerCase();
+    const brandFilter = document.getElementById('brand-header').value.trim().toLowerCase();
+    const objectTypeFilter = document.getElementById('object-type-header').value.trim().toLowerCase();
+    const parentBrandFilter = document.getElementById('parent-brand-header').value.trim().toLowerCase();
 
     const filtered = allHotels.filter(hotel => {
         const matchCountry = !countryFilter || hotel.country.toLowerCase().includes(countryFilter);
@@ -578,7 +568,6 @@ function filterMarkers(urlParams) {
         const matchParentBrand = !parentBrandFilter || hotel.parent_brand.toLowerCase().includes(parentBrandFilter);
         return matchCountry && matchCity && matchBrand && matchParentBrand&& matchObjectType;
     });
-    console.log('Filtered Hotels:', filtered);
 
     renderMarkers(filtered); // Your rendering logic
     generateDropdownOptions(filtered);
