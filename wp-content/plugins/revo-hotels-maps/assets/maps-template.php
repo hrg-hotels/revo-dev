@@ -2,15 +2,6 @@
 // Verhindere direkten Zugriff
 defined('ABSPATH') or die('No script kiddies please!');
 
-// Standardmäßig Deutsch setzen
-// $lang = 'de_DE';
-// if (strpos($_SERVER['REQUEST_URI'], '-en/') !== false) {
-//     $lang = 'en_US';
-// }
-
-// WordPress dazu zwingen, die Sprache zu wechseln
-//switch_to_locale($lang);
-
 ?>
 <script>
     var hotelFilterTranslations = {
@@ -22,6 +13,8 @@ defined('ABSPATH') or die('No script kiddies please!');
         hits: "<?php echo esc_js(ucfirst(__('hits', 'hotel-portfolio'))); ?>",
         yourSelection: "<?php echo esc_js(ucfirst(__('your-selection', 'hotel-portfolio'))); ?>"
     };
+
+
 </script>
 
 
@@ -68,14 +61,26 @@ defined('ABSPATH') or die('No script kiddies please!');
             </div>
         </div>	
 
-        <!-- Buttons -->
-        <div class="btn-wrapper">
-            <div id="btn-reset">
-              <img src="<?php echo esc_url(plugins_url('../img/restart_alt.svg', __FILE__)); ?>" alt="reset" />
-               <div><span style="color:#181B20;"> Reset</span></div>
+        <!-- MICE/All Hotels/Restaurants/some other objects Dropdown -->
+        <div class="selection-hr">
+            <div class="select-object-type" id="object-type-select">
+                <div class="select-header">
+                    <input name="object-type" type="text" autocomplete="off" id="object-type-header" maxlength="20" placeholder="All hotels"/>
+                </div>
+                <ul class="select-options" id="object-type-options"></ul>
             </div>
-        </div>
+        </div>	
   </div>
+    <!-- Buttons -->
+<div class="btn-wrapper">                             <!-- Button for redirecting to grid view -->
+    <div id="grid-btn-wrapper">
+        <a id="grid-view-btn" class="btn btn-grid-view" href="#">Grid View</a>
+    </div>
+    <div id="btn-reset">
+        <img src="<?php echo esc_url(plugins_url('../img/restart_alt.svg', __FILE__)); ?>" alt="reset" />
+        <div><span style="color:#181B20;"> Reset</span></div>
+    </div>
+</div>
   <div id="message-wrapper"></div>
 </div>  
 
