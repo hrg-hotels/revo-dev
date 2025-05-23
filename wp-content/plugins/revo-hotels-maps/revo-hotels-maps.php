@@ -52,6 +52,7 @@ function revo_hotels_maps_admin_page() {
 
 // Enqueue assets (CSS + JS)
 add_action('wp_enqueue_scripts', function() {
+        if (is_page(array('maps'))) {
     wp_enqueue_style(
         'revo-hotels-maps-css',
         plugins_url('assets/maps-template.css', __FILE__), 
@@ -71,6 +72,7 @@ add_action('wp_enqueue_scripts', function() {
         'ajax_url' => admin_url('admin-ajax.php'),
         'lang'     => get_locale()
     ]);
+}
 });
 
 /// AJAX: Fetch hotel data
@@ -161,8 +163,6 @@ if ($results) {
         'details' => __('Please try different filters or contact support if the issue persists.', 'revo-hotels-maps')
     ));
 }
-
-
 
 
 }

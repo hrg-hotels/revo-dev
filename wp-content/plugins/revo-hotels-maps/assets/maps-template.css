@@ -44,10 +44,52 @@
 /******POPUPUP******/
 .popWrap{
     display:flex;
+    padding-right: 20px;
+}
+.popWrap img{
+    display:none;
 }
 .contTxt{
-    padding-left:20px;
+  text-align:center;
 }
+.contTxt p{
+ margin-bottom:10px !important;;
+}
+.hotelHead{
+    text-transform: none !important;
+    line-height: normal !important;
+    letter-spacing: normal !important;
+    margin-bottom:10px;
+    margin-top:0px;
+}
+@media only screen and (min-width: 768px){
+  .contTxt{
+      padding-left:20px;
+  }
+}
+.gm-ui-hover-effect{
+   background: var(--awb-color5) !important;/*orange*/
+   color:white !important;
+   opacity: 10 !important;
+   width:35px !important;
+    height:35px !important;
+    padding: 6px !important;
+  }
+  .gm-ui-hover-effect:hover{
+background:#e54d32 !important;
+  }
+.gm-ui-hover-effect>span {
+    background-color: white !important;
+    width: 20px;
+    height: 20px;
+    margin:0px !important;
+}
+.gm-style .gm-style-iw-c {
+  border-radius: 0px !important;
+}
+  
+
+var(--awb-color5);/*orange*/
 /* Filter Wrapper */
 .search-wrapper {
   display: flex;
@@ -145,7 +187,7 @@
     font-weight: 400;
     display: flex;
     justify-content: center;
-    width: 100%;
+    width: 50%;
     padding:12px;
     color:#181B20;
     cursor: pointer;
@@ -155,6 +197,7 @@
 #btn-reset img {
     margin-right: 10px;
     padding-bottom: 4px;
+    width:16px;
 }
 
 /* Hover Effekt für Dropdowns */
@@ -224,6 +267,9 @@ color:var(--body_typography-color);
   margin-bottom:0 !important;
 }
 @media only screen and (min-width: 768px){
+  .btn-wrapper{
+    justify-content: flex-end;
+  }
   #btn-reset{
     width:auto;
   }
@@ -235,9 +281,7 @@ color:var(--body_typography-color);
   }
 }
 @media only screen and (min-width: 1280px){
-  #btn-reset{
-    margin-top:0;
-  }
+
   .message-filter-result{
     flex-direction:row;
   }
@@ -273,4 +317,25 @@ color:var(--body_typography-color);
   border: none;
   cursor: pointer;
   color: var(--h4_typography-color) !important;
+}
+#grid-btn-wrapper{
+  margin: 0;
+    background: transparent;
+    font-weight: 400;
+    display: flex;
+    justify-content: center;
+    width: 50%;
+    padding: 12px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+input:disabled {
+    background-color: #eee;
+    color:var(--link_hover_color);
+        cursor: not-allowed;
+        border: none;
+
+}
+input:disabled::placeholder {
+    color: #e9e9e9 !important; /* brighter grey for disabled placeholder */
 }

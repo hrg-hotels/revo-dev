@@ -70,15 +70,17 @@ defined('ABSPATH') or die('No script kiddies please!');
                 <ul class="select-options" id="object-type-options"></ul>
             </div>
         </div>	
-
-        <!-- Buttons -->
-        <div class="btn-wrapper">
-            <div id="btn-reset">
-              <img src="<?php echo esc_url(plugins_url('../img/restart_alt.svg', __FILE__)); ?>" alt="reset" />
-               <div><span style="color:#181B20;"> Reset</span></div>
-            </div>
-        </div>
   </div>
+    <!-- Buttons -->
+<div class="btn-wrapper">                             <!-- Button for redirecting to grid view -->
+    <div id="grid-btn-wrapper">
+        <a id="grid-view-btn" class="btn btn-grid-view" href="#">Grid View</a>
+    </div>
+    <div id="btn-reset">
+        <img src="<?php echo esc_url(plugins_url('../img/restart_alt.svg', __FILE__)); ?>" alt="reset" />
+        <div><span style="color:#181B20;"> Reset</span></div>
+    </div>
+</div>
   <div id="message-wrapper"></div>
 </div>  
 

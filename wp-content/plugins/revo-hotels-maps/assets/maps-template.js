@@ -158,8 +158,6 @@ document.addEventListener("DOMContentLoaded", () => {
     showGDPRConsent();
 });
 
-
-
 // Load Google Maps API with Avada Privacy Integration
 function loadGoogleMapsAPI(callback) {
     if (window.google && window.google.maps) {
@@ -204,54 +202,91 @@ function initRevoHotelsMap() {
 
             map = new google.maps.Map(mapEl, {
                 center: { lat: 51, lng: 10 },
-                zoom: 5,
+                zoom: 4,
                 mapId: "b7d66f7add83f786"
             });
 
             generateDropdownOptions(allHotels);
             renderMarkers(allHotels);
+            checkParams();
+            updateGridViewBtn();
         });
 }
-//check if there are URL parameters
-// Helper function to get URL parameters
+
+
+
+
+
+// Get URL parameters as an object
 function getURLParams() {
     const params = new URLSearchParams(window.location.search);
-    return {
-        city: params.get('city') || '',
-        country: params.get('country') || '',
-        brand: params.get('brand') || '',
-        parent_brand: params.get('parent_brand') || '',
-        object_type: params.get('object_type') || ''
-    };
+    return Object.fromEntries(params.entries());
 }
 
-// Step 1: Check for URL parameters and set values conditionally
+// Check URL parameters and set input values accordingly
 function checkParams() {
     const urlParams = getURLParams();
-    let anyParamSet = false;
+    if (urlParams && Object.keys(urlParams).length > 0 && Object.values(urlParams).some(v => v)) {
+        console.log("URL parameters found:", urlParams);
+        const { city, country, brand, parent_brand, object_type } = urlParams;
 
-    if (insertInput('city-header', urlParams.city)) anyParamSet = true;
-    if (insertInput('country-header', urlParams.country)) anyParamSet = true;
-    if (insertInput('brand-header', urlParams.brand)) anyParamSet = true;
-    if (insertInput('parent-brand-header', urlParams.parent_brand)) anyParamSet = true;
-    if (insertInput('object-type-header', urlParams.object_type)) anyParamSet = true;
+        if (city) document.getElementById('city-header').value = city;
+        if (country) document.getElementById('country-header').value = country;
+        if (brand) document.getElementById('brand-header').value = brand;
+        if (parent_brand) document.getElementById('parent-brand-header').value = parent_brand;
+        if (object_type) document.getElementById('object-type-header').value = object_type;
 
-    if (anyParamSet) {
-        filterMarkers();
-    }else {
-        renderMarkers(allHotels);
+        filterMarkers();        // Your filtering function
     }
-
 }
 
-// Step 2: Insert values into dropdown input fields and return if value was inserted
-function insertInput(id, value) {
-    const input = document.getElementById(id);
-    if (input && value) {
-        input.value = decodeURIComponent(value);
-        return true;
+// Update grid view button based on URL parameters
+function updateGridViewBtn() {
+    const gridViewBtn = document.getElementById("grid-view-btn");
+    if (!gridViewBtn) return;
+
+    // Remove old data-url
+    gridViewBtn.removeAttribute("data-url");
+
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasParams = [...urlParams.values()].some(value => value && value.trim() !== "");
+    const objectType = urlParams.get('object_type');
+
+    // Remove trailing '/maps/' from pathname if present
+    let basePath = window.location.pathname;
+    if (basePath.endsWith('/maps/')) {
+        basePath = basePath.slice(0, -6); // Remove exactly '/maps/'
     }
-    return false;
+
+    // Append proper suffix
+    if (objectType) {
+        basePath += "/meetings-events/";
+    } else {
+        basePath += "/portfolio/hotels/";
+    }
+
+    // Build final URL with or without params
+    let finalUrl = basePath;
+    if (hasParams) {
+        finalUrl += `?${urlParams.toString()}`;
+    }
+
+    // Append scroll anchor
+    finalUrl += "#scroll-link";
+
+    // Set attributes
+    gridViewBtn.setAttribute("data-url", finalUrl);
+    gridViewBtn.href = finalUrl; // Optional: enable native anchor/fallback
+}
+
+
+
+
+// Push input values to URL and reapply them
+function pushToUrl() {
+    updateURLParamsFromInputs();
+    checkParams();
 }
 
 // Update the URL based on current input values
@@ -263,7 +298,6 @@ function updateURLParamsFromInputs() {
             params.set(key, el.value.trim());
         }
     };
-
     addParam('city-header', 'city');
     addParam('country-header', 'country');
     addParam('brand-header', 'brand');
@@ -273,32 +307,6 @@ function updateURLParamsFromInputs() {
     const paramStr = params.toString();
     const newUrl = paramStr ? `${window.location.pathname}?${paramStr}` : window.location.pathname;
     window.history.replaceState({}, '', newUrl);
-}
-
-// Push input values to URL and reapply them
-function pushToUrl() {
-    updateURLParamsFromInputs();
-    checkParams();
-}
-
-// Clear all input fields and URL params
-document.getElementById("btn-reset")?.addEventListener("click", resetAllFiltersAndUrl);
-
-function resetAllFiltersAndUrl() {
-    const ids = ['country-header', 'city-header', 'parent-brand-header', 'brand-header', 'object-type-header'];
-    ids.forEach(id => {
-        const input = document.getElementById(id);
-        if (input) input.value = '';
-    });
-
-    window.history.replaceState({}, '', window.location.pathname);
-    filterMarkersWithUrlUpdate() 
-}
-
-// Hook into filtering trigger to also update URL
-function filterMarkersWithUrlUpdate() {
-    updateURLParamsFromInputs();
-    filterMarkers();
 }
 
 // Generate Dropdown Options (including County Town in City Dropdown)
@@ -330,6 +338,10 @@ function generateDropdownOptions(hotels) {
     const countyTowns = hotels.map(h => h.county_town).filter(ct => ct && !cities.includes(ct));
     const combinedCities = [...new Set([...cities, ...countyTowns])].sort((a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' }));
 
+
+
+
+
     //mapping object types
     const objectTypes = unique('object_type');
 
@@ -338,6 +350,29 @@ function generateDropdownOptions(hotels) {
     fillOptions('parent-brand-options', unique('parent_brand'));
     fillOptions('brand-options', unique('brand'));
     fillOptions('object-type-options', objectTypes);
+
+}
+
+// disable object type if no hotels are found
+function disableObjectTypeIfNoHotels() {
+    const optionsList = document.getElementById('object-type-options');
+    const objectTypeInput = document.getElementById('object-type-header');
+
+    if (!optionsList || !objectTypeInput) {
+        console.warn("Missing 'object-type-options' list or 'object-type-header' input.");
+        return;
+    }
+
+    const hasOptions = optionsList.querySelectorAll('li').length > 0;
+    console.log("Has Object Type Options:", hasOptions);
+
+    if (!hasOptions) {
+        console.log("No hotels found, disabling object type input");
+        objectTypeInput.disabled = true;
+    } else {
+        console.log("Hotels found, enabling object type input");
+        objectTypeInput.disabled = false;
+    }
 }
 
 // Dropdown visibility toggle on header click
@@ -430,15 +465,7 @@ function setActiveItem(items) {
     }
 }
 
-// Reset single field
-function clearField(inputId) {
-    const input = document.getElementById(inputId);
-    if (input) {
-        input.value = "";
-        pushToUrl();
-        checkParams();    }
-}
-
+//clear button functionality
 document.addEventListener("click", e => {
     if (e.target.classList.contains("clear-button")) {
         e.preventDefault();
@@ -451,20 +478,54 @@ document.addEventListener("click", e => {
         optionLists.forEach(list => list.style.display = "none");
     }
 });
-
+// Reset single field
+function clearField(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = "";
+        pushToUrl();
+    // remove all markers
+    clearMarkers();
+    // Reset map to default
+    zoomOut();
+    filterMarkers();
+    }
+}
+// ZOOM Out
+function zoomOut() {
+    map.setCenter({ lat: 51, lng: 10 });
+    map.setZoom(4);
+}
 // Reset ALL fields
 const resetBtn = document.getElementById("btn-reset");
-if (resetBtn) {
-    resetBtn.addEventListener("click", () => {
-        ["country-header", "city-header", "parent-brand-header", "brand-header","object-type"].forEach(id => {
-            const input = document.getElementById(id);
-            if (input) input.value = "";
-        });
-        checkParams();
+resetBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    clearAllFields();
+    filterMarkers();
+    updateResultMessage(allHotels.length, allHotels);
+});
+
+function clearAllFields() {
+    // Clear all input fields
+    allInputs.forEach(input => {    
+        input.value = "";
     });
+    // Clear URL parameters
+    const params = new URLSearchParams(window.location.search); 
+    params.delete('city');
+    params.delete('country');
+    params.delete('brand');
+    params.delete('parent_brand');      
+    params.delete('object_type');
+    const newUrl = params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, '', newUrl);
+    // rmove all markers
+    clearMarkers();
+    // Reset map to default
+    zoomOut()
 }
 
-
+// Message Wrapper
 function updateResultMessage(count, filteredHotels) {
     const wrapper = document.getElementById("message-wrapper");
     if (!wrapper) return;
@@ -552,7 +613,7 @@ function removeShowClass() {
     });
 }
 
-// ✳️ Expected filterMarkers implementation placeholder:
+//Expected filterMarkers implementation placeholder:
 function filterMarkers() {
     const countryFilter = document.getElementById('country-header').value.trim().toLowerCase();
     const cityFilter = document.getElementById('city-header').value.trim().toLowerCase();
@@ -569,13 +630,13 @@ function filterMarkers() {
         return matchCountry && matchCity && matchBrand && matchParentBrand&& matchObjectType;
     });
 
+    console.log('Filtered Hotels:', filtered);
     renderMarkers(filtered); // Your rendering logic
     generateDropdownOptions(filtered);
+    disableObjectTypeIfNoHotels(); // Disable object type if no hotels are found
+    updateGridViewBtn();    // Sets data-url on the button
     updateResultMessage(filtered.length, filtered);
 }
-
-
-
 
 // === MARKER & POPUP HELPERS ===
 function createCustomMarkerContent(iconUrl) {
@@ -591,17 +652,19 @@ function createPopupContent(hotel) {
         <div class="popWrap">
             <img src="${image}" class="hotelImg" style="width:30%;height:auto;object-fit:cover;">
             <div class="contTxt">
-                <h4 class="hotelHead">${hotel.name}</h4>
-                <p><strong>Adresse:</strong><br>${hotel.street}, ${hotel.zip} ${hotel.city}</p>
+                <h3 class="hotelHead">${hotel.name}</h3>
+                <p>${hotel.street}, ${hotel.zip} ${hotel.city}</p>
                 <p><strong>Telefon:</strong> ${hotel.phone}</p>
                 <p><strong>Email:</strong> ${hotel.email}</p>
-                <p><strong>Marke:</strong> ${hotel.brand}</p>
-                <p><strong>Object type:</strong> ${hotel.mice_request}</p>
-                <hr class="sep"/>
                 <div class="btnWrap">
-                    <button class="btn btn-card btn-select btnMaps">
-                        <a href="${hotel.website}" target="_blank" style="text-decoration:none;color:white;">Details</a>
-                    </button>
+                    <div>
+                            <a href="${hotel.website}" class="btn-card" target="_blank">
+                              <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 10" fill="none" style="max-width:20px;">
+                                <path d="M1 5H19M15 1L19 5L15 9" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                              <span style="width:120px;text-align: right;">Discover more</span>
+                            </a>               
+                          </div>
                 </div>
             </div>
         </div>
