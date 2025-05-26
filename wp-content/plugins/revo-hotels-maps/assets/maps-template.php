@@ -77,11 +77,18 @@ defined('ABSPATH') or die('No script kiddies please!');
         <a id="grid-view-btn" class="btn btn-grid-view" href="#">Grid View</a>
     </div>
     <div id="btn-reset">
-        <img src="<?php echo esc_url(plugins_url('../img/restart_alt.svg', __FILE__)); ?>" alt="reset" />
+        <img src="<?php echo esc_url(plugins_url('img/restart_alt.svg', __FILE__)); ?>" alt="reset" />
         <div><span style="color:#181B20;"> Reset</span></div>
     </div>
 </div>
   <div id="message-wrapper"></div>
 </div>  
 
-<div id="revo-hotels-map" style="width: 100%; height: 500px; margin-top: 20px;"></div>
+<div id="revo-hotels-map" style="width: 100%; height: 600px; margin-top: 20px;"></div>
+
+
+  <!--Image path for the JavaScript file -->
+<script>
+    let imgPath = "<?php echo esc_url(plugins_url('/img/', __FILE__)); ?>";
+    let imgUpl = "<?php echo esc_url(wp_upload_dir()['baseurl']); ?>";
+</script>
