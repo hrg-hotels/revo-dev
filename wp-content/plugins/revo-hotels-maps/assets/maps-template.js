@@ -536,14 +536,9 @@ function updateResultMessage(count, filteredHotels) {
     messageContainer.id = "message-container";
 
     if (count === 0) {
-        const img = document.createElement("img");
-        img.src = "https://www.hrg-hotels.com/path/to/not-found-graphic.png"; // replace with actual path
-        img.alt = "not found graphic";
-        img.className = "not-found-graphic";
-
         const nfgDiv = document.createElement("div");
         nfgDiv.className = "nfg";
-        nfgDiv.appendChild(img);
+
 
         messageContainer.innerHTML = `<div class="message-txt red">Keine Hotels gefunden</div>`;
         messageContainer.style.backgroundColor = "var(--awb-color5)";
@@ -559,17 +554,41 @@ function updateResultMessage(count, filteredHotels) {
         let objectType = document.getElementById('object-type-header').value.trim();
 
         messageContainer.innerHTML = `
-        <div class="message-txt green">
-            <h4 id="message-headline">Ihre Auswahl: </h4>
-            <div class="message-filter-result">
-                <div class="result-title" id="title-country"><span class="txt-black">Land:</span><span class="txt-gray"> ${country}</span></div>
-                <div class="result-title" id="title-city"><span class="txt-black">Stadt:</span><span class="txt-gray"> ${city}</span></div>
-                <div class="result-title" id="title-parent-brand"><span class="txt-black">Franchise Partner:</span><span class="txt-gray"> ${parentBrand}</span></div>
-                <div class="result-title" id="title-brand"><span class="txt-black">Marke:</span><span class="txt-gray"> ${brand}</span></div>
-                <div class="result-title" id="title-object-type"><span class="txt-black">Object type:</span><span class="txt-gray"> ${objectType}</span></div>
+       <div class="message-txt green" role="region" aria-labelledby="message-headline">
+            <h4 id="message-headline">${hotelFilterTranslations.yourSelection}:</h4>
+
+            <dl class="message-filter-result">
+                <div class="result-title">
+                <dt id="label-country" class="txt-black">${hotelFilterTranslations.country}:</dt>
+                <dd aria-labelledby="label-country" class="txt-gray">${country}</dd>
+                </div>
+                <div class="result-title">
+                <dt id="label-city" class="txt-black">${hotelFilterTranslations.city}:</dt>
+                <dd aria-labelledby="label-city" class="txt-gray">${city}</dd>
+                </div>
+                <div class="result-title">
+                <dt id="label-parent-brand" class="txt-black">Franchise Partner:</dt>
+                <dd aria-labelledby="label-parent-brand" class="txt-gray">${parentBrand}</dd>
+                </div>
+                <div class="result-title">
+                <dt id="label-brand" class="txt-black">${hotelFilterTranslations.brand}:</dt>
+                <dd aria-labelledby="label-brand" class="txt-gray">${brand}</dd>
+                </div>
+                <div class="result-title">
+                <dt id="label-object-type" class="txt-black">Object type:</dt>
+                <dd aria-labelledby="label-object-type" class="txt-gray">${objectType}</dd>
+                </div>
+            </dl>
+
+            <div>
+                <p class="result-message" aria-live="polite">
+                ${hotelFilterTranslations.searchResultet}:
+                <span class="txt-black" aria-label="Number of results">${count}</span>
+                ${hotelFilterTranslations.hits}
+                </p>
             </div>
-            <div><p class="result-message">Gefunden: <span class="txt-black"> ${count} </span> Hotels.</p></div>
-        </div>`;
+        </div>
+`;
 
         wrapper.appendChild(messageContainer);
         updateMessageContainer();
@@ -649,24 +668,49 @@ function createCustomMarkerContent(iconUrl) {
 function createPopupContent(hotel) {
     const image = hotel.image || defaultHotelImage;
     return `
-        <div class="popWrap">
-            <img src="${image}" class="hotelImg" style="width:30%;height:auto;object-fit:cover;">
+       <div class="popWrap" role="region" aria-label="Hotel information for ${hotel.name}">
+            <img 
+                src="${image}" 
+                class="hotelImg" 
+                alt="Image of ${hotel.name}" 
+                style="width:30%; height:auto; object-fit:cover;"
+            >
+
             <div class="contTxt">
                 <h3 class="hotelHead">${hotel.name}</h3>
-                <p>${hotel.street}, ${hotel.zip} ${hotel.city}</p>
-                <p><strong>Telefon:</strong> ${hotel.phone}</p>
-                <p><strong>Email:</strong> ${hotel.email}</p>
+
+                <p class="hotel-address">
+                <img src="${imgPath}location_on.svg" alt="Location" width="16" height="16">
+                <span>${hotel.street}, ${hotel.zip} ${hotel.city}</span>
+                </p>
+
+                <p class="hotel-phone">
+                <img src="${imgPath}call.svg" alt="Phone" width="16" height="16">
+                <a href="tel:${hotel.phone}" aria-label="Call ${hotel.name} at ${hotel.phone}">
+                    ${hotel.phone}
+                </a>
+                </p>
+
+                <p class="hotel-email">
+                <img src="${imgPath}mail.svg" alt="Email" width="16" height="16">
+                <a href="mailto:${hotel.email}" aria-label="Email ${hotel.name} at ${hotel.email}">
+                    ${hotel.email}
+                </a>
+                </p>
+
                 <div class="btnWrap">
                     <div>
-                            <a href="${hotel.website}" class="btn-card" target="_blank">
-                              <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 10" fill="none" style="max-width:20px;">
-                                <path d="M1 5H19M15 1L19 5L15 9" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
-                              </svg>
-                              <span style="width:120px;text-align: right;">Discover more</span>
-                            </a>               
-                          </div>
+                        <a href="${hotel.website}" rel="nofollow" class="btn-card" target="_blank" aria-label="Visit the website of ${hotel.name}">
+                        <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 10" fill="none" style="max-width:18px;margin-right: 2px;" aria-hidden="true" focusable="false">
+                            <path d="M1 5H19M15 1L19 5L15 9" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span style="width:120px; text-align:right;" class="popTxt">Discover more</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
+
+
     `;
 }

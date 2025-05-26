@@ -46,22 +46,65 @@
     display:flex;
     padding-right: 20px;
 }
-.popWrap img{
+.hotelImg{
     display:none;
 }
 .contTxt{
   text-align:center;
 }
 .contTxt p{
- margin-bottom:10px !important;;
+ margin-bottom:10px !important;
+ margin-top:5px !important;
 }
 .hotelHead{
     text-transform: none !important;
     line-height: normal !important;
     letter-spacing: normal !important;
-    margin-bottom:10px;
-    margin-top:0px;
+    margin-bottom:20px;
+    margin-top:15px;
 }
+
+.popTxt {
+  text-decoration: underline;
+  text-underline-offset: 3px; 
+  text-decoration-thickness: 0.5px; 
+}
+  .hotel-phone img, .hotel-address img, .hotel-email img {
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+@media only screen and (min-width: 1280px) {
+  .hotel-phone, .hotel-address, .hotel-email {
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+  }
+}
+
+.btnWrap{
+   margin-top: 20px;
+}
+.btnWrap a{
+  color:var(--h4_typography-color);
+}
+.btn-card .arrow-icon,
+.btn-card .popTxt {
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Hover styles */
+.btn-card:hover {
+  color: var(--awb-custom_color_1);
+}
+
+.btn-card:hover .arrow-icon {
+  transform: translateX(4px);
+}
+
+.btn-card:hover .popTxt {
+  color: var(--awb-custom_color_1); 
+}
+
 @media only screen and (min-width: 768px){
   .contTxt{
       padding-left:20px;
@@ -282,6 +325,20 @@ color:var(--body_typography-color);
 }
 @media only screen and (min-width: 1280px){
 
+.popWrap{
+    max-width: 500px !important;
+  }
+  .hotelImg{
+    width: 50%;
+    height: 50%;
+    display: block;
+  }
+  .contTxt {
+    text-align: left;
+  }
+  .hotelHead {
+    margin-top: 0;
+  }
   .message-filter-result{
     flex-direction:row;
   }
