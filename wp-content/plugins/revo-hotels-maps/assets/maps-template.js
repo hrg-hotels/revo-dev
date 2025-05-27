@@ -498,12 +498,35 @@ function zoomOut() {
 }
 // Reset ALL fields
 const resetBtn = document.getElementById("btn-reset");
-resetBtn.addEventListener("click", function (e) {
+
+if (resetBtn) {
+  // Click event
+  resetBtn.addEventListener("click", function (e) {
     e.preventDefault();
     clearAllFields();
     filterMarkers();
     updateResultMessage(allHotels.length, allHotels);
-});
+  });
+
+  // Enter key event
+  resetBtn.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.keyCode === 13) {
+      e.preventDefault();
+      clearAllFields();
+      filterMarkers();
+      updateResultMessage(allHotels.length, allHotels);
+    }
+  });
+
+  // Optional: Ensure the element is keyboard-focusable
+  if (!resetBtn.hasAttribute("tabindex")) {
+    resetBtn.setAttribute("tabindex", "0");
+  }
+  if (!resetBtn.hasAttribute("role")) {
+    resetBtn.setAttribute("role", "button");
+  }
+}
+
 
 function clearAllFields() {
     // Clear all input fields
@@ -554,41 +577,46 @@ function updateResultMessage(count, filteredHotels) {
         let objectType = document.getElementById('object-type-header').value.trim();
 
         messageContainer.innerHTML = `
-       <div class="message-txt green" role="region" aria-labelledby="message-headline">
+            <div class="message-txt green" role="region" aria-labelledby="message-headline">
             <h4 id="message-headline">${hotelFilterTranslations.yourSelection}:</h4>
 
-            <dl class="message-filter-result">
-                <div class="result-title">
-                <dt id="label-country" class="txt-black">${hotelFilterTranslations.country}:</dt>
-                <dd aria-labelledby="label-country" class="txt-gray">${country}</dd>
+            <div class="message-filter-result">
+                <div class="result-title" id="title-country">
+                <span class="txt-black" aria-hidden="true">${hotelFilterTranslations.country}:</span>
+                <span class="txt-gray" aria-label="${hotelFilterTranslations.country}">${country}</span>
                 </div>
-                <div class="result-title">
-                <dt id="label-city" class="txt-black">${hotelFilterTranslations.city}:</dt>
-                <dd aria-labelledby="label-city" class="txt-gray">${city}</dd>
+
+                <div class="result-title" id="title-city">
+                <span class="txt-black" aria-hidden="true">${hotelFilterTranslations.city}:</span>
+                <span class="txt-gray" aria-label="${hotelFilterTranslations.city}">${city}</span>
                 </div>
-                <div class="result-title">
-                <dt id="label-parent-brand" class="txt-black">Franchise Partner:</dt>
-                <dd aria-labelledby="label-parent-brand" class="txt-gray">${parentBrand}</dd>
+
+                <div class="result-title" id="title-parent-brand">
+                <span class="txt-black" aria-hidden="true">Franchise Partner:</span>
+                <span class="txt-gray" aria-label="Franchise Partner">${parentBrand}</span>
                 </div>
-                <div class="result-title">
-                <dt id="label-brand" class="txt-black">${hotelFilterTranslations.brand}:</dt>
-                <dd aria-labelledby="label-brand" class="txt-gray">${brand}</dd>
+
+                <div class="result-title" id="title-brand">
+                <span class="txt-black" aria-hidden="true">${hotelFilterTranslations.brand}:</span>
+                <span class="txt-gray" aria-label="${hotelFilterTranslations.brand}">${brand}</span>
                 </div>
-                <div class="result-title">
-                <dt id="label-object-type" class="txt-black">Object type:</dt>
-                <dd aria-labelledby="label-object-type" class="txt-gray">${objectType}</dd>
+
+                <div class="result-title" id="title-object-type">
+                <span style="display:none;" class="txt-black" aria-hidden="true">Object type:</span>
+                <span class="txt-gray" aria-label="Object type">${objectType}-Hotels</span>
                 </div>
-            </dl>
+            </div>
 
             <div>
                 <p class="result-message" aria-live="polite">
                 ${hotelFilterTranslations.searchResultet}:
-                <span class="txt-black" aria-label="Number of results">${count}</span>
+                <span class="txt-black" aria-label="Result count">${count}</span>
                 ${hotelFilterTranslations.hits}
                 </p>
             </div>
-        </div>
-`;
+            </div>
+
+            `;
 
         wrapper.appendChild(messageContainer);
         updateMessageContainer();
