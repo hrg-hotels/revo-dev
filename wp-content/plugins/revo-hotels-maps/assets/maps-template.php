@@ -14,7 +14,6 @@ defined('ABSPATH') or die('No script kiddies please!');
         yourSelection: "<?php echo esc_js(ucfirst(__('your-selection', 'hotel-portfolio'))); ?>"
     };
 
-
 </script>
 
 <div id="scroll-link" class="search-wrapper">
