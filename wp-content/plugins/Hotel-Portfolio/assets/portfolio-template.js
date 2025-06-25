@@ -84,8 +84,20 @@
                     const options = $("#" + optionsId);
 
                     // Falls der Clear-Button noch nicht existiert, füge ihn hinzu
-                      if (!header.siblings(".clear-button").length) {
-                        header.after(`<button class="clear-button" data-input="${headerId}">✕</button>`);
+                    if (!header.siblings(".clear-button").length) {
+                        const inputLabel = header.attr("placeholder") || "input";
+                        const buttonHtml = `
+                            <button 
+                                type="button"
+                                class="clear-button" 
+                                data-input="${headerId}"
+                                aria-label="Clear ${inputLabel} field"
+                                title="Clear ${inputLabel} field"
+                            >
+                                ✕
+                            </button>
+                        `;
+                        header.after(buttonHtml);
                     }
 
                     // Öffnen/Schließen der Dropdown-Optionen
@@ -552,7 +564,7 @@
                           <img src="${hotel.image}" alt="detail image ${hotel.name}">
                         </div>
                         <div class="innerCard">
-                            <h4 class="titleCard ">${hotel.name}</h4>
+                            <h3 class="titleCard ">${hotel.name}</h3>
                             <p class="hotel-address">${hotel.city}, ${hotel.country}</p>
                             <p class="hotel-send-mail">
                                 <a href="mailto:${hotel.email}">Send email</a>
@@ -561,7 +573,7 @@
                         </div>
                         <div class="btn-container">
                           <div>
-                            <a href="${hotel.website}" class="btn-card" target="_blank">
+                            <a href="${hotel.website}" class="btn-card" target="_blank" rel="noopener noreferrer">
                               <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 10" fill="none" style="max-width:20px;">
                                 <path d="M1 5H19M15 1L19 5L15 9" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
                               </svg>
