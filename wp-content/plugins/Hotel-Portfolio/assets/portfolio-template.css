@@ -36,13 +36,15 @@ custom-black: var(--awb-text-color);
     margin-bottom: 20px;
     margin-top: 20px;
 }
-.titleCard h4{
-font-family: var(--h4_typography-font-family);
-font-weight: var(--h4_typography-font-weight);
-line-height: var(--h4_typography-line-height);
-letter-spacing: var(--h4_typography-letter-spacing);
-text-transform: var(--h4_typography-text-transform);
-font-style: var(--h4_typography-font-style, normal);
+.titleCard{
+font-family: var(--h4_typography-font-family) !important;
+font-weight: var(--h4_typography-font-weight) !important;
+line-height: var(--h4_typography-line-height) !important;
+letter-spacing: var(--h4_typography-letter-spacing) !important;
+text-transform: var(--h4_typography-text-transform) !important;
+font-style: var(--h4_typography-font-style, normal) !important;
+font-size: 22px !important;
+color: black !important;
 }
 .card-sl {
     font-family: 'Work Sans', sans-serif !important;

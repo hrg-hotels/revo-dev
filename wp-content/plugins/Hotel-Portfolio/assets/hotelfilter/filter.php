@@ -1,7 +1,6 @@
 <?php
 // Verhindere direkten Zugriff
 defined('ABSPATH') or die('No script kiddies please!');
-
 ?>
 <script>
     var hotelFilterTranslations = {
@@ -18,11 +17,21 @@ defined('ABSPATH') or die('No script kiddies please!');
 
 <div id="scroll-link" class="search-wrapper">
   <div class="row-search">
+
         <!-- Country Dropdown -->
         <div class="selection-hr">
             <div class="select-country" id="country-select">
+                <label for="country-header" class="visually-hidden"><?php echo ucfirst(esc_html__('country', 'hotel-portfolio')) ?></label>
                 <div class="select-header">
-                <input name="country" type="text" autocomplete="off" maxlength="30" id="country-header" placeholder="<?php echo ucfirst(esc_html__('country', 'hotel-portfolio')) ?>" />
+                    <input 
+                        name="country"
+                        type="text"
+                        autocomplete="off"
+                        maxlength="30"
+                        id="country-header"
+                        placeholder="<?php echo ucfirst(esc_html__('country', 'hotel-portfolio')) ?>"
+                        aria-label="<?php echo ucfirst(esc_html__('country', 'hotel-portfolio')) ?>"
+                    />
                 </div>
                 <ul class="select-options" id="country-options"></ul>
             </div>
@@ -31,28 +40,36 @@ defined('ABSPATH') or die('No script kiddies please!');
         <!-- City Dropdown -->
         <div class="selection-hr">
             <div class="select-city" id="city-select">
+                <label for="city-header" class="visually-hidden"><?php echo ucfirst(esc_html__('city', 'hotel-portfolio')) ?></label>
                 <div class="select-header">
-                    <input name="city" type="text" autocomplete="off" id="city-header" maxlength="50" placeholder="<?php echo ucfirst(esc_html__('city', 'hotel-portfolio'))?>" />
+                    <input 
+                        name="city"
+                        type="text"
+                        autocomplete="off"
+                        maxlength="50"
+                        id="city-header"
+                        placeholder="<?php echo ucfirst(esc_html__('city', 'hotel-portfolio')) ?>"
+                        aria-label="<?php echo ucfirst(esc_html__('city', 'hotel-portfolio')) ?>"
+                    />
                 </div>
                 <ul class="select-options" id="city-options"></ul>
             </div>
         </div>
 
-        <!-- Categories Dropdown 
-        <div class="selection-hr">
-            <div class="select-category" id="category-select">
-                <div class="select-header">
-                    <input name="category" type="text" autocomplete="off" id="category-header" placeholder="<?php echo ucfirst(esc_html__('category', 'hotel-portfolio')) ?>" />
-                </div>
-                <ul class="select-options" id="category-options"></ul>
-            </div>
-        </div>-->
-
         <!-- Parent Brand Dropdown -->
         <div class="selection-hr last-selection">
             <div class="select-parent-brand" id="parent-brand-select">
+                <label for="parent-brand-header" class="visually-hidden">Franchise Partner</label>
                 <div class="select-header">
-                    <input name="parent-brand" type="text" autocomplete="off" maxlength="50" id="parent-brand-header" placeholder="Franchise Partner"/>
+                    <input 
+                        name="parent-brand"
+                        type="text"
+                        autocomplete="off"
+                        maxlength="50"
+                        id="parent-brand-header"
+                        placeholder="Franchise Partner"
+                        aria-label="Franchise Partner"
+                    />
                 </div>
                 <ul class="select-options" id="parent-brand-options"></ul>
             </div>
@@ -61,8 +78,17 @@ defined('ABSPATH') or die('No script kiddies please!');
         <!-- Brand Dropdown -->
         <div class="selection-hr">
             <div class="select-brand" id="brand-select">
+                <label for="brand-header" class="visually-hidden"><?php echo ucfirst(esc_html__('brand', 'hotel-portfolio')) ?></label>
                 <div class="select-header">
-                    <input name="brand" type="text" autocomplete="off" id="brand-header" maxlength="50" placeholder="<?php echo ucfirst(esc_html__('brand', 'hotel-portfolio'))?>"/>
+                    <input 
+                        name="brand"
+                        type="text"
+                        autocomplete="off"
+                        maxlength="50"
+                        id="brand-header"
+                        placeholder="<?php echo ucfirst(esc_html__('brand', 'hotel-portfolio')) ?>"
+                        aria-label="<?php echo ucfirst(esc_html__('brand', 'hotel-portfolio')) ?>"
+                    />
                 </div>
                 <ul class="select-options" id="brand-options"></ul>
             </div>
@@ -70,11 +96,21 @@ defined('ABSPATH') or die('No script kiddies please!');
 
         <!-- Buttons -->
         <div class="btn-wrapper">
-            <div id="btn-reset">
-              <img src="<?php echo esc_url(plugins_url('../img/restart_alt.svg', __FILE__)); ?>" alt="reset" />
-               <div><span style="color:#181B20;"> Reset</span></div>
+            <div id="btn-reset" role="button" tabindex="0" aria-label="Reset Search Filters">
+                <img src="<?php echo esc_url(plugins_url('../img/restart_alt.svg', __FILE__)); ?>" alt="reset icon" />
+                <div><span style="color:#181B20;"> Reset</span></div>
             </div>
         </div>
   </div>
-  <div id="message-wrapper"></div>
+  <div id="message-wrapper" role="status" aria-live="polite"></div>
 </div>
+
+<style>
+.visually-hidden {
+    position: absolute !important;
+    height: 1px; width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+}
+</style>
