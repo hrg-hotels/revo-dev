@@ -131,10 +131,10 @@ function showGDPRConsent() {
 
     consentLayer.innerHTML = `
         <div style="background: #333; padding: 20px; border-radius: 10px; text-align: center; max-width: 400px;">
-            <h2 style="margin-bottom: 15px;">Datenschutz-Einwilligung</h2>
-            <p>Um die Karte anzuzeigen, müssen Sie der Verwendung von Google Maps zustimmen.</p>
-            <button id="gdpr-consent-btn" style="margin-top: 15px; padding: 10px 20px; background-color: #4CAF50; border: none; cursor: pointer; color: white;">Karte anzeigen</button>
-            <button id="gdpr-withdraw-btn" style="margin-top: 15px; padding: 10px 20px; background-color: #f44336; border: none; cursor: pointer; color: white;">Einwilligung zurückziehen</button>
+            <h2 style="margin-bottom: 15px;color:white;">${hotelFilterTranslations.consentHeadline}</h2>
+            <p>${hotelFilterTranslations.consentText}</p>
+            <button id="gdpr-consent-btn" style="margin-top: 15px; padding: 10px 20px; background-color: var(--awb-color5); border: none; cursor: pointer; color: white;">${hotelFilterTranslations.showMap}</button>
+            <button id="gdpr-withdraw-btn" style="cursor: pointer; color: white;display:none;">Einwilligung zurückziehen</button>
         </div>
     `;
 

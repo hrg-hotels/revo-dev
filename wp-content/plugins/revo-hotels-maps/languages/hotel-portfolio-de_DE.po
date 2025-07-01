@@ -10,10 +10,10 @@ msgstr "Marke"
 msgid "category"
 msgstr "Kategorie"
 
-msgid "no-result"
+msgid "noResult"
 msgstr "Die Suche ergab keine Treffer"
 
-msgid "search-resultet"
+msgid "searchResultet"
 msgstr "Die Suche ergab"
 
 msgid "hits"
@@ -25,5 +25,20 @@ msgstr "Konferenzfläche"
 msgid "people"
 msgstr "Teilnehmeranzahl"
 
-msgid "your-selection"
+msgid "yourSelection"
 msgstr "Ihre Auswahl"
+
+msgid "consentText"
+msgstr "Um die Karte anzuzeigen, müssen Sie der Verwendung von Google Maps zustimmen."
+
+msgid "consentHeadline"
+msgstr "data privacy consent"
+
+msgid "showMap"
+msgstr "Karte anzeigen"
+
+msgid "noHotelsFound"
+msgstr "Keine Hotels gefunden"
+
+msgid "noResultsFound"
+msgstr "Keine Ergebnisse gefunden"
