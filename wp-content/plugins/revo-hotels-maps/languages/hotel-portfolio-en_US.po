@@ -11,10 +11,10 @@ msgid "category"
 msgstr "Category"
 
 
-msgid "no-result"
+msgid "noResult"
 msgstr "The search did not match any results"
 
-msgid "search-resultet"
+msgid "searchResultet"
 msgstr "The search resulted in"
 
 msgid "hits"
@@ -26,6 +26,20 @@ msgstr "Conference space"
 msgid "people"
 msgstr "Number of participants"
 
-msgid "your-selection"
+msgid "yourSelection"
 msgstr "Your selection" 
 
+msgid "consentText"
+msgstr "To display the map, you must agree to the use of Google Maps."
+
+msgid "consentHeadline"
+msgstr "Datenschutz Einwilligung"
+
+msgid "showMap"
+msgstr "Show map"
+
+msgid "noHotelsFound"
+msgstr "No hotels found"
+
+msgid "noResultsFound"
+msgstr "No results found"

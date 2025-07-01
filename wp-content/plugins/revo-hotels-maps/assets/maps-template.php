@@ -8,10 +8,15 @@ defined('ABSPATH') or die('No script kiddies please!');
         country: "<?php echo esc_js(ucfirst(__('country', 'hotel-portfolio'))); ?>",
         city: "<?php echo esc_js(ucfirst(__('city', 'hotel-portfolio'))); ?>",
         brand: "<?php echo esc_js(ucfirst(__('brand', 'hotel-portfolio'))); ?>",
-        noResult: "<?php echo esc_js(ucfirst(__('no-result', 'hotel-portfolio'))); ?>",
-        searchResultet: "<?php echo esc_js(ucfirst(__('search-resultet', 'hotel-portfolio'))); ?>",
+        noResult: "<?php echo esc_js(ucfirst(__('noResult', 'hotel-portfolio'))); ?>",
+        searchResultet: "<?php echo esc_js(ucfirst(__('searchResultet', 'hotel-portfolio'))); ?>",
         hits: "<?php echo esc_js(ucfirst(__('hits', 'hotel-portfolio'))); ?>",
-        yourSelection: "<?php echo esc_js(ucfirst(__('your-selection', 'hotel-portfolio'))); ?>"
+        yourSelection: "<?php echo esc_js(ucfirst(__('yourSelection', 'hotel-portfolio'))); ?>",
+        consentText: "<?php echo esc_js(ucfirst(__('consentText', 'hotel-portfolio'))); ?>",
+        consentHeadline: "<?php echo esc_js(ucfirst(__('consentHeadline', 'hotel-portfolio'))); ?>",
+        showMap: "<?php echo esc_js(ucfirst(__('showMap', 'hotel-portfolio'))); ?>",
+        noHotelsFound: "<?php echo esc_js(ucfirst(__('noHotelsFound', 'hotel-portfolio'))); ?>",
+        noResultsFound: "<?php echo esc_js(ucfirst(__('noResultsFound', 'hotel-portfolio'))); ?>"
     };
 
 </script>
