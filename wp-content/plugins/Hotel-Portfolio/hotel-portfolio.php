@@ -60,7 +60,7 @@ function hotel_portfolio_admin_page() {
     <div class="wrap">
         <h1><?php esc_html_e('Hotel Portfolio Einstellungen', 'hotel-portfolio'); ?></h1>
         <p><?php esc_html_e('Hier kommen die Einstellungen und die Dokumentation', 'hotel-portfolio'); ?></p>
-        <a href="https://client-hrg-hotels-staging.wemakefuture.com/form/c89fd1f7-89cb-464c-ab1a-8cb0cc74973d" class="button button-primary"><?php esc_html_e('Chronos Daten Sync', 'hotel-portfolio'); ?></a>
+        <a href="https://n8n.revo-h.com/form/c89fd1f7-89cb-464c-ab1a-8cb0cc74973d" class="button button-primary"><?php esc_html_e('Chronos Daten Sync', 'hotel-portfolio'); ?></a>
     </div>
     <?php
 }
