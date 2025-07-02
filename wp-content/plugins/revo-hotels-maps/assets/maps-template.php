@@ -5,18 +5,18 @@ defined('ABSPATH') or die('No script kiddies please!');
 ?>
 <script>
     var hotelFilterTranslations = {
-        country: "<?php echo esc_js(ucfirst(__('country', 'hotel-portfolio'))); ?>",
-        city: "<?php echo esc_js(ucfirst(__('city', 'hotel-portfolio'))); ?>",
-        brand: "<?php echo esc_js(ucfirst(__('brand', 'hotel-portfolio'))); ?>",
-        noResult: "<?php echo esc_js(ucfirst(__('noResult', 'hotel-portfolio'))); ?>",
-        searchResultet: "<?php echo esc_js(ucfirst(__('searchResultet', 'hotel-portfolio'))); ?>",
-        hits: "<?php echo esc_js(ucfirst(__('hits', 'hotel-portfolio'))); ?>",
-        yourSelection: "<?php echo esc_js(ucfirst(__('yourSelection', 'hotel-portfolio'))); ?>",
-        consentText: "<?php echo esc_js(ucfirst(__('consentText', 'hotel-portfolio'))); ?>",
-        consentHeadline: "<?php echo esc_js(ucfirst(__('consentHeadline', 'hotel-portfolio'))); ?>",
-        showMap: "<?php echo esc_js(ucfirst(__('showMap', 'hotel-portfolio'))); ?>",
-        noHotelsFound: "<?php echo esc_js(ucfirst(__('noHotelsFound', 'hotel-portfolio'))); ?>",
-        noResultsFound: "<?php echo esc_js(ucfirst(__('noResultsFound', 'hotel-portfolio'))); ?>"
+        country: "<?php echo esc_js(ucfirst(__('country', 'revo-hotels-maps'))); ?>",
+        city: "<?php echo esc_js(ucfirst(__('city', 'revo-hotels-maps'))); ?>",
+        brand: "<?php echo esc_js(ucfirst(__('brand', 'revo-hotels-maps'))); ?>",
+        noResult: "<?php echo esc_js(ucfirst(__('noResult', 'revo-hotels-maps'))); ?>",
+        searchResultet: "<?php echo esc_js(ucfirst(__('searchResultet', 'revo-hotels-maps'))); ?>",
+        hits: "<?php echo esc_js(ucfirst(__('hits', 'revo-hotels-maps'))); ?>",
+        yourSelection: "<?php echo esc_js(ucfirst(__('yourSelection', 'revo-hotels-maps'))); ?>",
+        consentText: "<?php echo esc_js(ucfirst(__('consentText', 'revo-hotels-maps'))); ?>",
+        consentHeadline: "<?php echo esc_js(ucfirst(__('consentHeadline', 'revo-hotels-maps'))); ?>",
+        showMap: "<?php echo esc_js(ucfirst(__('showMap', 'revo-hotels-maps'))); ?>",
+        noHotelsFound: "<?php echo esc_js(ucfirst(__('noHotelsFound', 'revo-hotels-maps'))); ?>",
+        noResultsFound: "<?php echo esc_js(ucfirst(__('noResultsFound', 'revo-hotels-maps'))); ?>"
     };
 
 </script>

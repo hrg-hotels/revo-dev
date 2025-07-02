@@ -139,6 +139,8 @@ function showGDPRConsent() {
     `;
 
     document.body.appendChild(consentLayer);
+    console.log(hotelFilterTranslations.consentHeadline, hotelFilterTranslations.noResult);
+    
 
     document.getElementById("gdpr-consent-btn").addEventListener("click", function() {
         localStorage.setItem("gdprConsent", "true"); // Save consent
