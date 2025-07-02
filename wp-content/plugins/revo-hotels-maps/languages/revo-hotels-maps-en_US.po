@@ -33,7 +33,7 @@ msgid "consentText"
 msgstr "To display the map, you must agree to the use of Google Maps."
 
 msgid "consentHeadline"
-msgstr "Datenschutz Einwilligung"
+msgstr "Data privacy consent"
 
 msgid "showMap"
 msgstr "Show map"
