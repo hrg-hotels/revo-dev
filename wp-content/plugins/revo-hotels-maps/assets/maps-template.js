@@ -1,27 +1,3 @@
-
-
-// === GLOBALS ===
-const defaultMarkerIcon = "http://localhost/hrgredesign/wp-content/uploads/2025/05/HRG_maps_marker.svg";
-const defaultHotelImage = "https://www.hrg-hotels.com/hubfs/HRG/Corporate%20Pages/Portfolio/Hotel-Images/Platzhalter.jpg";
-let map, markers = [], clusterer, allHotels = [];
-
-const brandIcons = {
-    "Vienna House by Wyndham": { url: "http://localhost/hrgredesign/wp-content/uploads/2025/05/VH_maps_icon.svg" },
-    "TrademarkCollectionbyWyndham": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/amedia_marker.png" },
-    "Adagio Access": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/adagio_original_marker.png" },
-    "ibis Styles": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/ibis_styles_marker.png" },
-    "Dorint": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/dorint_marker.png" },
-    "Hilton": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/hilton_marker.png" },
-    "HolidayInnExpress": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/holiday_inn_express_marker.png" },
-    "Hyatt": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/hyatt_marker.png" },
-    "Ibisbudget": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/ibis_budget_marker.png" },
-    "Mercure": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/mercure_marker.png" },
-    "Mövenpick": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/moevenpick_marker.png" },
-    "Pullman": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/pullman_marker.png" },
-    "Ramada by Wyndham": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/ramada_marker.png" },
-    "HolidayInn": { url: "https://www.hrg-hotels.com/hubfs/HRG_Maps-Marker/holiday_inn_marker.png" }
-};
-
 // === CREATE MARKERS AND CLUSTER ===
 function renderMarkers(hotels) {
     clearMarkers();
@@ -214,10 +190,6 @@ function initRevoHotelsMap() {
             updateGridViewBtn();
         });
 }
-
-
-
-
 
 // Get URL parameters as an object
 function getURLParams() {
