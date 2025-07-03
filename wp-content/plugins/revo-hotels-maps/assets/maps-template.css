@@ -28,14 +28,17 @@
 }
 
 .select-options li {
-    padding: 8px;
+    padding: 5px 10px;
+    color: #737B7D;
+    font-size: 12px;
     cursor: pointer;
+    list-style: none;
 }
 
 .select-options li:hover,
 .select-options li.highlighted {
-    background: #007cba;
-    color: white;
+    background: #a7acad21;
+    padding-left: 20px;
 }
 
 

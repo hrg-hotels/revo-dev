@@ -61,6 +61,14 @@ add_action('wp_enqueue_scripts', function() {
     );
 
     wp_enqueue_script(
+        'revo-hotels-marker-js',
+        plugins_url('assets/marker.js', __FILE__),
+        [],
+        REVO_HOTELS_MAPS_VERSION,
+        true
+    );
+
+    wp_enqueue_script(
         'revo-hotels-maps-js',
         plugins_url('assets/maps-template.js', __FILE__),
         [],
@@ -110,7 +118,7 @@ $results = $wpdb->get_results(
             h.port_prio AS order_prio,
             h.lat,
             h.lon AS lng,
-            CASE WHEN h.mice_request = 'True' THEN 'MICE' ELSE '' END AS object_type,
+            CASE WHEN h.mice_request = 'True' THEN 'MICE Hotels' ELSE '' END AS object_type,
             COALESCE(h.brand, 'Unknown') AS brand, 
             COALESCE(h.parent_brand, 'Unknown') AS parent_brand, 
             h.publication_status
