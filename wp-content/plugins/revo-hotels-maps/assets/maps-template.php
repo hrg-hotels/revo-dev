@@ -22,6 +22,19 @@ defined('ABSPATH') or die('No script kiddies please!');
 </script>
 
 <div id="scroll-link" class="search-wrapper">
+<!-- Grid/Maps View Button -->
+  <div class="btn-wrapper-view">
+    <div class="btn-view-container">
+      <a id="grid-view-btn" class="btn btn-view" href="#" role="button" aria-label="Switch to grid view">
+        <img class="view-icon" src="<?php echo esc_url(plugins_url('img/list_alt.svg', __FILE__)); ?>" alt="Map view icon" /> Grid View
+      </a>
+    </div> 
+    <div class="btn-view-container">
+      <a id="maps-view-btn" class="btn btn-view active-view" href="#" role="button" aria-label="Switch to map view">
+        <img class="view-icon" src="<?php echo esc_url(plugins_url('img/map_active.svg', __FILE__)); ?>" alt="Grid view icon" /> Map View
+      </a>
+    </div>
+  </div>
   <div class="row-search">
 
     <!-- Country Dropdown -->
@@ -100,17 +113,8 @@ defined('ABSPATH') or die('No script kiddies please!');
 
   </div>
 
-  <!-- Buttons -->
+<!-- Reset Button -->
   <div class="btn-wrapper">
-
-    <!-- Grid View Button -->
-    <div id="grid-btn-wrapper">
-      <a id="grid-view-btn" class="btn btn-grid-view" href="#" role="button" aria-label="Switch to grid view">
-        Grid View
-      </a>
-    </div>
-
-    <!-- Reset Button -->
     <div id="btn-reset" role="button" tabindex="0" aria-label="Reset filter selection">
       <img src="<?php echo esc_url(plugins_url('img/restart_alt.svg', __FILE__)); ?>" alt="Reset icon" />
       <div><span style="color:#181B20;">Reset</span></div>
