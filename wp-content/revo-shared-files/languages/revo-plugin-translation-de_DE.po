@@ -42,3 +42,12 @@ msgstr "Keine Hotels gefunden"
 
 msgid "noResultsFound"
 msgstr "Keine Ergebnisse gefunden"
+
+msgid "grid-view"
+msgstr "Rasteransicht"
+
+msgid "map-view"
+msgstr "Kartenansicht"
+
+msgid "discover-more"
+msgstr "Mehr entdecken"

@@ -43,3 +43,12 @@ msgstr "No hotels found"
 
 msgid "noResultsFound"
 msgstr "No results found"
+
+msgid "grid-view"
+msgstr "Grid view"
+
+msgid "map-view"
+msgstr "Map view"
+
+msgid "discover-more"
+msgstr "discover more"

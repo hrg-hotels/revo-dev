@@ -15,9 +15,9 @@ define('REVO_HOTELS_MAPS_VERSION', '1.0.0');
 define('REVO_HOTELS_MAPS_DIR', plugin_dir_path(__FILE__));
 define('REVO_HOTELS_MAPS_URL', plugin_dir_url(__FILE__));
 
-// Load translations
+// Load translations from shared folder
 add_action('init', function() {
-    load_plugin_textdomain('revo-hotels-maps', false, dirname(plugin_basename(__FILE__)) . '/languages');
+    load_textdomain('revo-plugin-translation', WP_CONTENT_DIR . '/revo-shared-files/languages/revo-plugin-translation-' . determine_locale() . '.mo');
 });
 
 // Flush rewrite rules on deactivation

@@ -706,13 +706,11 @@ function createPopupContent(hotel) {
                         <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 10" fill="none" style="max-width:18px;margin-right: 2px;" aria-hidden="true" focusable="false">
                             <path d="M1 5H19M15 1L19 5L15 9" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <span style="width:120px; text-align:right;" class="popTxt">Discover more</span>
+                        <span style="width:120px; text-align:right;" class="popTxt">${hotelFilterTranslations.discoverMore}</span>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-
-
     `;
 }
