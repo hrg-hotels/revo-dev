@@ -108,10 +108,22 @@
   color: var(--awb-custom_color_1); 
 }
 
+.btn-wrapper-view{
+display: flex;
+justify-content: space-between;
+flex-wrap: wrap;
+margin: 20px 0;
+margin-bottom:50px;
+}
+
 @media only screen and (min-width: 768px){
   .contTxt{
       padding-left:20px;
   }
+  .btn-wrapper-view{
+    justify-content: flex-end;
+    margin: 20px 0;
+    }
 }
 .gm-ui-hover-effect{
    background: var(--awb-color5) !important;/*orange*/
@@ -238,7 +250,10 @@ var(--awb-color5);/*orange*/
     color:#181B20;
     cursor: pointer;
     margin-top: 20px;
-    caret-color: transparent; 
+    caret-color: transparent;
+    text-transform: uppercase; 
+    font-size: 14px !important;
+    color: #656A70 !important;
 }
 #btn-reset img {
     margin-right: 10px;
@@ -378,16 +393,38 @@ color:var(--body_typography-color);
   cursor: pointer;
   color: var(--h4_typography-color) !important;
 }
-#grid-btn-wrapper{
+.btn-view{
   margin: 0;
     background: transparent;
-    font-weight: 400;
     display: flex;
     justify-content: center;
-    width: 50%;
-    padding: 12px;
     cursor: pointer;
-    margin-top: 20px;
+    text-transform: uppercase;
+    font-size: 14px !important;
+    padding: 12px;
+    color:#656A70;
+}
+.active-view {
+  color: var(--awb-color5);
+  text-decoration: underline;
+  text-underline-offset: 7px;
+}
+.view-icon {
+    margin-right: 8px !important;
+    width: 22px;
+    height: 22px;
+    padding-top: 3px;
+}
+/* Style hover for inactive buttons only */
+.btn-view:not(.active-view):hover {
+  color: var(--awb-color5);  
+  text-decoration: underline;  
+  text-underline-offset: 7px;     
+}
+
+/* Style the icon */
+.btn-view:not(.active-view):hover .view-icon {
+  filter: brightness(0) saturate(100%) invert(61%) sepia(31%) saturate(677%) hue-rotate(330deg) brightness(99%) contrast(90%);
 }
 input:disabled {
     background-color: #eee;
