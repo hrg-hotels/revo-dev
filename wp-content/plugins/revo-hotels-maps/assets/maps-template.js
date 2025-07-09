@@ -230,6 +230,10 @@ function updateGridViewBtn() {
 
     // Remove trailing '/maps/' from pathname if present
     basePath = revoHotelsMaps.siteUrl; 
+    console.log(revoHotelsMaps.lang);
+    if (revoHotelsMaps.lang === 'de_DE') {
+        basePath = basePath + "/de";
+    }
     
 
     // Append proper suffix
