@@ -27,3 +27,9 @@ msgstr "Teilnehmeranzahl"
 
 msgid "your-selection"
 msgstr "Ihre Auswahl"
+
+msgid "grid-view"
+msgstr "Rasteransicht"
+
+msgid "map-view"
+msgstr "Kartenansicht"
