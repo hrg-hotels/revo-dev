@@ -12,33 +12,33 @@
         })
         .then(data => {
             if (data.success) {
-     // ****** GLOBAL VARIABLES AND FUNCTIONS *************//
-     let fetchedHotels = data.data;
-     console.log("fetchedHotels", fetchedHotels);
- 
-     let resultHotelArr = [];
-     let renderHook = document.getElementById("hotel-portfolio-container");
-     let urlParams = "";
-     let globalParams = {};
- 
-     // Variables for dataValue in input fields
-     let selectedCity = "";
-     let selectedCountry = "";
-     let selectedBrand = "";
-     let selectedParentBrand = "";
- 
-     // Variables for pagination
-     let splittResult = [];
-     let currentPageNumber = 1;
-     let prevPageNumber = 0;
-     let nextPageNumber = 2;
+// ****** GLOBAL VARIABLES AND FUNCTIONS *************//
+                let fetchedHotels = data.data;
+                console.log("fetchedHotels", fetchedHotels);
+            
+                let resultHotelArr = [];
+                let renderHook = document.getElementById("hotel-portfolio-container");
+                let urlParams = "";
+                let globalParams = {};
+            
+                // Variables for dataValue in input fields
+                let selectedCity = "";
+                let selectedCountry = "";
+                let selectedBrand = "";
+                let selectedParentBrand = "";
+            
+                // Variables for pagination
+                let splittResult = [];
+                let currentPageNumber = 1;
+                let prevPageNumber = 0;
+                let nextPageNumber = 2;
 
                 // Functions to clear and reset values
-                function clearHotelList() {
-                    renderHook.innerHTML = "";
-                }
+                  function clearHotelList() {
+                      renderHook.innerHTML = "";
+              }
 
-  /*************Filter**************************************************/                
+//*************FILTER**************************************************/               
                 //Dropdown-Werte setzen
                 function generateDropdownOptions(resultHotelArr) {
                   const getUniqueSortedValues = (keys) => {
@@ -75,7 +75,6 @@
                   populateDropdown("parent-brand-options", parentBrand);
               }
               
-
                 // Verstecke die Dropdown-Optionen initial
                 $(".select-options").hide(); 
 
@@ -322,7 +321,7 @@
                   checkParams(); // Jobliste aktualisieren
                 });
       
-  //**********SEARCH FUNCTION******************************/
+//**********SEARCH FUNCTION******************************/
                     function handleEvent() {
 
                       $(".nfg").remove();
@@ -354,7 +353,7 @@
                       pushArgToURL(argObj);
                   }
 
-  //*************PUSH ARGUMENTS TO URL***********/
+//*************PUSH ARGUMENTS TO URL***********/
                   function pushArgToURL(argObj) {
          
                     // Entferne das `#` aus der Basis-URL
@@ -375,7 +374,7 @@
                     checkParams();
                   }
   
-  //*************MESSAGE CONTAINER/ERROR MESSAGE ***********/
+//*************MESSAGE CONTAINER/ERROR MESSAGE ***********/
                 function message(resultLength) {
                   
                   $("#message-container").remove();
@@ -471,7 +470,7 @@
                     $(`#title-${element}`).removeClass("show");
                   });
                 }
-  //************SPLIT FUNCTION******************************/
+//************SPLIT FUNCTION******************************/
                 //SPLIT RESULT TO SITE OBJECTS FOR PAGINATION
                 function splittArray(resOrigin) {
                     splittResult = [];
@@ -489,6 +488,7 @@
                     }
                     renderPageCont(splittResult[0].pageArray);
                     updatePagination();
+                    updateMapViewBtn();
                     console.log("splittResult", splittResult);
                 }
                 //renderPagination
@@ -549,7 +549,7 @@
                     $("#prev-page, #next-page").css("display", "block");
                   }
                 }
-  /*************RENDER LIST OF CARDS*************************/
+//*************RENDER LIST OF CARDS*************************/
                 function renderList(resultHotelArr) {
                   //remove old hotel list
                   clearHotelList();
@@ -591,7 +591,7 @@
                   }
                 }
   
-  /*************GET URL PARAMETER ***************************/ 
+//*************GET URL PARAMETER ***************************/ 
                 function getParameter() { 
                   const params = {};
                   urlParams = new URLSearchParams(window.location.search);
@@ -626,7 +626,7 @@
                     filterListByParams(params);
                 }  
 
-/*************FILTER LIST WITH PARAMETER*******************/  
+//*************FILTER LIST WITH PARAMETER*******************/  
             function filterListByParams(params) {
               resultHotelArr = [];
 
@@ -688,8 +688,35 @@
   
                     handleEvent(); // Aktualisiert die Suche
                   });
+//************MAPS VIEW UPDATE FUNCTION******************************/  
+          function updateMapViewBtn() {
+            const mapViewBtn = document.getElementById("map-view-btn");
+            if (!mapViewBtn) return;
 
-  //************CHECK PARAMETERS*****************************/ 
+            // Remove old data-url
+            mapViewBtn.removeAttribute("data-url");
+
+           // Get the base path (e.g., "/hrgredesign")
+            const pathSegments = window.location.pathname.split('/').filter(Boolean); // remove empty segments
+            const basePath = pathSegments.length > 0 ? `/${pathSegments[0]}` : '/';
+
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasParams = [...urlParams.values()].some(value => value && value.trim() !== "");
+
+            // Start with base path
+            let finalUrl = basePath +"/maps/";
+            if (hasParams) {
+                finalUrl += `?${urlParams.toString()}`;
+            }
+            finalUrl += "#scroll-link";
+
+            // Update button
+            mapViewBtn.setAttribute("data-url", finalUrl);
+            mapViewBtn.href = finalUrl; // Optional: enable native anchor/fallback
+        }
+
+//************CHECK PARAMETERS*****************************/ 
                 function checkParams() {
                     const urlParams = new URLSearchParams(window.location.search);
                     if (urlParams.toString() === "") {
@@ -697,7 +724,8 @@
                       globalParams = {};
                       generateDropdownOptions(resultHotelArr);
                       message(resultHotelArr.length);
-                        splittArray(fetchedHotels);
+                      splittArray(fetchedHotels);
+                      updateMapViewBtn();
                     } else {
                         getParameter();
                     }

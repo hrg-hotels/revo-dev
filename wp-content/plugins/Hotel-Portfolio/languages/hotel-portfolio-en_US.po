@@ -29,3 +29,8 @@ msgstr "Number of participants"
 msgid "your-selection"
 msgstr "Your selection" 
 
+msgid "grid-view"
+msgstr "Grid view"
+
+msgid "map-view"
+msgstr "Map view"

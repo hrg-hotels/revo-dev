@@ -16,6 +16,20 @@ defined('ABSPATH') or die('No script kiddies please!');
 </script>
 
 <div id="scroll-link" class="search-wrapper">
+      <div class="btn-wrapper-view">
+            <div class="btn-view-container">
+            <a id="grid-view-btn" class="btn btn-view active-view" href="#" role="button" aria-label="Switch to grid view">
+                <img class="view-icon" src="<?php echo esc_url(content_url('revo-shared-files/img/list_alt_active.svg')); ?>" alt="Map view icon" /> 
+                <?php echo ucfirst(esc_html__('grid-view', 'hotel-portfolio')) ?>
+            </a>
+            </div> 
+            <div class="btn-view-container">
+            <a id="map-view-btn" class="btn btn-view" href="#" role="button" aria-label="Switch to map view">
+                <img class="view-icon" src="<?php echo esc_url(content_url('revo-shared-files/img/map.svg')); ?>" alt="Grid view icon" /> 
+                <?php echo ucfirst(esc_html__('map-view', 'hotel-portfolio')) ?>
+            </a>
+            </div>
+        </div>
   <div class="row-search">
 
         <!-- Country Dropdown -->
