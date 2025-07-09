@@ -52,7 +52,7 @@ function revo_hotels_maps_admin_page() {
 
 // Enqueue assets (CSS + JS)
 add_action('wp_enqueue_scripts', function() {
-        if (is_page(array('maps'))) {
+        if (is_page(array('maps','karte'))) {
     wp_enqueue_style(
         'revo-hotels-maps-css',
         plugins_url('assets/maps-template.css', __FILE__), 
