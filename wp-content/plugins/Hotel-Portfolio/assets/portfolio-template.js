@@ -690,6 +690,7 @@
                   });
 //************MAPS VIEW UPDATE FUNCTION******************************/  
           function updateMapViewBtn() {
+            console.log(hotelPortfolio.siteUrl);
             const mapViewBtn = document.getElementById("map-view-btn");
             if (!mapViewBtn) return;
 
