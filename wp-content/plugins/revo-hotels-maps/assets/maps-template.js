@@ -216,6 +216,7 @@ function checkParams() {
 
 // Update grid view button based on URL parameters
 function updateGridViewBtn() {
+    console.log(revoHotelsMaps.siteUrl);
     const gridViewBtn = document.getElementById("grid-view-btn");
     if (!gridViewBtn) return;
 
@@ -228,10 +229,8 @@ function updateGridViewBtn() {
     const objectType = urlParams.get('object_type');
 
     // Remove trailing '/maps/' from pathname if present
-    let basePath = window.location.pathname;
-    if (basePath.endsWith('/maps/')) {
-        basePath = basePath.slice(0, -6); // Remove exactly '/maps/'
-    }
+    basePath = revoHotelsMaps.siteUrl; 
+    
 
     // Append proper suffix
     if (objectType) {

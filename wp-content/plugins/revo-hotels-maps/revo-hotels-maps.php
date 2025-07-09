@@ -78,7 +78,8 @@ add_action('wp_enqueue_scripts', function() {
 
     wp_localize_script('revo-hotels-maps-js', 'revoHotelsMaps', [
         'ajax_url' => admin_url('admin-ajax.php'),
-        'lang'     => get_locale()
+        'lang'     => get_locale(),
+        'siteUrl'  => get_site_url()
     ]);
 }
 });
