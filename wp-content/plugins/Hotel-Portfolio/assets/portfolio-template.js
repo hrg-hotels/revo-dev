@@ -696,16 +696,12 @@
             // Remove old data-url
             mapViewBtn.removeAttribute("data-url");
 
-           // Get the base path (e.g., "/hrgredesign")
-            const pathSegments = window.location.pathname.split('/').filter(Boolean); // remove empty segments
-            const basePath = pathSegments.length > 0 ? `/${pathSegments[0]}` : '/';
-
             // Get URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             const hasParams = [...urlParams.values()].some(value => value && value.trim() !== "");
 
             // Start with base path
-            let finalUrl = basePath +"/maps/";
+            let finalUrl = hotelPortfolio.siteUrl +"/maps/";
             if (hasParams) {
                 finalUrl += `?${urlParams.toString()}`;
             }
