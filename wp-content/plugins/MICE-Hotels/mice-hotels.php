@@ -163,7 +163,9 @@ function mice_hotels_enqueue_scripts() {
 
         // **Hier wird `miceHotels` als globales Objekt an JavaScript übergeben**
         wp_localize_script('mice-hotels-ajax', 'miceHotels', array(
-            'ajaxurl' => admin_url('admin-ajax.php')
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'lang'     => get_locale(),
+            'siteUrl' => get_site_url()
         ));
 
         // JavaScript für den Filterbereich

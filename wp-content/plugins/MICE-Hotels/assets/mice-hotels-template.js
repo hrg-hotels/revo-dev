@@ -545,6 +545,7 @@ function generateDropdownOptions(resultHotelArr) {
                     console.log('splittResult',splittResult );  
                     renderPageCont(splittResult[0].pageArray);
                     updatePagination();
+                    updateMapViewBtn();
                 }
                 //renderPagination
                 function renderPageCont(arr) {
@@ -819,6 +820,36 @@ function generateDropdownOptions(resultHotelArr) {
         window.history.pushState({}, document.title, window.location.pathname);
     }
 }
+//************MAPS VIEW UPDATE FUNCTION******************************/  
+          function updateMapViewBtn() {
+            const mapViewBtn = document.getElementById("map-view-btn");
+            if (!mapViewBtn) return;
+
+            // Remove old data-url
+            mapViewBtn.removeAttribute("data-url");
+
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasParams = [...urlParams.values()].some(value => value && value.trim() !== "");
+
+            console.log(miceHotels.siteUrl, miceHotels.lang); 
+            // Start with base path
+            let finalUrl = "";
+            let baseUrl = miceHotels.siteUrl;
+                if (miceHotels.lang === 'de_DE') {
+                    finalUrl = baseUrl + "/de/maps/";
+                }else {
+                    finalUrl = baseUrl +  "/maps/";
+                }
+            if (hasParams) {
+                finalUrl += `?${urlParams.toString()}`;
+            }
+            finalUrl += "&object_type=MICE+Hotels#scroll-link";
+
+            // Update button
+            mapViewBtn.setAttribute("data-url", finalUrl);
+            mapViewBtn.href = finalUrl; // Optional: enable native anchor/fallback
+        }
 
 
   //************CHECK PARAMETERS*****************************/ 
@@ -830,6 +861,7 @@ function generateDropdownOptions(resultHotelArr) {
                       generateDropdownOptions(resultHotelArr);
                       message(resultHotelArr.length);
                         splittArray(fetchedHotels);
+                        updateMapViewBtn();
                     } else {
                         getParameter();
                     }
