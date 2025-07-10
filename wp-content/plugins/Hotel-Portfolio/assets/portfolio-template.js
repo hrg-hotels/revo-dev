@@ -701,8 +701,15 @@
             const urlParams = new URLSearchParams(window.location.search);
             const hasParams = [...urlParams.values()].some(value => value && value.trim() !== "");
 
+            console.log(hotelPortfolio.siteUrl, hotelPortfolio.lang); 
             // Start with base path
-            let finalUrl = hotelPortfolio.siteUrl +"/maps/";
+            let finalUrl = "";
+            let baseUrl = hotelPortfolio.siteUrl;
+                if (hotelPortfolio.lang === 'de_DE') {
+                    finalUrl = baseUrl + "/de/maps/";
+                }else {
+                    finalUrl = baseUrl +  "/maps/";
+                }
             if (hasParams) {
                 finalUrl += `?${urlParams.toString()}`;
             }

@@ -118,7 +118,8 @@ function hotel_portfolio_enqueue_scripts() {
         
         wp_localize_script('hotel-portfolio-ajax', 'hotelPortfolio', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'siteUrl' => home_url()
+            'lang'     => get_locale(),
+            'siteUrl' => get_site_url()
         ));
 
         wp_enqueue_style('hotel-portfolio-filter', HOTEL_PORTFOLIO_URL . 'assets/hotelfilter/filter.css', array(), HOTEL_PORTFOLIO_VERSION);
