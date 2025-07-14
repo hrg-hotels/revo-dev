@@ -120,6 +120,8 @@ $results = $wpdb->get_results(
             h.lat,
             h.lon AS lng,
             CASE WHEN h.mice_request = 'True' THEN 'MICE Hotels' ELSE '' END AS object_type,
+            h.total_conference_space_in_m AS area,
+            h.max_number_of_participants_total AS people,
             COALESCE(h.brand, 'Unknown') AS brand, 
             COALESCE(h.parent_brand, 'Unknown') AS parent_brand, 
             h.publication_status

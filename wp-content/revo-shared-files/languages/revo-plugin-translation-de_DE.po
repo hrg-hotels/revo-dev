@@ -51,3 +51,9 @@ msgstr "Kartenansicht"
 
 msgid "discover-more"
 msgstr "Mehr entdecken"
+
+msgid "conference-space"
+msgstr "Konferenzfläche"
+
+msgid "number-of-participants"
+msgstr "Anzahl der Teilnehmer"
