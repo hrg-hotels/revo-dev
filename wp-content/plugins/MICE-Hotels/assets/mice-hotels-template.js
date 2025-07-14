@@ -322,7 +322,7 @@ function generateDropdownOptions(resultHotelArr) {
           { id: "people", placeholder: hotelFilterTranslations.people }
       ];
 
-      // Deactivate input fields to activ
+      // Deactivated input fields to activ
       const areaInput = document.getElementById("area-header");
       const peopleInput = document.getElementById("people-header"); 
       if (areaInput) {

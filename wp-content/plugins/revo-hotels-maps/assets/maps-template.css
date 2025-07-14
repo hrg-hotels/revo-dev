@@ -76,6 +76,18 @@
     margin-right: 8px;
     vertical-align: middle;
   }
+/* Optional: faded look for disabled dropdowns */
+input.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+}
+
+/* Block pointer events to fake dropdown behavior */
+.dropdown-disabled {
+    pointer-events: none;
+}
+
 @media only screen and (min-width: 1280px) {
   .hotel-phone, .hotel-address, .hotel-email {
     display: flex; 

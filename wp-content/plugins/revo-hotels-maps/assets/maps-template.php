@@ -117,7 +117,7 @@ defined('ABSPATH') or die('No script kiddies please!');
       </div>
     </div>
             <!-- Area Dropdown -->
-        <div class="selection-hr mice-only">
+        <div id="areaEl" class="selection-hr mice-only">
             <div class="select-area" id="area-select">
                 <div class="select-header">
                     <input name="area" type="text" class="read-only" autocomplete="off" id="area-header" maxlength="50"
@@ -131,7 +131,7 @@ defined('ABSPATH') or die('No script kiddies please!');
 
         <!-- People Dropdown -->
 
-        <div class="selection-hr mice-only">
+        <div id="peopleEl" class="selection-hr mice-only">
             <div class="select-people" id="people-select">
                 <div class="select-header">
                     <input name="people" type="text" class="read-only" autocomplete="off" id="people-header"
