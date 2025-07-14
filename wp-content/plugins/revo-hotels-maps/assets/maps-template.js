@@ -115,8 +115,6 @@ function showGDPRConsent() {
     `;
 
     document.body.appendChild(consentLayer);
-    console.log(hotelFilterTranslations.consentHeadline, hotelFilterTranslations.noResult);
-    
 
     document.getElementById("gdpr-consent-btn").addEventListener("click", function() {
         localStorage.setItem("gdprConsent", "true"); // Save consent
@@ -217,7 +215,6 @@ function checkParams() {
 }
 // Update grid view button based on URL parameters
 function updateGridViewBtn() {
-    console.log(revoHotelsMaps.siteUrl);
     const gridViewBtn = document.getElementById("grid-view-btn");
     if (!gridViewBtn) return;
 
@@ -234,25 +231,20 @@ function updateGridViewBtn() {
     console.log(revoHotelsMaps.lang);
     if (revoHotelsMaps.lang === 'de_DE') {
         basePath = basePath + "/de";
-    }
-    
-
+    } 
     // Append proper suffix
     if (objectType) {
         basePath += "/meetings-events/";
     } else {
         basePath += "/portfolio/hotels/";
     }
-
     // Build final URL with or without params
     let finalUrl = basePath;
     if (hasParams) {
         finalUrl += `?${urlParams.toString()}`;
     }
-
     // Append scroll anchor
     finalUrl += "#scroll-link";
-
     // Set attributes
     gridViewBtn.setAttribute("data-url", finalUrl);
     gridViewBtn.href = finalUrl; // Optional: enable native anchor/fallback
@@ -323,9 +315,7 @@ function generateDropdownOptions(hotels) {
     fillOptions('area-options', unique('area'));
     fillOptions('people-options', unique('people'));
     disableConferenceSpaceAndParticipants();
-
 }
-
 // disable object type if no hotels are found.
 //  for example when searching for city 'echterdingen' there is no mice hotel and therefore its not needed to select an object type.
 function disableObjectTypeIfNoHotels() {
@@ -348,7 +338,7 @@ function disableObjectTypeIfNoHotels() {
         objectTypeInput.disabled = false;
     }
 }
-// Dispable input fields Conference Space and Number of Participants if object type is not MICE
+// Disbable input fields Conference Space and Number of Participants if object type is not MICE
 function disableConferenceSpaceAndParticipants() {
     const miceElements = document.querySelectorAll('.mice-only');
     const objectTypeInput = document.getElementById('object-type-header').value.trim().toLowerCase();
@@ -369,6 +359,56 @@ function disableConferenceSpaceAndParticipants() {
     }
 }
 disableConferenceSpaceAndParticipants();
+// disable area if people is not selected and in return disable people if area is not selected
+      // Deactivate input fields to activ
+// disable area when people is not selected and in return disable people when area is not selected
+
+function toggleAreaAndPeopleInputs() {
+    const areaInput = document.getElementById("area-header");
+    const peopleInput = document.getElementById("people-header");
+
+    if (!areaInput || !peopleInput) return;
+
+    const areaVal = areaInput.value.trim();
+    const peopleVal = peopleInput.value.trim();
+
+    if (areaVal !== "" && peopleVal === "") {
+        // Disable people
+        peopleInput.classList.add("disabled");
+        peopleInput.setAttribute("readonly", true);
+        peopleInput.setAttribute("aria-disabled", "true");
+        peopleInput.parentElement.classList.add("dropdown-disabled");
+
+        // Enable area
+        areaInput.classList.remove("disabled");
+        areaInput.removeAttribute("aria-disabled");
+        areaInput.parentElement.classList.remove("dropdown-disabled");
+
+    } else if (peopleVal !== "" && areaVal === "") {
+        // Disable area
+        areaInput.classList.add("disabled");
+        areaInput.setAttribute("readonly", true);
+        areaInput.setAttribute("aria-disabled", "true");
+        areaInput.parentElement.classList.add("dropdown-disabled");
+
+        // Enable people
+        peopleInput.classList.remove("disabled");
+        peopleInput.removeAttribute("aria-disabled");
+        peopleInput.parentElement.classList.remove("dropdown-disabled");
+
+    } else {
+        // Enable both
+        areaInput.classList.remove("disabled");
+        peopleInput.classList.remove("disabled");
+        areaInput.removeAttribute("aria-disabled");
+        peopleInput.removeAttribute("aria-disabled");
+        areaInput.parentElement.classList.remove("dropdown-disabled");
+        peopleInput.parentElement.classList.remove("dropdown-disabled");
+    }
+}
+
+
+
 // Dropdown visibility toggle on header click
 const allInputs = document.querySelectorAll(".select-header input");
 allInputs.forEach(input => {
@@ -499,11 +539,9 @@ function clearField(inputId) {
         const paramKey = inputId.replace('-header', '');
         params.delete(paramKey);
     }
-
     // Update URL without reloading the page
     const newUrl = `${window.location.pathname}?${params.toString()}`;
     window.history.replaceState({}, '', newUrl);
-
     // Update UI and state
     updateMessageContainer();
     updateGridViewBtn();
@@ -707,6 +745,8 @@ function filterMarkers() {
     const parentBrandFilter = document.getElementById('parent-brand-header').value.trim().toLowerCase();
     const areaFilter = document.getElementById('area-header').value.trim();
     const peopleFilter = document.getElementById('people-header').value.trim();
+
+    toggleAreaAndPeopleInputs();
 
     const filtered = allHotels.filter(hotel => {
         // Safe property access
