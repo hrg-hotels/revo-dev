@@ -166,6 +166,7 @@ var(--awb-color5);/*orange*/
     border-bottom: 1px solid gray;
     background: white;
     position: relative;
+    min-width:24% !important;
 }
 
 .selection-hr input {

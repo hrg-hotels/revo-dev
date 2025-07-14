@@ -52,3 +52,9 @@ msgstr "Map view"
 
 msgid "discover-more"
 msgstr "discover more"
+
+msgid "conference-space"
+msgstr "Conference space"
+
+msgid "number-of-participants"
+msgstr "Number of participants"
