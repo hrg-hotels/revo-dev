@@ -260,9 +260,9 @@ var(--awb-color5);/*orange*/
     justify-content: center;
     width: 50%;
     padding:12px;
+    padding-bottom: 0;
     color:#181B20;
     cursor: pointer;
-    margin-top: 20px;
     caret-color: transparent;
     text-transform: uppercase; 
     font-size: 14px !important;
