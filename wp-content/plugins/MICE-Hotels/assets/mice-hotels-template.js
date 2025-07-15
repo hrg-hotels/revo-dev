@@ -842,9 +842,11 @@ function generateDropdownOptions(resultHotelArr) {
                     finalUrl = baseUrl +  "/maps/";
                 }
             if (hasParams) {
-                finalUrl += `?${urlParams.toString()}`;
+                finalUrl += `?${urlParams.toString()}` + "&object_type=MICE+Hotels#scroll-link";
+            }else{
+                finalUrl += "?object_type=MICE+Hotels#scroll-link";
             }
-            finalUrl += "&object_type=MICE+Hotels#scroll-link";
+
 
             // Update button
             mapViewBtn.setAttribute("data-url", finalUrl);
