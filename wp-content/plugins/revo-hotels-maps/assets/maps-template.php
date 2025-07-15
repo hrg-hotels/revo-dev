@@ -143,15 +143,12 @@ defined('ABSPATH') or die('No script kiddies please!');
             </div>
         </div>
 
-
-  </div>
-
-<!-- Reset Button -->
-  <div class="btn-wrapper">
-    <div id="btn-reset" role="button" tabindex="0" aria-label="Reset filter selection">
-      <img src="<?php echo esc_url(plugins_url('img/restart_alt.svg', __FILE__)); ?>" alt="Reset icon" />
-      <div><span style="color:#181B20;">Reset</span></div>
+      <div id="btn-reset" role="button" tabindex="0" aria-label="Reset filter selection">
+        <img src="<?php echo esc_url(plugins_url('img/restart_alt.svg', __FILE__)); ?>" alt="Reset icon" />
+      <div style="color:#181B20; height:32px; padding-top: 6px;">Reset</div>
     </div>
+
+
   </div>
 
   <div id="message-wrapper"></div>
