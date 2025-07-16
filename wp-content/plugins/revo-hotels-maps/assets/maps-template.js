@@ -223,7 +223,7 @@ function updateGridViewBtn() {
         basePath = basePath + "/de";
     } 
     // Append proper suffix
-    if (isMice) {
+    if (window.isMice) {
         basePath += "/meetings-events/";
     } else {
         basePath += "/portfolio/hotels/";
