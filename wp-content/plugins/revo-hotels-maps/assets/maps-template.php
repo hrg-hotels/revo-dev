@@ -102,20 +102,6 @@ defined('ABSPATH') or die('No script kiddies please!');
       </div>
     </div>
 
-    <!-- Object Type Dropdown -->
-    <div class="selection-hr">
-      <div class="select-object-type" id="object-type-select">
-        <div class="select-header">
-          <input name="object-type" type="text" autocomplete="off" id="object-type-header" maxlength="20"
-                 placeholder="All hotels"
-                 aria-label="Object type"          
-                 aria-controls="object-type-options"
-                 aria-expanded="false"
-                    />
-        </div>
-        <ul class="select-options" id="object-type-options" role="listbox" tabindex="-1" aria-label="Object type options"></ul>
-      </div>
-    </div>
             <!-- Area Dropdown -->
         <div id="areaEl" class="selection-hr mice-only">
             <div class="select-area" id="area-select">
