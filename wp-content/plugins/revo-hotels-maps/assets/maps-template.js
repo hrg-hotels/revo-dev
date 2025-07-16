@@ -19,7 +19,8 @@ function renderMarkers(hotels) {
         });
 
         marker.addListener('click', () => {
-            infoWindow.open({ anchor: marker, map });
+                infoWindow.open({ anchor: marker, map });
+                disableAreaAndPeopleInPopup();
         });
 
         markers.push(marker);
@@ -134,38 +135,19 @@ document.addEventListener("DOMContentLoaded", () => {
     showGDPRConsent();
 });
 
-/**  Load Google Maps API with Avada Privacy Integration
-function loadGoogleMapsAPI(callback) {
-    if (window.google && window.google.maps) {
-        if (typeof callback === "function") callback();
-        return;
-    }
-
-    if (typeof AvadaPrivacy !== 'undefined' && typeof AvadaPrivacy.registerScript === 'function') {
-        // Use Avada's privacy API to load the script
-        AvadaPrivacy.registerScript({
-            type: 'gmaps',
-            src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBrGUx-sWW3nkDEL0CRoUYvA0MS95VCMlY&callback=initRevoHotelsMap&libraries=marker',
-            id: 'google-maps-api-js',
-            async: true,
-            defer: true
-        });
-    } else {
-        // Directly load Google Maps API if Avada Privacy is not active
-        const script = document.createElement('script');
-        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBrGUx-sWW3nkDEL0CRoUYvA0MS95VCMlY&callback=' + callback.name + '&libraries=marker';
-        script.id = 'google-maps-api-js';
-        script.async = true;
-        script.defer = true;
-        document.body.appendChild(script);
-    }
-}**/
-
 function initRevoHotelsMap() {
     const mapEl = document.getElementById('revo-hotels-map');
     if (!mapEl) return;
 
-    fetch(`${revoHotelsMaps.ajax_url}?action=revo_hotels_maps_fetch&lang=${revoHotelsMaps.lang}`)
+    // get data from revo-hotels-map-root
+    const mice = document.getElementById('revo-hotels-map-root').dataset.mice;
+    let ajaxUrl = `${revoHotelsMaps.ajax_url}?action=revo_hotels_maps_fetch&lang=${revoHotelsMaps.lang}`;
+    window.isMice = false;
+    if (mice && mice === '1') {
+        ajaxUrl += '&mice=1';
+        window.isMice = true;
+    }
+    fetch(ajaxUrl)
         .then(res => res.json())
         .then(data => {
             if (!data.success || !Array.isArray(data.data)) {
@@ -182,31 +164,39 @@ function initRevoHotelsMap() {
                 mapId: "b7d66f7add83f786"
             });
 
+            console.log('window.isMice: '+ window.isMice);
             generateDropdownOptions(allHotels);
             renderMarkers(allHotels);
             checkParams();
-            updateGridViewBtn();
+            updateGridViewBtn();  
+            addMiceStylesIfNeeded();
         });
 }
+// add styles if isMice is true
+function addMiceStylesIfNeeded(){
+    if (!window.isMice) return;
+    console.log('isMice is true, adding styles');
+    document.querySelectorAll('.selection-hr').forEach(el => {
+        el.classList.add('selection-hr-mice');
+    });
+}
+
 
 // Get URL parameters as an object
 function getURLParams() {
     const params = new URLSearchParams(window.location.search);
     return Object.fromEntries(params.entries());
 }
-
 // Check URL parameters and set input values accordingly
 function checkParams() {
     const urlParams = getURLParams();
     if (urlParams && Object.keys(urlParams).length > 0 && Object.values(urlParams).some(v => v)) {
-        console.log("URL parameters found:", urlParams);
-        const { city, country, brand, parent_brand, object_type,area, people } = urlParams;
+        const { city, country, brand, parent_brand, area, people } = urlParams;
 
         if (city) document.getElementById('city-header').value = city;
         if (country) document.getElementById('country-header').value = country;
         if (brand) document.getElementById('brand-header').value = brand;
         if (parent_brand) document.getElementById('parent-brand-header').value = parent_brand;
-        if (object_type) document.getElementById('object-type-header').value = object_type;
         if (area) document.getElementById('area-header').value = area;
         if (people) document.getElementById('people-header').value = people;
 
@@ -267,7 +257,6 @@ function updateURLParamsFromInputs() {
     addParam('country-header', 'country');
     addParam('brand-header', 'brand');
     addParam('parent-brand-header', 'parent_brand');
-    addParam('object-type-header', 'object_type');
     addParam('area-header', 'area');
     addParam('people-header', 'people');
 
@@ -311,39 +300,17 @@ function generateDropdownOptions(hotels) {
     fillOptions('city-options', combinedCities);
     fillOptions('parent-brand-options', unique('parent_brand'));
     fillOptions('brand-options', unique('brand'));
-    fillOptions('object-type-options', objectTypes);
     fillOptions('area-options', unique('area'));
     fillOptions('people-options', unique('people'));
     disableConferenceSpaceAndParticipants();
 }
-// disable object type if no hotels are found.
-//  for example when searching for city 'echterdingen' there is no mice hotel and therefore its not needed to select an object type.
-function disableObjectTypeIfNoHotels() {
-    const optionsList = document.getElementById('object-type-options');
-    const objectTypeInput = document.getElementById('object-type-header');
 
-    if (!optionsList || !objectTypeInput) {
-        console.warn("Missing 'object-type-options' list or 'object-type-header' input.");
-        return;
-    }
-
-    const hasOptions = optionsList.querySelectorAll('li').length > 0;
-    console.log("Has Object Type Options:", hasOptions);
-
-    if (!hasOptions) {
-        console.log("No hotels found, disabling object type input");
-        objectTypeInput.disabled = true;
-    } else {
-        console.log("Hotels found, enabling object type input");
-        objectTypeInput.disabled = false;
-    }
-}
-// Disbable input fields Conference Space and Number of Participants if object type is not MICE
+// Disbable input fields Conference Space and Number of Participants if not MICE Hotels
 function disableConferenceSpaceAndParticipants() {
     const miceElements = document.querySelectorAll('.mice-only');
-    const objectTypeInput = document.getElementById('object-type-header').value.trim().toLowerCase();
+    console.log('disableConferenceSpaceAndParticipants called, isMice:', window.isMice);
 
-    if (objectTypeInput === 'mice hotels') {
+    if (window.isMice) {
         miceElements.forEach(el => {
             el.style.display = 'block';
             const input = el.querySelector('input');
@@ -359,10 +326,7 @@ function disableConferenceSpaceAndParticipants() {
     }
 }
 disableConferenceSpaceAndParticipants();
-// disable area if people is not selected and in return disable people if area is not selected
-      // Deactivate input fields to activ
-// disable area when people is not selected and in return disable people when area is not selected
-
+//function to toggle area and people inputs based on their values
 function toggleAreaAndPeopleInputs() {
     const areaInput = document.getElementById("area-header");
     const peopleInput = document.getElementById("people-header");
@@ -406,10 +370,18 @@ function toggleAreaAndPeopleInputs() {
         peopleInput.parentElement.classList.remove("dropdown-disabled");
     }
 }
-
-
-
-// Dropdown visibility toggle on header click
+//disable area and people in Popup if not MICE Hotels
+function disableAreaAndPeopleInPopup() {
+ const popupArea = document.querySelector('.popup-area');    
+    const popupPeople = document.querySelector('.popup-people');
+    if (!popupArea || !popupPeople) return; 
+    if (window.isMice) {
+        popupArea.style.display = 'block';
+        popupPeople.style.display = 'block';
+    } else {
+        popupArea.style.display = 'none';
+        popupPeople.style.display = 'none';
+    }}
 const allInputs = document.querySelectorAll(".select-header input");
 allInputs.forEach(input => {
     const optionsId = input.id.replace("-header", "-options");
@@ -498,7 +470,6 @@ function setActiveItem(items) {
         items[currentFocusIndex].scrollIntoView({ block: "nearest" });
     }
 }
-
 //clear button functionality
 document.addEventListener("click", e => {
     if (e.target.classList.contains("clear-button")) {
@@ -521,24 +492,6 @@ function clearField(inputId) {
     input.value = "";
 
     const params = new URLSearchParams(window.location.search);
-
-    // Special case for 'object-type-header'
-    if (inputId === 'object-type-header') {
-        const areaInput = document.getElementById('area-header');
-        const peopleInput = document.getElementById('people-header');
-
-        if (areaInput) areaInput.value = "";
-        if (peopleInput) peopleInput.value = "";
-
-        // Remove from URL
-        params.delete('area');
-        params.delete('people');
-        params.delete('object_type');
-    } else {
-        // Remove corresponding parameter
-        const paramKey = inputId.replace('-header', '');
-        params.delete(paramKey);
-    }
     // Update URL without reloading the page
     const newUrl = `${window.location.pathname}?${params.toString()}`;
     window.history.replaceState({}, '', newUrl);
@@ -549,7 +502,6 @@ function clearField(inputId) {
     zoomOut();
     filterMarkers();
 }
-
 // ZOOM Out
 function zoomOut() {
     map.setCenter({ lat: 51, lng: 10 });
@@ -633,7 +585,6 @@ function updateResultMessage(count, filteredHotels) {
         let city = document.getElementById('city-header').value.trim();
         let parentBrand = document.getElementById('parent-brand-header').value.trim();
         let brand = document.getElementById('brand-header').value.trim();
-        let objectType = document.getElementById('object-type-header').value.trim();
         let area = document.getElementById('area-header').value.trim();
         let people = document.getElementById('people-header').value.trim();
 
@@ -660,11 +611,6 @@ function updateResultMessage(count, filteredHotels) {
                 <div class="result-title" id="title-brand">
                 <span class="txt-black" aria-hidden="true">${hotelFilterTranslations.brand}:</span>
                 <span class="txt-gray" aria-label="${hotelFilterTranslations.brand}">${brand}</span>
-                </div>
-
-                <div class="result-title" id="title-object-type">
-                <span style="display:none;" class="txt-black" aria-hidden="true">Object type:</span>
-                <span class="txt-gray" aria-label="Object type">${objectType}</span>
                 </div>
 
                 <div class="result-title" id="title-area">
@@ -706,14 +652,8 @@ function updateMessageContainer() {
     if (document.getElementById("brand-header").value.trim()) {
         document.getElementById("title-brand")?.classList.add("show");
     }
-    if (document.getElementById("object-type-header").value.trim()) {
-        document.getElementById("title-object-type")?.classList.add("show");
-    }
     if (document.getElementById("parent-brand-header").value.trim()) {
         document.getElementById("title-parent-brand")?.classList.add("show");
-    }
-    if (document.getElementById("object-type-header").value.trim()) {
-        document.getElementById("title-object-type")?.classList.add("show");
     }
     if (document.getElementById("area-header").value.trim()) {
         document.getElementById("title-area")?.classList.add("show");
@@ -725,13 +665,14 @@ function updateMessageContainer() {
     && !document.getElementById("city-header").value 
     && !document.getElementById("brand-header").value 
     && !document.getElementById("parent-brand-header").value
-    && !document.getElementById("object-type-header").value) {
+    && !document.getElementById("area-header").value
+    && !document.getElementById("people-header").value) {
         document.getElementById("message-headline")?.style.setProperty("display", "none");
     }
 }
 // Remove "show" class from all titles in the message container
 function removeShowClass() {
-    const ids = ['country', 'city', 'brand', 'parent-brand', 'object-type', 'area', 'people'];
+    const ids = ['country', 'city', 'brand', 'parent-brand', 'area', 'people'];
     ids.forEach(id => {
         document.getElementById(`title-${id}`)?.classList.remove("show");
     });
@@ -741,7 +682,6 @@ function filterMarkers() {
     const countryFilter = document.getElementById('country-header').value.trim().toLowerCase();
     const cityFilter = document.getElementById('city-header').value.trim().toLowerCase();
     const brandFilter = document.getElementById('brand-header').value.trim().toLowerCase();
-    const objectTypeFilter = document.getElementById('object-type-header').value.trim().toLowerCase();
     const parentBrandFilter = document.getElementById('parent-brand-header').value.trim().toLowerCase();
     const areaFilter = document.getElementById('area-header').value.trim();
     const peopleFilter = document.getElementById('people-header').value.trim();
@@ -754,7 +694,6 @@ function filterMarkers() {
         const hotelCity = (hotel.city || "").toLowerCase();
         const hotelCountyTown = (hotel.county_town || "").toLowerCase();
         const hotelBrand = (hotel.brand || "").toLowerCase();
-        const hotelObjectType = (hotel.object_type || "").toLowerCase();
         const hotelParentBrand = (hotel.parent_brand || "").toLowerCase();
         const hotelArea = (hotel.area || "").trim();
         const hotelPeople = (hotel.people || "").trim();
@@ -762,12 +701,11 @@ function filterMarkers() {
         const matchCountry = !countryFilter || hotelCountry.includes(countryFilter);
         const matchCity = !cityFilter || hotelCity.includes(cityFilter) || hotelCountyTown.includes(cityFilter);
         const matchBrand = !brandFilter || hotelBrand.includes(brandFilter);
-        const matchObjectType = !objectTypeFilter || hotelObjectType.includes(objectTypeFilter);
         const matchParentBrand = !parentBrandFilter || hotelParentBrand.includes(parentBrandFilter);
 
         // 🔹 Neue Logik für "area"
         let matchArea = true;
-        if (objectTypeFilter === "mice hotels" && areaFilter) {
+        if (areaFilter) {
             if (areaFilter === "<100") {
                 matchArea = true;
             } else if (areaFilter === "100-500") {
@@ -782,8 +720,8 @@ function filterMarkers() {
         }
 
         // 🔹 Neue Logik für "people"
-        let matchPeople = true;
-        if (objectTypeFilter === "mice hotels" && peopleFilter) {
+            let matchPeople = true;
+            if (peopleFilter) {
             if (peopleFilter === "<150") {
                 matchPeople = true;
             } else if (peopleFilter === "150-300") {
@@ -798,24 +736,16 @@ function filterMarkers() {
                 matchPeople = false;
             }
         }
-
-        // Only show "mice hotels" if that is the selected object type
-        // If you want to filter strictly for "mice hotels" regardless of other filters:
-        // if (objectTypeFilter) matchObjectType = hotelObjectType === "mice hotels";
-        // If you want to show other hotel types, keep as is.
-
-        return matchCountry && matchCity && matchBrand && matchObjectType && matchParentBrand && matchArea && matchPeople;
+        return matchCountry && matchCity && matchBrand && matchParentBrand && matchArea && matchPeople;
     });
 
     console.log('Filtered Hotels:', filtered);
     renderMarkers(filtered); // Your rendering logic
     generateDropdownOptions(filtered);
     disableConferenceSpaceAndParticipants(); // Disable conference space and participants if not MICE
-    disableObjectTypeIfNoHotels(); // Disable object type if no hotels are found
     updateGridViewBtn();    // Sets data-url on the button
     updateResultMessage(filtered.length, filtered);
 }
-
 
 // === MARKER & POPUP HELPERS ===
 function createCustomMarkerContent(iconUrl) {
@@ -842,6 +772,15 @@ function createPopupContent(hotel) {
                 <p class="hotel-address">
                 <img src="${imgPath}location_on.svg" alt="Location" width="16" height="16">
                 <span>${hotel.street}, ${hotel.zip} ${hotel.city}</span>
+                </p>
+
+                <p class="popup-area">
+                <img src="${imgPath}area.svg" alt="Conference space" width="16" height="16" style="margin-right: 12px;">
+                <span>${hotelFilterTranslations.conferenceSpace}: ${hotel.area}</span>
+                </p>
+                <p class="popup-people">
+                <img src="${imgPath}people.svg" alt="number of participants" width="16" height="16" style="margin-right: 12px;">
+                <span>${hotelFilterTranslations.numberOfParticipants}: ${hotel.people}</span>
                 </p>
 
                 <p class="hotel-phone">
@@ -871,4 +810,5 @@ function createPopupContent(hotel) {
             </div>
         </div>
     `;
+
 }

@@ -837,15 +837,12 @@ function generateDropdownOptions(resultHotelArr) {
             let finalUrl = "";
             let baseUrl = miceHotels.siteUrl;
                 if (miceHotels.lang === 'de_DE') {
-                    finalUrl = baseUrl + "/de/maps/";
+                    finalUrl = baseUrl + "/de/maps-mice/";
                 }else {
-                    finalUrl = baseUrl +  "/maps/";
+                    finalUrl = baseUrl +  "/maps-mice/";
                 }
-            if (hasParams) {
-                finalUrl += `?${urlParams.toString()}` + "&object_type=MICE+Hotels#scroll-link";
-            }else{
-                finalUrl += "?object_type=MICE+Hotels#scroll-link";
-            }
+                finalUrl += `?${urlParams.toString()}` + "#scroll-link";
+     
 
 
             // Update button

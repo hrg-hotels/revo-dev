@@ -52,7 +52,7 @@ function revo_hotels_maps_admin_page() {
 
 // Enqueue assets (CSS + JS)
 add_action('wp_enqueue_scripts', function() {
-        if (is_page(array('maps','karte'))) {
+        if (is_page(array('maps','karte','maps-mice'))) {
     wp_enqueue_style(
         'revo-hotels-maps-css',
         plugins_url('assets/maps-template.css', __FILE__), 
@@ -91,71 +91,60 @@ add_action('wp_ajax_nopriv_revo_hotels_maps_fetch', 'revo_hotels_maps_fetch_data
 function revo_hotels_maps_fetch_data() {
     global $wpdb;
     $lang = isset($_GET['lang']) ? sanitize_text_field($_GET['lang']) : 'en';
-
-    // Normalize lang to short format (e.g., en-US -> en)
     $short_lang = substr($lang, 0, 2);
 
-// Optimized SQL Query with UNION for Multi-Language Fallback
-$results = $wpdb->get_results(
-    $wpdb->prepare(
-        "
-        SELECT 
-            h.image,
-            h.name,
-            -- Country with fallback
-            COALESCE(country.translation, h.country_code, 'Country not found') AS country, 
-            h.zip,
+    // Prüfe auf mice-Parameter
+    $filter_mice = (isset($_GET['mice']) && $_GET['mice'] === '1');
 
-            -- City with fallback
-            COALESCE(city.translation, h.city, 'City not found') AS city, 
-            
-            -- County Town with fallback
-            COALESCE(county_town.translation, h.county_town, 'County Town not found') AS county_town, 
+    // Wenn gefiltert werden soll, WHERE ergänzen
+    $where_mice = $filter_mice ? "WHERE h.mice_request = 'True'" : "";
 
-            h.street,
-            h.phone,
-            h.email,
-            h.homepage AS website,
-            h.port_prio AS order_prio,
-            h.lat,
-            h.lon AS lng,
-            CASE WHEN h.mice_request = 'True' THEN 'MICE Hotels' ELSE '' END AS object_type,
-            h.total_conference_space_in_m AS area,
-            h.max_number_of_participants_total AS people,
-            COALESCE(h.brand, 'Unknown') AS brand, 
-            COALESCE(h.parent_brand, 'Unknown') AS parent_brand, 
-            h.publication_status
-        FROM {$wpdb->prefix}hotel_portfolio_04 h
+    // ACHTUNG: Wenn du schon ein WHERE brauchst (z.B. weil du später weitere Filter hast), musst du ggf. mit AND erweitern.
+    // Für jetzt reicht das aber so:
 
-        -- Country with UNION fallback
-        LEFT JOIN (
-            SELECT code, translation FROM {$wpdb->prefix}hotel_translation 
-            WHERE type = 'country' AND (lang = %s OR lang = %s)
-        ) country ON country.code = h.country_code
-
-        -- City with UNION fallback
-        LEFT JOIN (
-            SELECT code, translation FROM {$wpdb->prefix}hotel_translation 
-            WHERE type = 'city' AND (lang = %s OR lang = %s)
-        ) city ON city.code = h.city
-
-        -- County Town with UNION fallback
-        LEFT JOIN (
-            SELECT code, translation FROM {$wpdb->prefix}hotel_translation 
-            WHERE type = 'county_town' AND (lang = %s OR lang = %s)
-        ) county_town ON county_town.code = h.county_town
-
-        ORDER BY order_prio ASC, h.name ASC
-        ", 
-        $short_lang, 
-        $lang, 
-        $short_lang, 
-        $lang, 
-        $short_lang, 
-        $lang
-    ), 
-    ARRAY_A
-);
+    $results = $wpdb->get_results(
+        $wpdb->prepare(
+            "
+            SELECT 
+                h.image,
+                h.name,
+                COALESCE(country.translation, h.country_code, 'Country not found') AS country, 
+                h.zip,
+                COALESCE(city.translation, h.city, 'City not found') AS city, 
+                COALESCE(county_town.translation, h.county_town, 'County Town not found') AS county_town, 
+                h.street,
+                h.phone,
+                h.email,
+                h.homepage AS website,
+                h.port_prio AS order_prio,
+                h.lat,
+                h.lon AS lng,
+                CASE WHEN h.mice_request = 'True' THEN 'MICE Hotels' ELSE '' END AS object_type,
+                h.total_conference_space_in_m AS area,
+                h.max_number_of_participants_total AS people,
+                COALESCE(h.brand, 'Unknown') AS brand, 
+                COALESCE(h.parent_brand, 'Unknown') AS parent_brand, 
+                h.publication_status
+            FROM {$wpdb->prefix}hotel_portfolio_04 h
+            LEFT JOIN (
+                SELECT code, translation FROM {$wpdb->prefix}hotel_translation 
+                WHERE type = 'country' AND (lang = %s OR lang = %s)
+            ) country ON country.code = h.country_code
+            LEFT JOIN (
+                SELECT code, translation FROM {$wpdb->prefix}hotel_translation 
+                WHERE type = 'city' AND (lang = %s OR lang = %s)
+            ) city ON city.code = h.city
+            LEFT JOIN (
+                SELECT code, translation FROM {$wpdb->prefix}hotel_translation 
+                WHERE type = 'county_town' AND (lang = %s OR lang = %s)
+            ) county_town ON county_town.code = h.county_town
+            $where_mice
+            ORDER BY order_prio ASC, h.name ASC
+            ",
+            $short_lang, $lang, $short_lang, $lang, $short_lang, $lang
+        ), 
+        ARRAY_A
+    );
 
 // Debugging
 if ($wpdb->last_error) {
@@ -180,9 +169,16 @@ if ($results) {
 
 
 // Shortcode: Display map with template
-function revo_hotels_map_grid() {
+function revo_hotels_map_grid($atts = []) {
+    $atts = shortcode_atts([
+        'mice' => '0',
+    ], $atts);
+
     ob_start();
+    echo '<div id="revo-hotels-map-root" data-mice="' . esc_attr($atts['mice']) . '">';
     include REVO_HOTELS_MAPS_DIR . 'assets/maps-template.php';
+    echo '</div>';
     return ob_get_clean();
 }
 add_shortcode('revo_hotels_map', 'revo_hotels_map_grid');
+
