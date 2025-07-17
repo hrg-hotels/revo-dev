@@ -361,6 +361,9 @@ color:var(--body_typography-color);
     #btn-reset{
     width:auto;
   }
+      .btn-reset-mice{
+    width:50% !important;
+  }
 }
 @media only screen and (min-width: 1280px){
 
