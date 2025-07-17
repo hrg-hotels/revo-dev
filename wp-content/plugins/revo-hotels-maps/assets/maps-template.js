@@ -1,4 +1,6 @@
 // === CREATE MARKERS AND CLUSTER ===
+let openInfoWindow = null; // <-- add this variable at the right scope (outside the function if you want to persist between render calls)
+
 function renderMarkers(hotels) {
     clearMarkers();
 
@@ -19,8 +21,15 @@ function renderMarkers(hotels) {
         });
 
         marker.addListener('click', () => {
-                infoWindow.open({ anchor: marker, map });
-                disableAreaAndPeopleInPopup();
+            // Close the previously open infoWindow
+            if (openInfoWindow) {
+                openInfoWindow.close();
+            }
+            // Open this infoWindow and set as currently open
+            infoWindow.open({ anchor: marker, map });
+            openInfoWindow = infoWindow;
+
+            disableAreaAndPeopleInPopup();
         });
 
         markers.push(marker);
@@ -30,8 +39,8 @@ function renderMarkers(hotels) {
         const { MarkerClusterer } = window.markerClusterer;
         clusterer = new MarkerClusterer({ map, markers });
     });
-
 }
+
 
 function clearMarkers() {
     markers.forEach(m => m.setMap(null));
@@ -175,10 +184,10 @@ function initRevoHotelsMap() {
 // add styles if isMice is true
 function addMiceStylesIfNeeded(){
     if (!window.isMice) return;
-    console.log('isMice is true, adding styles');
     document.querySelectorAll('.selection-hr').forEach(el => {
         el.classList.add('selection-hr-mice');
     });
+    document.getElementById('btn-reset').classList.add('btn-reset-mice');
 }
 
 
