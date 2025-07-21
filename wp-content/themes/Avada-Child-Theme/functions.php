@@ -9,7 +9,7 @@ add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles', 20 );
 // Conditionally enqueue custom JS only on specific portfolio/brands-and-partners URLs
 function childtheme_enqueue_custom_script() {
     // Only load on the brands-and-partners page (en + de)
-    if (is_page(array('brands-and-partners', 'de/brands-and-partners'))) {
+    if (is_page(array('brands-and-partners', '/de/portfolio/hotelmarken-und-partner/'))) {
         wp_enqueue_script(
             'link-brand-to-portfolio',
             get_stylesheet_directory_uri() . '/link_brand_to_portfolio.js',
