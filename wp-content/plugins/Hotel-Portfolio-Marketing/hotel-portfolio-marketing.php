@@ -126,49 +126,52 @@ add_shortcode('hotel_portfolio_marketing_b2c', function() {
 
 
 
-
-
-
 // Scripte und Styles für Frontend einbinden
 function hotel_portfolio_marketing_enqueue_scripts() {
-    // Passe diese Zeile an die neuen Dateinamen und Pfade an!
-    wp_enqueue_style(
-        'hotel-portfolio-marketing-style',
-        HOTEL_PORTFOLIO_MARKETING_URL . 'assets/portfolio-template-marketing.css',
-        array(),
-        HOTEL_PORTFOLIO_MARKETING_VERSION
-    );
+    if (is_page(array('offers-b2b', 'offers-b2c'))) {
 
-    wp_enqueue_script(
-        'hotel-portfolio-marketing-ajax',
-        HOTEL_PORTFOLIO_MARKETING_URL . 'assets/portfolio-template-marketing.js',
-        array('jquery'),
-        null,
-        true
-    );
+        // Haupt-Styles
+        wp_enqueue_style(
+            'hotel-portfolio-marketing-style',
+            HOTEL_PORTFOLIO_MARKETING_URL . 'assets/portfolio-template-marketing.css',
+            array(),
+            HOTEL_PORTFOLIO_MARKETING_VERSION
+        );
 
-    wp_localize_script('hotel-portfolio-marketing-ajax', 'hotelPortfolioMarketing', array(
-        'ajaxurl' => admin_url('admin-ajax.php'),
-        'lang'     => get_locale(),
-        'siteUrl' => get_site_url()
-    ));
+        // Haupt-Script mit AJAX-Daten
+        wp_enqueue_script(
+            'hotel-portfolio-marketing-ajax',
+            HOTEL_PORTFOLIO_MARKETING_URL . 'assets/portfolio-template-marketing.js',
+            array('jquery'),
+            null,
+            true
+        );
 
-    // Optional: Filter-Assets, wenn verwendet
-    wp_enqueue_style(
-        'hotel-portfolio-marketing-filter',
-        HOTEL_PORTFOLIO_MARKETING_URL . 'assets/hotelfilter/filter-marketing.css',
-        array(),
-        HOTEL_PORTFOLIO_MARKETING_VERSION
-    );
-    wp_enqueue_script(
-        'hotel-portfolio-marketing-filter',
-        HOTEL_PORTFOLIO_MARKETING_URL . 'assets/hotelfilter/filter-marketing.js',
-        array('jquery'),
-        null,
-        true
-    );
+        wp_localize_script('hotel-portfolio-marketing-ajax', 'hotelPortfolioMarketing', array(
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'lang'    => get_locale(),
+            'siteUrl' => get_site_url()
+        ));
+
+        // Optional: Filter-Funktionalitäten
+        wp_enqueue_style(
+            'hotel-portfolio-marketing-filter',
+            HOTEL_PORTFOLIO_MARKETING_URL . 'assets/hotelfilter/filter-marketing.css',
+            array(),
+            HOTEL_PORTFOLIO_MARKETING_VERSION
+        );
+
+        wp_enqueue_script(
+            'hotel-portfolio-marketing-filter',
+            HOTEL_PORTFOLIO_MARKETING_URL . 'assets/hotelfilter/filter-marketing.js',
+            array('jquery'),
+            null,
+            true
+        );
+    }
 }
 add_action('wp_enqueue_scripts', 'hotel_portfolio_marketing_enqueue_scripts');
+
 
 
 
