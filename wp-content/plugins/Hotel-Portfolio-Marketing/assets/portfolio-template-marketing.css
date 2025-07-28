@@ -1,0 +1,310 @@
+/**************************
+red:var(--awb-color5);
+text:var(--awb-text-color);
+custom-black: var(--awb-text-color);
+
+*******************************************/
+#hotel-portfolio-container {
+    display: flex;
+    justify-content: start;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-left: -20px;
+    margin-right: -20px;
+}
+.card-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+}
+@media only screen and (min-width: 768px) {
+    .card-wrapper {
+        width: 33%;
+    }
+    #hotel-portfolio-container {
+        margin-right: -32px;
+    }
+}
+.innerCard{
+    width: 100%;
+}
+.innerCard p{
+    margin: 0 !important;
+}
+.titleCard{
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+.titleCard{
+font-family: var(--h4_typography-font-family) !important;
+font-weight: var(--h4_typography-font-weight) !important;
+line-height: var(--h4_typography-line-height) !important;
+letter-spacing: var(--h4_typography-letter-spacing) !important;
+text-transform: var(--h4_typography-text-transform) !important;
+font-style: var(--h4_typography-font-style, normal) !important;
+font-size: 22px !important;
+color: black !important;
+}
+.card-sl {
+    font-family: 'Work Sans', sans-serif !important;
+    width: 100%;
+    background: white;
+    overflow: hidden;
+    text-align: left;
+    min-height: 380px; /* Gleiche Höhe für alle Karten */
+}
+.card-sl p {
+    font-family: var(--body_typography-font-family)!important;
+    font-size: var(--body_typography-font-size)!important;
+    text-transform: capitalize;
+    line-height: 2.2rem;
+}
+.hotel-phone{
+    color: var(--awb-color5)  !important;
+}
+.hotel-address{
+    color: var(--body_typography-color) !important;
+}
+.card-sl p a{
+    font-size: var(--body_typography-font-size)!important;
+    color:var(--awb-color5) !important;
+    text-decoration: none;
+}
+.hotel-address,
+.hotel-send-mail,
+.hotel-phone {
+    display: flex;
+    align-items: center; /* Vertikale Ausrichtung */
+    gap: 8px; /* Abstand zwischen Icon und Text */
+}
+
+/* Gemeinsame Icon-Styles für alle ::before-Elemente */
+.hotel-address::before,
+.hotel-send-mail::before,
+.hotel-phone::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    flex-shrink: 0; /* Verhindert, dass das Icon skaliert */
+    margin-right:8px;
+}
+
+/* Icon für Adresse */
+.hotel-address::before {
+    background-image: url('img/location_on.svg');
+    margin-left: 3px;
+    margin-right: 5px;
+}
+
+/* Icon für E-Mail */
+.hotel-send-mail::before {
+    background-image: url('img/mail.svg');
+}
+
+/* Icon für Telefon */
+.hotel-phone::before {
+    background-image: url('img/call.svg');
+    width: 18px;
+    margin-left: 2px;
+}
+
+.imgHotel {
+    overflow: hidden;
+    display: inline-block;
+}
+
+.imgHotel img {
+    transition: transform 0.5s ease-in-out;
+    width: 100%; /* Damit das Bild sich anpasst */
+    display: block;
+    min-height: 260px; 
+    object-fit: cover;
+}
+
+.imgHotel:hover img {
+    transform: scale(1.1); /* Vergrößerung auf 110% */
+}
+
+.hotel-address, .hotel-phone, .hotel-email {
+    font-size: 0.9rem;
+    margin: 5px 0;
+}
+.hotel-email a {
+    text-decoration: none;
+}
+/* view button section */
+.btn-wrapper-view{
+display: flex;
+justify-content: space-between;
+flex-wrap: wrap;
+margin: 20px 0;
+margin-bottom:50px;
+}
+.btn-view{
+  margin: 0;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 14px !important;
+    padding: 12px;
+    color:#656A70;
+}
+@media only screen and (min-width: 768px){
+  .btn-wrapper-view{
+    justify-content: flex-end;
+    margin: 20px 0;
+    }
+}
+.active-view {
+  color: var(--awb-color5);
+  text-decoration: underline;
+  text-underline-offset: 7px;
+}
+.view-icon {
+    margin-right: 8px !important;
+    width: 22px;
+    height: 22px;
+    padding-top: 3px;
+}
+/* Style hover for inactive buttons only */
+.btn-view:not(.active-view):hover {
+  color: var(--awb-color5);  
+  text-decoration: underline;  
+  text-underline-offset: 7px;     
+}
+
+/* Style the icon */
+.btn-view:not(.active-view):hover .view-icon {
+  filter: brightness(0) saturate(100%) invert(61%) sepia(31%) saturate(677%) hue-rotate(330deg) brightness(99%) contrast(90%);
+}
+/* Button Container */
+.btn-container {
+    margin-top:20px;
+    width: 100%;
+}
+.btn-card img{
+    margin-right: 10px;
+    margin-top: 9px;
+}
+.btn-container div {
+  border-bottom: 1px solid var(--awb-color7);
+  width: 155px;
+  padding-left: 3px;
+  padding-right: 0;
+  padding-bottom: 3px;
+}
+
+.btn-container div:hover {
+  border-bottom: 1px solid var(--awb-color5);
+}
+
+.btn-container div:hover a,
+.btn-container div:hover a span,
+.btn-container div:hover .arrow-icon {
+  color: var(--awb-color5);
+}
+.btn-container div:hover {
+  border-bottom: 1px solid var(--awb-color5);
+}
+
+.btn-container a {
+  color: var(--h4_typography-color);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.btn-container a:hover {
+  color: var(--link_color);
+}
+
+.arrow-icon {
+  width: 20px;
+  height: 10px;
+  color: var(--awb-color7);
+  transition: color 0.1s ease;
+}
+
+.btn-container:hover .arrow-icon {
+  color: var(--awb-color5);
+}
+
+
+
+/************************Pagination*******************************************/
+.portfolio-pagination{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px 0 33px;
+}
+.pag-item{
+    border-radius: 100%;
+    border: 3px solid white;
+    width: 30px;
+    background: white;
+    height: 30px;
+    text-align: center;
+    margin: 0 10px;
+}
+.pag-center{
+    border: 1px solid var(--body_typography-color);
+    background-color:var(--body_typography-color);
+    color: white !important;
+}
+.pop-logo img{
+    width: 100px;
+    }
+.arrow-pag{
+    cursor: pointer;
+    caret-color: transparent; 
+}
+.pag-left{
+  transform: rotate(180deg);
+}
+.pag{
+    max-width:20px !important;
+}
+#next-page {
+    user-select: none;
+}
+#prev-page {
+    user-select: none;
+}
+/************Offer**************/
+.offer-tags{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: evenly;
+    gap: 5px;
+    margin-top: 10px;
+}
+.offer-label {
+    background-color:#f9f9fb;
+    color: #AFAFAF;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: var(--awb-font-size)!important;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+.offer-label:hover {
+    background-color: var(--awb-color5);
+    color: white;
+    cursor: pointer;
+}
+.offer-label-active {
+    background-color: #FFDBD4;
+    color: #E56A54;
+}
+.offer-title{
+        font-size: var(--awb-font-size)!important;
+        font-family: var(--body_typography-font-family) !important;
+}
