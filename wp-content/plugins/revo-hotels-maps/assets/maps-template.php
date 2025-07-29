@@ -76,15 +76,15 @@ defined('ABSPATH') or die('No script kiddies please!');
 
     <!-- Parent Brand Dropdown -->
     <div class="selection-hr last-selection">
-      <div class="select-parent-brand" id="parent-brand-select">
+      <div class="select-parent_brand" id="parent_brand-select">
         <div class="select-header">
-          <input name="parent-brand" type="text" autocomplete="off" maxlength="50" id="parent-brand-header"
+          <input name="parent_brand" type="text" autocomplete="off" maxlength="50" id="parent_brand-header"
                  placeholder="Franchise Partner"
                  aria-label="Franchise Partner"  
-                 aria-controls="parent-brand-options"
+                 aria-controls="parent_brand-options"
                     />
         </div>
-        <ul class="select-options" id="parent-brand-options" role="listbox" tabindex="-1" aria-label="Franchise partner options"></ul>
+        <ul class="select-options" id="parent_brand-options" role="listbox" tabindex="-1" aria-label="Franchise partner options"></ul>
       </div>
     </div>
 
