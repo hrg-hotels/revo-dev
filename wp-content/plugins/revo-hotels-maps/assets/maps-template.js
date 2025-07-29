@@ -41,7 +41,6 @@ function renderMarkers(hotels) {
     });
 }
 
-
 function clearMarkers() {
     markers.forEach(m => m.setMap(null));
     markers = [];
@@ -190,7 +189,6 @@ function addMiceStylesIfNeeded(){
     document.getElementById('btn-reset').classList.add('btn-reset-mice');
 }
 
-
 // Get URL parameters as an object
 function getURLParams() {
     const params = new URLSearchParams(window.location.search);
@@ -205,7 +203,7 @@ function checkParams() {
         if (city) document.getElementById('city-header').value = city;
         if (country) document.getElementById('country-header').value = country;
         if (brand) document.getElementById('brand-header').value = brand;
-        if (parent_brand) document.getElementById('parent-brand-header').value = parent_brand;
+        if (parent_brand) document.getElementById('parent_brand-header').value = parent_brand;
         if (area) document.getElementById('area-header').value = area;
         if (people) document.getElementById('people-header').value = people;
 
@@ -265,7 +263,7 @@ function updateURLParamsFromInputs() {
     addParam('city-header', 'city');
     addParam('country-header', 'country');
     addParam('brand-header', 'brand');
-    addParam('parent-brand-header', 'parent_brand');
+    addParam('parent_brand-header', 'parent_brand');
     addParam('area-header', 'area');
     addParam('people-header', 'people');
 
@@ -307,7 +305,7 @@ function generateDropdownOptions(hotels) {
 
     fillOptions('country-options', unique('country'));
     fillOptions('city-options', combinedCities);
-    fillOptions('parent-brand-options', unique('parent_brand'));
+    fillOptions('parent_brand-options', unique('parent_brand'));
     fillOptions('brand-options', unique('brand'));
     fillOptions('area-options', unique('area'));
     fillOptions('people-options', unique('people'));
@@ -497,12 +495,21 @@ function clearField(inputId) {
     const input = document.getElementById(inputId);
     if (!input) return;
 
-    console.log('InputID ' + inputId + ' cleared');
     input.value = "";
 
+    // inputId is city-header, country-header, brand-header, parent_brand-header, area-header or people-header
+    //the parameter of the element to be cleared is the same without the "-header" suffix
     const params = new URLSearchParams(window.location.search);
+    const paramName = inputId.replace("-header", "");
+    console.log('Clearing URL parameter: ' + paramName);
+    // Clear the URL parameter
+    params.delete(paramName);
+
+
+
     // Update URL without reloading the page
     const newUrl = `${window.location.pathname}?${params.toString()}`;
+    console.log('New URL after clearing field: ' + newUrl);
     window.history.replaceState({}, '', newUrl);
     // Update UI and state
     updateMessageContainer();
@@ -553,21 +560,24 @@ function clearAllFields() {
         input.value = "";
     });
     // Clear URL parameters
-    const params = new URLSearchParams(window.location.search); 
+    clearURLParams();
+    // remove all markers
+    clearMarkers();
+    // Reset map to default
+    zoomOut()
+}
+function clearURLParams() {
+    const params = new URLSearchParams(window.location.search);
     params.delete('city');
     params.delete('country');
     params.delete('brand');
-    params.delete('parent_brand');      
+    params.delete('parent_brand');
     params.delete('object_type');
     params.delete('area');
     params.delete('people');
     const newUrl = params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname;
     window.history.replaceState({}, '', newUrl);
-    // rmove all markers
-    clearMarkers();
-    // Reset map to default
-    zoomOut()
-}
+};
 // Message Wrapper
 function updateResultMessage(count, filteredHotels) {
     const wrapper = document.getElementById("message-wrapper");
@@ -592,7 +602,7 @@ function updateResultMessage(count, filteredHotels) {
     } else {
         let country = document.getElementById('country-header').value.trim();
         let city = document.getElementById('city-header').value.trim();
-        let parentBrand = document.getElementById('parent-brand-header').value.trim();
+        let parentBrand = document.getElementById('parent_brand-header').value.trim();
         let brand = document.getElementById('brand-header').value.trim();
         let area = document.getElementById('area-header').value.trim();
         let people = document.getElementById('people-header').value.trim();
@@ -612,7 +622,7 @@ function updateResultMessage(count, filteredHotels) {
                 <span class="txt-gray" aria-label="${hotelFilterTranslations.city}">${city}</span>
                 </div>
 
-                <div class="result-title" id="title-parent-brand">
+                <div class="result-title" id="title-parent_brand">
                 <span class="txt-black" aria-hidden="true">Franchise Partner:</span>
                 <span class="txt-gray" aria-label="Franchise Partner">${parentBrand}</span>
                 </div>
@@ -661,8 +671,8 @@ function updateMessageContainer() {
     if (document.getElementById("brand-header").value.trim()) {
         document.getElementById("title-brand")?.classList.add("show");
     }
-    if (document.getElementById("parent-brand-header").value.trim()) {
-        document.getElementById("title-parent-brand")?.classList.add("show");
+    if (document.getElementById("parent_brand-header").value.trim()) {
+        document.getElementById("title-parent_brand")?.classList.add("show");
     }
     if (document.getElementById("area-header").value.trim()) {
         document.getElementById("title-area")?.classList.add("show");
@@ -673,7 +683,7 @@ function updateMessageContainer() {
     if (!document.getElementById("country-header").value 
     && !document.getElementById("city-header").value 
     && !document.getElementById("brand-header").value 
-    && !document.getElementById("parent-brand-header").value
+    && !document.getElementById("parent_brand-header").value
     && !document.getElementById("area-header").value
     && !document.getElementById("people-header").value) {
         document.getElementById("message-headline")?.style.setProperty("display", "none");
@@ -681,7 +691,7 @@ function updateMessageContainer() {
 }
 // Remove "show" class from all titles in the message container
 function removeShowClass() {
-    const ids = ['country', 'city', 'brand', 'parent-brand', 'area', 'people'];
+    const ids = ['country', 'city', 'brand', 'parent_brand', 'area', 'people'];
     ids.forEach(id => {
         document.getElementById(`title-${id}`)?.classList.remove("show");
     });
@@ -691,7 +701,7 @@ function filterMarkers() {
     const countryFilter = document.getElementById('country-header').value.trim().toLowerCase();
     const cityFilter = document.getElementById('city-header').value.trim().toLowerCase();
     const brandFilter = document.getElementById('brand-header').value.trim().toLowerCase();
-    const parentBrandFilter = document.getElementById('parent-brand-header').value.trim().toLowerCase();
+    const parentBrandFilter = document.getElementById('parent_brand-header').value.trim().toLowerCase();
     const areaFilter = document.getElementById('area-header').value.trim();
     const peopleFilter = document.getElementById('people-header').value.trim();
 
