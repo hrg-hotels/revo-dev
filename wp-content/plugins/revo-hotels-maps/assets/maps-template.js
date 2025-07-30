@@ -173,11 +173,7 @@ function initRevoHotelsMap() {
             });
 
             console.log('window.isMice: '+ window.isMice);
-            generateDropdownOptions(allHotels);
-            renderMarkers(allHotels);
             checkParams();
-            updateGridViewBtn();  
-            addMiceStylesIfNeeded();
         });
 }
 // add styles if isMice is true
@@ -208,6 +204,16 @@ function checkParams() {
         if (people) document.getElementById('people-header').value = people;
 
         filterMarkers();        // Your filtering function
+    }else {
+        // If no params, reset the map and markers
+        zoomOut();
+        clearMarkers();
+        updateResultMessage(allHotels.length, allHotels);
+        renderMarkers(allHotels); // Render all hotels
+        generateDropdownOptions(allHotels); // Generate dropdown options from all hotels
+        updateGridViewBtn();  
+        addMiceStylesIfNeeded();
+
     }
 }
 // Update grid view button based on URL parameters
