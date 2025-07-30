@@ -593,39 +593,31 @@
   
 //*************GET URL PARAMETER ***************************/ 
                 function getParameter() { 
-                  const params = {};
-                  urlParams = new URLSearchParams(window.location.search);
-                  for (const [key, value] of urlParams.entries()) {
-                    params[key] = value;
-                  }
-                  //push paramters to input fields as value and call filterListByParams
-                  if (params.hotel_country || params.city || params.brand) {
-                    $('.selection-hr input[name="country"]').val(params.country);
-                    $('.selection-hr input[name="City"]').val(params.city);
-                    $('.selection-hr input[name="brand"]').val(params.brand);
-                  
-                    if (params.city) {
-                      $("#city-header").text(params.city);
-                        selectedCity = params.city;
-                        }
-                    if (params.country) {
-                      $("#country-header").text(params.country);
-                          selectedCountry = params.country;
-                        }
-                    if (params.brand) {
-                      $("#brand-header").text(params.brand);
-                          selectedBrand = params.brand;
-                        }
-                    if (params.parent_brand) {
-                      $("#brand-header").text(params.parent_brand);
-                          selectedParentBrand = params.parent_brand;
-                        }                
+                    const params = {};
+                    const urlParams = new URLSearchParams(window.location.search);
+                    for (const [key, value] of urlParams.entries()) {
+                        params[key] = value;
                     }
-              
-                    globalParams  = params;
-                    filterListByParams(params);
-                }  
+                    console.log("params", params);
 
+                    // Map between URL param names and input names
+                    if (params.country || params.city || params.brand || params.parent_brand) {
+                        // Set the values using input[name=...]
+                        $('.selection-hr input[name="country"]').val(params.country || '');
+                        $('.selection-hr input[name="city"]').val(params.city || '');
+                        $('.selection-hr input[name="brand"]').val(params.brand || '');
+                        $('.selection-hr input[name="parent-brand"]').val(params.parent_brand || ''); 
+
+                        // If you need to set some global variables:
+                        if (params.city) selectedCity = params.city;
+                        if (params.country) selectedCountry = params.country;
+                        if (params.brand) selectedBrand = params.brand;
+                        if (params.parent_brand) selectedParentBrand = params.parent_brand;
+                    }
+
+                    globalParams = params;
+                    filterListByParams(params);
+                }
 //*************FILTER LIST WITH PARAMETER*******************/  
             function filterListByParams(params) {
               resultHotelArr = [];

@@ -24,11 +24,11 @@
                 let globalParams = {};
             
                 // Variables for dataValue in input fields
-                let selectedCity = "";
-                let selectedCountry = "";
-                let selectedBrand = "";
-                let selectedOffer = "";
-                let selectedParentBrand = "";
+                // let selectedCity = "";
+                // let selectedCountry = "";
+                // let selectedBrand = "";
+                // let selectedOffer = "";
+                // let selectedParentBrand = "";
             
                 // Variables for pagination
                 let splittResult = [];
@@ -675,43 +675,29 @@
 
 //*************GET URL PARAMETER ***************************/ 
                 function getParameter() { 
-                  const params = {};
-                  urlParams = new URLSearchParams(window.location.search);
-                  for (const [key, value] of urlParams.entries()) {
-                    params[key] = value;
-                  }
-                  //push paramters to input fields as value and call filterListByParams
-                  if (params.hotel_country || params.city || params.brand || params.offer) {
-                    $('.selection-hr input[name="country"]').val(params.country);
-                    $('.selection-hr input[name="City"]').val(params.city);
-                    $('.selection-hr input[name="brand"]').val(params.brand);
-                    $('.selection-hr input[name="offer"]').val(params.offer);
-
-                    if (params.city) {
-                      $("#city-header").text(params.city);
-                        selectedCity = params.city;
-                        }
-                    if (params.country) {
-                      $("#country-header").text(params.country);
-                          selectedCountry = params.country;
-                        }
-                    if (params.brand) {
-                      $("#brand-header").text(params.brand);
-                          selectedBrand = params.brand;
-                        }
-                    if (params.parent_brand) {
-                      $("#brand-header").text(params.parent_brand);
-                          selectedParentBrand = params.parent_brand;
-                        }
-                    if (params.offer) {
-                      $("#offer-header").text(params.offer);
-                          selectedOffer = params.offer;
-                        }
+                    const params = {};
+                    const urlParams = new URLSearchParams(window.location.search);
+                    for (const [key, value] of urlParams.entries()) {
+                        params[key] = value;
                     }
-              
-                    globalParams  = params;
+                    // Map between URL param names and input names
+                    if (params.country || params.city || params.brand || params.offer) {
+                        // Set the values using input[name=...]
+                        $('.selection-hr input[name="country"]').val(params.country || '');
+                        $('.selection-hr input[name="city"]').val(params.city || '');
+                        $('.selection-hr input[name="brand"]').val(params.brand || '');
+                        $('.selection-hr input[name="offer"]').val(params.offer || ''); 
+
+                        // If you need to set some global variables:
+                        // if (params.city) selectedCity = params.city;
+                        // if (params.country) selectedCountry = params.country;
+                        // if (params.brand) selectedBrand = params.brand;
+                        // if (params.parent_brand) selectedOffer = params.offer;
+                    }
+
+                    globalParams = params;
                     filterListByParams(params);
-                }  
+                }
 //*************FILTER LIST WITH PARAMETER*******************/  
                 function filterListByParams(params) {
                   resultHotelArr = [];
