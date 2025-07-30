@@ -674,54 +674,41 @@ function generateDropdownOptions(resultHotelArr) {
 
   
   /*************GET URL PARAMETER ***************************/ 
-                function getParameter() { 
-                  const params = {};
-                  urlParams = new URLSearchParams(window.location.search);
-                  for (const [key, value] of urlParams.entries()) {
-                    params[key] = value;
-                  }
-                  //push paramters to input fields as value and call filterListByParams
-                  if (params.hotel_country || params.city || params.brand
-                    || params.parent_brand || params.area || params.people) { 
-                    $('.selection-hr input[name="country"]').val(params.country);
-                    $('.selection-hr input[name="City"]').val(params.city);
-                    $('.selection-hr input[name="brand"]').val(params.brand);
-                    $('.selection-hr input[name="parent brand"]').val(params.parent_brand);
-                    $('.selection-hr input[name="area"]').val(params.area);
-                    $('.selection-hr input[name="people"]').val(params.people);
-                  
+function getParameter() { 
+    const params = {};
+    const urlParams = new URLSearchParams(window.location.search);
+    for (const [key, value] of urlParams.entries()) {
+        params[key] = value;
+    }
+    console.log("params", params);
 
-                    if (params.city) {
-                      $("#city-header").text(params.city);
-                        selectedCity = params.city;
-                        }
-                    if (params.country) {
-                      $("#country-header").text(params.country);
-                          selectedCountry = params.country;
-                        }
-                    if (params.brand) {
-                      $("#brand-header").text(params.brand);
-                          selectedBrand = params.brand;
-                        }
-                    if (params.parent_brand) {
-                      $("#brand-header").text(params.parent_brand);
-                          selectedParentBrand = params.parent_brand;
-                        }                
-                    }
-                    if(params.area){
-                      $("#area-header").text(params.area);  
-                      selectedArea = params.area;
-                    }
-                    if(params.people){
-                      $("#people-header").text(params.people);  
-                      selectedPeople = params.people;
-                    }
+    // Check for at least one relevant param
+    if (
+        params.country || params.city || params.brand ||
+        params.parent_brand || params.area || params.people
+    ) { 
+        // Always match input name EXACTLY! (case sensitive, hyphens etc.)
+        $('.selection-hr input[name="country"]').val(params.country || '');
+        $('.selection-hr input[name="city"]').val(params.city || '');
+        $('.selection-hr input[name="brand"]').val(params.brand || '');
+        $('.selection-hr input[name="parent-brand"]').val(params.parent_brand || '');
+        $('.selection-hr input[name="area"]').val(params.area || '');
+        $('.selection-hr input[name="people"]').val(params.people || '');
 
-              
-                    globalParams  = params;
-                    console.log("globalParams", globalParams);
-                    filterListByParams(params);
-                }  
+        // Set global variables if needed
+        if (params.city) selectedCity = params.city;
+        if (params.country) selectedCountry = params.country;
+        if (params.brand) selectedBrand = params.brand;
+        if (params.parent_brand) selectedParentBrand = params.parent_brand;
+        if (params.area) selectedArea = params.area;
+        if (params.people) selectedPeople = params.people;
+    }
+
+    // Set globalParams and call your filter function
+    globalParams = params;
+    console.log("globalParams", globalParams);
+    filterListByParams(params);
+}
 
   /*************FILTER LIST WITH PARAMETER*******************/  
   function filterListByParams(params) {
