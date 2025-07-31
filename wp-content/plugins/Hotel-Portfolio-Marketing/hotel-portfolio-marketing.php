@@ -55,10 +55,24 @@ function hotel_portfolio_marketing_admin_page() {
 }
 
 // AJAX-Handler für Hotel- und Marketingdaten
+// AJAX-Handler für Hotel- und Marketingdaten mit DE/EN Umschaltung bei Offer-Titeln und -Beschreibungen
 function hotel_portfolio_marketing_fetch_data() {
     global $wpdb;
     $lang = isset($_GET['lang']) ? sanitize_text_field($_GET['lang']) : 'en';
-    $target_group = isset($_GET['target_group']) ? sanitize_text_field($_GET['target_group']) : 'b2b'; // Default
+    $target_group = isset($_GET['target_group']) ? sanitize_text_field($_GET['target_group']) : 'b2b';
+
+    // Dynamisch die Offer-Titel- und Description-Felder je nach Sprache auswählen
+    $offer_fields = [];
+    for ($i = 1; $i <= 6; $i++) {
+        $title_field = $lang === 'en' ? "m.offer_title_0{$i}_en" : "m.offer_title_0{$i}";
+        $desc_field = $lang === 'en' ? "m.offer_description_0{$i}_en" : "m.offer_description_0{$i}";
+        $offer_fields[] = "m.offer_type_0{$i}";
+        $offer_fields[] = "$title_field AS offer_title_0{$i}";
+        $offer_fields[] = "$desc_field AS offer_description_0{$i}";
+        $offer_fields[] = "m.offer_image_0{$i}";
+    }
+    $offer_fields[] = "m.target_group";
+    $offer_fields_sql = implode(",\n            ", $offer_fields);
 
     $results = $wpdb->get_results($wpdb->prepare("
         SELECT 
@@ -76,13 +90,7 @@ function hotel_portfolio_marketing_fetch_data() {
             COALESCE(h.brand, 'Unknown') AS brand, 
             COALESCE(h.parent_brand, 'Unknown') AS parent_brand, 
             h.publication_status,
-            m.offer_type_01, m.offer_title_01, m.offer_description_01, m.offer_image_01,
-            m.offer_type_02, m.offer_title_02, m.offer_description_02, m.offer_image_02,
-            m.offer_type_03, m.offer_title_03, m.offer_description_03, m.offer_image_03,
-            m.offer_type_04, m.offer_title_04, m.offer_description_04, m.offer_image_04,
-            m.offer_type_05, m.offer_title_05, m.offer_description_05, m.offer_image_05,
-            m.offer_type_06, m.offer_title_06, m.offer_description_06, m.offer_image_06,
-            m.target_group
+            $offer_fields_sql
         FROM {$wpdb->prefix}hotel_portfolio_04 h
         LEFT JOIN {$wpdb->prefix}hotel_translation ct 
             ON ct.code = h.country_code AND ct.lang = %s AND ct.type = 'country'
@@ -102,6 +110,7 @@ function hotel_portfolio_marketing_fetch_data() {
         wp_send_json_error(__('Keine Daten gefunden.', 'hotel-portfolio-marketing'));
     }
 }
+
 add_action('wp_ajax_hotel_portfolio_marketing_fetch', 'hotel_portfolio_marketing_fetch_data');
 add_action('wp_ajax_nopriv_hotel_portfolio_marketing_fetch', 'hotel_portfolio_marketing_fetch_data');
 
