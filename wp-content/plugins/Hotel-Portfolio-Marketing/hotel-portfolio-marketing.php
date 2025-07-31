@@ -133,7 +133,8 @@ add_shortcode('hotel_portfolio_marketing_b2c', function() {
     return hotel_portfolio_marketing_shortcode(array('target_group' => 'b2c'));
 });
 
-
+// shortcode for b2b [hotel_portfolio_marketing_b2b]
+// shortcode for b2c [hotel_portfolio_marketing_b2c]
 
 // Scripte und Styles für Frontend einbinden
 function hotel_portfolio_marketing_enqueue_scripts() {
