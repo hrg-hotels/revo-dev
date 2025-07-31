@@ -35,10 +35,49 @@ function renderMarkers(hotels) {
         markers.push(marker);
     });
 
-    loadMarkerClusterer(() => {
-        const { MarkerClusterer } = window.markerClusterer;
-        clusterer = new MarkerClusterer({ map, markers });
+loadMarkerClusterer(() => {
+    const { MarkerClusterer } = window.markerClusterer;
+    clusterer = new MarkerClusterer({
+        map,
+        markers,
+        renderer: {
+            render({ count, position }) {
+                let iconUrl;
+                let size = 40;
+
+                // Verschiedene Icons und Größen je nach Anzahl
+                if (count < 10) {
+                    iconUrl = 'https://revo-hospitality-group.com/wp-content/uploads/2025/07/revo_cluster.png';
+                    size = 40;
+                } else if (count < 50) {
+                    iconUrl = 'https://revo-hospitality-group.com/wp-content/uploads/2025/07/revo_cluster.png';
+                    size = 50;
+                } else {
+                    iconUrl = 'https://revo-hospitality-group.com/wp-content/uploads/2025/07/revo_cluster.png';
+                    size = 60;
+                }
+
+                return new google.maps.Marker({
+                    position,
+                    icon: {
+                        url: iconUrl,
+                        scaledSize: new google.maps.Size(size, size),
+                    },
+                    label: {
+                        text: String(count),
+                        color: "#fff",
+                        fontSize: "14px"
+                    }
+                });
+            }
+        }
     });
+});
+
+
+
+
+
 }
 
 function clearMarkers() {
@@ -76,7 +115,7 @@ function loadGoogleMapsAPI(callback) {
         // Use Avada's privacy API to load the script
         AvadaPrivacy.registerScript({
             type: 'gmaps',
-            src: 'https://maps.googleapis.com/maps/api/js?key=xxxxxx&callback=initRevoHotelsMap&libraries=marker',
+            src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBrGUx-sWW3nkDEL0CRoUYvA0MS95VCMlY&callback=initRevoHotelsMap&libraries=marker',
             id: 'google-maps-api-js',
             async: true,
             defer: true
