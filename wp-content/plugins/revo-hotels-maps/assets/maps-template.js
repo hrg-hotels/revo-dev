@@ -231,6 +231,7 @@ function getURLParams() {
 }
 // Check URL parameters and set input values accordingly
 function checkParams() {
+    addMiceStylesIfNeeded();
     const urlParams = getURLParams();
     if (urlParams && Object.keys(urlParams).length > 0 && Object.values(urlParams).some(v => v)) {
         const { city, country, brand, parent_brand, area, people } = urlParams;
@@ -251,7 +252,6 @@ function checkParams() {
         renderMarkers(allHotels); // Render all hotels
         generateDropdownOptions(allHotels); // Generate dropdown options from all hotels
         updateGridViewBtn();  
-        addMiceStylesIfNeeded();
 
     }
 }
