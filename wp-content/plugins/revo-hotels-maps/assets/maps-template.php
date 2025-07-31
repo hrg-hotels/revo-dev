@@ -140,7 +140,7 @@ defined('ABSPATH') or die('No script kiddies please!');
   <div id="message-wrapper"></div>
 </div>
 
-<div id="revo-hotels-map" style="width: 100%; height: 600px; margin-top: 20px;"></div>
+<div id="revo-hotels-map"></div>
 
 
 
