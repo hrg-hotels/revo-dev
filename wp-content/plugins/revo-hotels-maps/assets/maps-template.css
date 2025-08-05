@@ -485,3 +485,7 @@ input:disabled::placeholder {
 .popup-people{
   display:none;
 }
+/* marker*/
+.custom-marker img {
+  filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5));
+}
