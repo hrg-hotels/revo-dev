@@ -138,7 +138,7 @@ add_shortcode('hotel_portfolio_marketing_b2c', function() {
 
 // Scripte und Styles für Frontend einbinden
 function hotel_portfolio_marketing_enqueue_scripts() {
-    if (is_page(array('offers-b2b', 'offers-b2c','corporate-christmas-parties','culinary-highlights'))) {
+    if (is_page(array('offers-b2b', 'offers-b2c'))) {
 
         // Haupt-Styles
         wp_enqueue_style(
