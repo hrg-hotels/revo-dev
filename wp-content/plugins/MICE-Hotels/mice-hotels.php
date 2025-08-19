@@ -130,7 +130,7 @@ add_action('wp_ajax_nopriv_mice_hotels_fetch', 'mice_hotels_fetch_data');
  * JavaScript und Styles sicher einbinden.
  */
 function mice_hotels_enqueue_scripts() {
-    if (is_page(array('meetings-und-events','meetings-events','imex','corporate-christmas-parties'))) {
+    if (is_page(array('meetings-und-events','meetings-events','imex','weihnachtsfeier','corporate-christmas-parties'))) {
 
         // Debugging: Prüfe generierte URLs
         error_log('MICE HOTELS CSS URL: ' . plugins_url('assets/mice-hotels-template.css', __FILE__));
