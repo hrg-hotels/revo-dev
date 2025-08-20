@@ -1,0 +1,671 @@
+(function($) {
+  "use strict";
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // Prüfen, ob "/de/" in der URL enthalten ist
+    const lang = window.location.pathname.includes('/de/') ? 'de' : 'en';
+
+    fetch(jobPortal.ajaxurl + `?action=jobportal_fetch&lang=${lang}`)
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP-Fehler: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // ****** GLOBAL VARIABLES AND FUNCTIONS *************//
+                let fetchedJobs = data.data;
+                console.log("fetchedJobs", fetchedJobs);
+
+                let resultJobArr = [];
+                let renderHook = document.getElementById("jobportal-container");
+                let urlParams = "";
+                let globalParams = {};
+
+                 // Variables for dataValue in input fields
+                let selectedCity = "";
+                let selectedjobtitle = "";
+                let selectedBrand = "";
+                let selectedDepartment = "";
+            
+                // Variables for pagination
+                let splittResult = [];
+                let currentPageNumber = 1;
+                let prevPageNumber = 0;
+                let nextPageNumber = 2;
+                                // Functions to clear and reset values
+                  function clearJobList() {
+                      renderHook.innerHTML = "";
+              }
+
+/*************Filter**************************************************/                
+                //Dropdown-Werte setzen
+
+                function generateDropdownOptions(resultJobArr) {
+                    const getUniqueSortedValues = (key) => {
+                    return [...new Set(resultJobArr.map(h => h[key]).filter(Boolean))].sort();
+                };
+
+                const jobtitle = getUniqueSortedValues('title');
+                 const cities = getUniqueSortedValues('city');
+                 const brand = getUniqueSortedValues('companyname');
+                 const department = getUniqueSortedValues('department');
+
+                  const populateDropdown = (id, values) => {
+                    const dropdown = document.getElementById(id);
+                    if (!dropdown) {
+                      console.warn(`Dropdown with ID "${id}" not found.`);
+                      return;
+                    }
+
+                    dropdown.innerHTML = values
+                      .map(v => `<li data-value="${v}">${v}</li>`)
+                      .join('');
+                  };
+
+                  // Populiere Dropdowns
+                  populateDropdown("jobtitle-options", jobtitle);
+                  populateDropdown("city-options", cities);
+                  // populateDropdown("category-options", category);
+                  populateDropdown("brand-options", brand);
+                  populateDropdown("department-options", department);
+
+                }
+
+                // Verstecke die Dropdown-Optionen initial
+                $(".select-options").hide(); 
+
+                function setupDropdown(headerId, optionsId) {
+                    const header = $("#" + headerId);
+                    const options = $("#" + optionsId);
+
+                    // Falls der Clear-Button noch nicht existiert, füge ihn hinzu
+                      if (!header.siblings(".clear-button").length) {
+                        header.after(`<button class="clear-button" data-input="${headerId}">✕</button>`);
+                    }
+
+                    // Öffnen/Schließen der Dropdown-Optionen
+                    header.click(function (e) {
+                        e.stopPropagation(); // Verhindert, dass document.click() es sofort schließt
+                        $(".select-options").not(options).slideUp(); // Schließt andere Dropdowns
+                        options.slideToggle();
+                    });
+                    // Filter-Logik beim Tippen (Input Suggestions)
+                      header.on("input", function () {
+                        handleEvent();
+                        const searchTerm = $(this).val().toLowerCase();
+                        const visibleOptions = options.children("li").filter(function () {
+                          return $(this).text().toLowerCase().startsWith(searchTerm);
+                        });
+
+                    // Zeige gefilterte Optionen
+                        options.children("li").hide();
+                        visibleOptions.show();
+
+                    // "Keine Ergebnisse" anzeigen, wenn keine Treffer vorhanden sind
+                        if (visibleOptions.length === 0) {
+                            if (!options.find(".no-results").length) {
+                                options.append('<li class="no-results">Keine Ergebnisse gefunden</li>');
+                            }
+                        } else {
+                            options.find(".no-results").remove();
+                        }
+
+                    // Dropdown offen halten, wenn Ergebnisse vorhanden sind
+                        options.slideDown();
+                    });
+
+                    // Auswahl einer Option
+                    options.on("click", "li", function (e) {
+                        e.stopPropagation(); 
+                        header.val($(this).text());
+                        options.slideUp();
+                    });
+                }
+                // Event-Listener für den Löschen-Button
+                $(document).on("click", ".clear-button", function () {
+                  const inputId = $(this).data("input");
+                  $("#" + inputId).val(""); // Leert das Input-Feld
+                  handleEvent(); // Aktualisiert die Suche
+                });
+
+                // INPUT-SUGGESTION & LIVE-FILTERUNG FÜR ALLE DROPDOWNS
+                // Globale Variable für den aktuellen Fokus
+                let currentFocus = -1;
+                $(".select-header input").on("input", function () {
+                  resultJobArr = [];
+                  window.history.pushState({}, document.title, window.location.pathname);
+                  checkParams();
+                  
+                  const input = $(this);
+                  const filter = input.val().toLowerCase();
+                  const optionsList = input.closest(".selection-hr").find(".select-options");
+                  const allOptions = optionsList.find("li");
+
+                  optionsList.slideDown();               // ✅ Dropdown immer öffnen, wenn der Benutzer tippt
+                  currentFocus = -1;                     // Reset des Fokus
+                  allOptions.removeClass("highlighted"); // Entferne alte Hervorhebungen
+
+                  if (filter === "") {
+                      allOptions.show();                // ✅ Alle Optionen anzeigen, wenn das Eingabefeld leer ist
+                      return;
+                  }
+
+                  // ✅ Optionen filtern basierend auf der Eingabe
+                  allOptions.each(function () {
+                      const text = $(this).text().toLowerCase();
+                      $(this).toggle(text.includes(filter));  // Zeige nur passende Optionen
+                  });
+
+                  // ✅ Dropdown schließen, wenn keine Optionen übrig sind
+                  if (optionsList.find("li:visible").length === 0) {
+                      optionsList.slideUp();
+                  }
+                });
+
+                //TASTATURNAVIGATION
+                $(".select-header input").on("keydown", function (e) {
+                  const input = $(this);
+                  const optionsList = input.closest(".selection-hr").find(".select-options");
+                  const allOptions = optionsList.find("li");
+                  const visibleOptions = optionsList.find("li:visible");
+
+                  if (e.key === "ArrowDown") {
+                      e.preventDefault();
+
+                      // ✅ Dropdown öffnen, wenn es geschlossen ist
+                      if (!optionsList.is(":visible")) {
+                          optionsList.slideDown();
+                          allOptions.show(); // Alle Optionen anzeigen, wenn noch keine Eingabe
+                      }
+
+                      currentFocus++;
+                      if (currentFocus >= visibleOptions.length) currentFocus = 0;
+                      highlightOption(visibleOptions.length ? visibleOptions : allOptions);
+                  } 
+                  else if (e.key === "ArrowUp") {
+                      e.preventDefault();
+                      currentFocus--;
+                      if (currentFocus < 0) currentFocus = visibleOptions.length - 1;
+                      highlightOption(visibleOptions.length ? visibleOptions : allOptions);
+                  } 
+                  else if (e.key === "Enter") {
+                      e.preventDefault();
+                      const options = visibleOptions.length ? visibleOptions : allOptions;
+
+                      if (currentFocus > -1 && options.eq(currentFocus).length) {
+                          // ✅ Wenn eine Option ausgewählt ist, wähle sie aus
+                          options.eq(currentFocus).click();
+                      } else {
+                          // ✅ Wenn KEINE Option ausgewählt ist, führe handleEvent direkt aus
+                          handleEvent();
+                          optionsList.slideUp();
+                      }
+                  }
+                });
+
+                // OPTION HERVORHEBEN
+                function highlightOption(options) {
+                    options.removeClass("highlighted");
+                    if (currentFocus >= 0 && currentFocus < options.length) {
+                        options.eq(currentFocus).addClass("highlighted");
+                    }
+                }
+
+                //OPTION KLICKEN
+                $(".select-options").on("click", "li", function () {
+                    const value = $(this).text().trim();
+                    const input = $(this).closest(".selection-hr").find("input");
+
+                    input.val(value);
+                    $(this).closest(".select-options").slideUp(function () {
+                        $(this).find("li").removeClass("highlighted");
+                    });
+
+                    currentFocus = -1;
+                    handleEvent();
+                });
+
+                //SCHLIEßEN BEI KLICK AUSSERHALB
+                $(document).on("click", function (e) {
+                    if (!$(e.target).closest(".selection-hr").length) {
+                        $(".select-options").slideUp().find("li").removeClass("highlighted");
+                        currentFocus = -1;
+                    }
+                });
+
+                // Event Listener for pressing enter key
+                $(document).on('keypress', function (e) {
+                  if (e.which === 13) {
+                    handleEvent();
+                      $(".select-options").slideUp();
+                  }
+                });
+
+                // Event Listener für Änderungen in den Input-Feldern (blur & change)
+                $("#jobtitle-header, #city-header, #brand-header","#department-header")
+                  .on("blur change", function () {
+                    if ($(this).val().trim() !== "") {
+                    // Setze den Wert und stelle sicher, dass das Feld editierbar bleibt
+                    input.val(value).prop("readonly", false).prop("disabled", false);
+
+                    // Fokus explizit setzen, damit der Benutzer weiter tippen kann
+                    setTimeout(() => input.focus(), 100);
+                    }
+                  });
+                  $(".select-options").on("click", "li", function () {            
+                    const value = $(this).text().trim();
+                    const input = $(this).closest(".selection-hr").find("input");
+                
+                    // Setze den Wert ins Input-Feld
+                    input.val(value);
+                
+                    // Setze den Wert und stelle sicher, dass das Feld editierbar bleibt
+                    input.val(value).prop("readonly", false).prop("disabled", false);
+
+                    // Fokus explizit setzen, damit der Benutzer weiter tippen kann
+                    setTimeout(() => input.focus(), 100);
+                });
+
+                // Initialisiere die Dropdowns
+                setupDropdown("jobtitle-header", "jobtitle-options");
+                setupDropdown("city-header", "city-options");
+                // setupDropdown("category-header", "category-options");
+                setupDropdown("brand-header", "brand-options");
+                setupDropdown("department-header", "department-options");
+                //************RESET FUNCTION******************************/
+                $("#btn-reset").click(function () {
+                    removeShowClass();
+                    $(".nfg").remove(); // Entfernt Elemente mit Klasse "nfg"
+                    window.history.pushState({}, document.title, window.location.pathname); // Entfernt URL-Parameter
+
+                    // Felder zurücksetzen
+                    const filters = [
+                        { id: "jobtitle", placeholder: "Jobtitle" },
+                        { id: "city", placeholder: "city" },
+                        { id: "country", placeholder: "country" },
+                        { id: "brand", placeholder: "brand" },
+                        { id: "department", placeholder: "Department" }
+                    ];
+
+                    filters.forEach(({ id, placeholder }) => {
+                        $(`#${id}-header`).val("").attr("placeholder", placeholder);
+                        $(`#${id}-options li`).show();
+                        $(`.selection-hr input[name="${id.replace("-", " ")}"]`).val("");
+                    });
+
+                    checkParams(); // Jobliste aktualisieren
+                });
+                
+//************SPLIT AND RENDER FUNCTIONALITY******************************/
+                //SPLIT RESULT TO SITE OBJECTS FOR PAGINATION
+                function splittArray(resOrigin) {
+                    splittResult = [];
+                    currentPageNumber = 1;
+                    prevPageNumber = 0;
+                    nextPageNumber = 2;
+                    let startIdx = 0;
+                    let pageNumber = 1;
+                    while (startIdx < resOrigin.length) {
+                        let endIdx = startIdx + 6;
+                        let pageArray = resOrigin.slice(startIdx, endIdx);
+                        splittResult.push({ pageNumber, pageArray });
+                        startIdx = endIdx;
+                        pageNumber++;
+                    }
+                    renderPageCont(splittResult[0].pageArray);
+                    updatePagination();
+                   // updateMapViewBtn();
+                    console.log("splittResult", splittResult);
+                }
+                //renderPagination
+                function renderPageCont(arr) {
+                  renderList(arr);
+                }
+                //buttons pagination
+                $(".arrow-pag").click((event) => {
+                  //left arrow
+                  if ($(event.currentTarget).hasClass("pleft")) {
+                    if (currentPageNumber > 1) {
+                      currentPageNumber--;
+                      prevPageNumber = currentPageNumber - 1;
+                      nextPageNumber = currentPageNumber + 1;
+                      renderPageCont(splittResult[currentPageNumber - 1].pageArray);
+                      updatePagination();
+                      $('html, body').animate({ scrollTop: $('#scroll-link').offset().top },100);
+                    } else {
+                      return;
+                    }
+                  }
+                  //right arrow
+                  else {
+                    if (splittResult.length > currentPageNumber) {
+                      currentPageNumber++;
+                      prevPageNumber = currentPageNumber - 1;
+                      nextPageNumber = currentPageNumber + 1;
+                      renderPageCont(splittResult[currentPageNumber - 1].pageArray);
+                      updatePagination();
+                      $('html, body').animate({ scrollTop: $('#scroll-link').offset().top }, 100);
+                    } else {
+                      return;
+                    }
+                  }
+                });
+                //UPDATE PAGINATION ELEMENTS
+                function updatePagination() {
+                  $("#current-page").text(currentPageNumber);
+                  $("#prev-page").text(prevPageNumber);
+                  $("#next-page").text(nextPageNumber);
+                  if (prevPageNumber == 0) {
+                    $(".pleft").css("display", "none");
+                    $("#prev-page").text(" ").css("background-color", "transparent");
+                  } else {
+                    $(".pleft").css("display", "flex");
+                    $("#prev-page").css("background-color", "white");
+                  }
+                  if (nextPageNumber > splittResult.length) {
+                    $(".pright, #next-page").css("display", "none");
+                    $("#next-page").text(" ").css("background-color", "transparent");
+                  } else {
+                    $(".pright").css("display", "flex");
+                    $("#next-page").css("background-color", "white");
+                  }
+                  if (splittResult.length < 2) {
+                    $("#prev-page, #next-page").css("display", "none");
+                  } else {
+                    $("#prev-page, #next-page").css("display", "block");
+                  }
+                }
+                //RENDER LIST OF CARDS
+                function renderList(resultJobArr) {
+                  //remove old job list
+                  clearJobList();
+
+                  for (let job of resultJobArr) {
+                    let jobItem = document.createElement("div");
+                    jobItem.classList.add("job-list-item");
+
+                    jobItem.innerHTML = `
+                                        <div class="job-header">
+                                            <h3>${job.title}</h3>
+                                        </div>
+                                        <div class="company-list-item">
+                                            <div class="comp-col2">
+                                                <p class="line-hight-160"><strong>${job.companyname}</strong></p>
+                                                <div class="item-location">
+                                                    <img src="${imgPath}location_on.svg" alt="icon location" class="search-icon list-loc-icon">
+                                                    <p class="line-hight-160 pd-cit">${job.city}, ${job.city}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="key-row">
+                                            <div class="key-container">
+                                                <p>${job.city}, ${job.country}</p>
+                                            </div>
+                                            <div class="key-container">
+                                                <p>${job.careerlevels}</p>
+                                            </div>
+                                            <div class="key-container">
+                                                <p>${job.employment_type}</p>
+                                            </div>
+                                            <div class="key-container">
+                                                <p>${job.joblocation_type}</p>
+                                            </div>
+                                            <div class="key-container">
+                                                <p>${job.categories}</p>
+                                            </div>
+                                        </div>
+                                        <button class="det-btn btn btn-card btn-job">
+                                        <img src="${imgPath}arrow_black.svg" alt="arrow">
+                                        </button> 
+                                      `;
+
+                    document.getElementById("jobportal-container").appendChild(jobItem);
+                  }
+                }
+//*************MESSAGE CONTAINER/ERROR MESSAGE ***********/
+                function message(resultLength) {              
+                                  $("#message-container").remove();
+                                  $(".not-found-graphic").remove();
+
+                                  let messageContainer = $("<div></div>");
+                                  messageContainer.attr("id", "message-container");
+
+                                  // if no hotels are found, display not found graphic
+                                  if (resultLength === 0) {
+                                    //clear job List
+                                    clearJobList();
+                                    //hide pagination
+                                    $(".portfolio-pagination").hide();
+                                    //hide sort buttons
+                                    $(".btn-sort").hide();
+                                    //not found graphic
+                                    let notFoundGraphic = $("<img></img>");
+                                    notFoundGraphic.attr(
+                                      "src",
+                                      imgPath + "not-found-graphic.png"
+                                    );
+                                    notFoundGraphic.attr("alt", "not found graphic");
+                                    notFoundGraphic.attr("class", "not-found-graphic");
+
+                                    // Create div with class nfg and append the img element
+                                    let nfgDiv = $("<div></div>").addClass("nfg");
+                                    nfgDiv.append(notFoundGraphic);
+
+                                    // message text
+                                    messageContainer.css({
+                                      "background-color": "var(--awb-color5)",
+                                      "color": "white"
+                                    });
+                                    messageContainer.html(`
+                                      <div class="message-txt red">"No Result"</div>  
+                                    `);
+                                    $("#message-wrapper").append(messageContainer);
+                                    $("#message-wrapper").append(nfgDiv);
+                                  }
+                                  // if hotels are found
+                                  else {
+                                    //show pagination
+                                    $(".portfolio-pagination").show();
+                                    //message text
+                                
+                                    messageContainer.html(`
+                                      <div class="message-txt green">
+                                            <h4 id="message-headline">"Your Selection": </h4>
+                                            <div class="message-filter-result">
+                                              <div class="result-title" id="title-jobtitle"><span class="txt-black">"Jobtitle":</span><span class="txt-gray"> ${globalParams.jobtitle}</span></div>
+                                              <div class="result-title" id="title-country"><span class="txt-black">"country":</span><span class="txt-gray"> ${globalParams.country}</span></div>
+                                              <div class="result-title" id="title-city"><span class="txt-black">"city":</span><span class="txt-gray"> ${globalParams.city}</span></div>
+                                              <div class="result-title" id="title-department"><span class="txt-black">"Department":</span><span class="txt-gray"> ${globalParams.department}</span></div>
+                                              <div class="result-title" id="title-brand"><span class="txt-black">"Brand":</span><span class="txt-gray"> ${globalParams.brand}</span></div>
+                                            </div>
+                                            <div><p class="result-message">"search resulted" <span class="txt-black"> ${resultLength} </span>"hits".</p></div>
+                                          </div>          
+                                      `);
+                                    
+                                    $("#message-wrapper").append(messageContainer);
+                                    if (resultJobArr.length === fetchedJobs.length) { 
+                                      $(".result-message").html(`<span class="txt-black">Hotels:</span> ${resultJobArr.length}`);
+                                  }
+                                    updateMessageContainer();
+                                  }
+                                }
+                //update message container
+                function updateMessageContainer(){
+                  //remove show class from message elements
+                  removeShowClass();
+
+                  if (Object.keys(globalParams).length === 0) {
+                  $('#message-headline').css('display','none');
+                  }
+                  if (globalParams.country && globalParams.country !== "" && globalParams.country !== 'Country') {
+                    $("#title-country").addClass("show");
+                  }
+                  if (globalParams.city && globalParams.city !== "" && globalParams.city !== 'City') {
+                    $("#title-city").addClass("show");
+                  }
+                  if (globalParams.brand && globalParams.brand !== "" && globalParams.brand !=='Brand') {
+                    $("#title-brand").addClass("show");
+                  }
+                  if (globalParams.jobtitle && globalParams.jobtitle !== "" && globalParams.jobtitle !== 'jobtitle') {
+                    $("#title-jobtitle").addClass("show");
+                  }
+                  if (globalParams.department && globalParams.department !== "" && globalParams.department !== 'Department') {
+                    $("#title-department").addClass("show");
+                  }
+                }
+              //remove show class from message elements
+                function removeShowClass(){
+                  let messageTitleArray = ['country', 'city', 'brand', 'department', 'jobtitle'];
+                  messageTitleArray.forEach((element) => {
+                    $(`#title-${element}`).removeClass("show");
+                  });
+                }
+                //**********SEARCH FUNCTION (get values from inputs)******************************/
+                function handleEvent() {
+                    $(".nfg").remove();
+                    let argObj = {};
+                    let jobtitle = $("#jobtitle-header").val().trim();
+                    let city = $("#city-header").val().trim();
+                    let department = $("#department-header").val().trim();
+                    let brand = $("#brand-header").val().trim();
+                
+                    if (jobtitle!== "" && jobtitle !== undefined) {
+                        argObj["jobtitle"] = jobtitle;
+                    }
+                    if (brand !== "" && brand !== undefined) {
+                        argObj["brand"] = brand;
+                    }
+                    if (city !== "" && city !== undefined) {
+                        argObj["city"] = city;
+                    }
+                    if (department !== "" && department !== undefined) {
+                        argObj["department"] = department;
+                    }
+                    // 🔹 URL aktualisieren
+                    pushArgToURL(argObj);
+                }
+                //*************PUSH ARGUMENTS TO URL*********************/
+                function pushArgToURL(argObj) {
+                
+                    // Entferne das `#` aus der Basis-URL
+                    let baseUrl = window.location.href.split("?")[0].split("#")[0];
+                
+                    let queryString = Object.keys(argObj)
+                    .map((key) => key + "=" + encodeURIComponent(argObj[key]))
+                    .join("&");
+                
+                    let url = baseUrl;
+                    if (queryString) {
+                    url += "?" + queryString;
+                    }
+                
+                    window.history.pushState({ path: url }, "", url);
+                    
+                    // pull parameters from URL and call filterListByParams
+                    checkParams();
+                }
+
+//*************GET URL PARAMETER ***************************/ 
+                function getParameter() { 
+                    const params = {};
+                    const urlParams = new URLSearchParams(window.location.search);
+                    for (const [key, value] of urlParams.entries()) {
+                        params[key] = value;
+                    }
+                    console.log("params", params);
+
+                    // Map between URL param names and input names
+                    if (params.jobtitle||params.country || params.city || params.brand || params.department) {
+                        // Set the values using input[name=...]
+                        $('.selection-hr input[name="jobtitle"]').val(params.jobtitle || '');
+                        //$('.selection-hr input[name="country"]').val(params.country || '');
+                        $('.selection-hr input[name="city"]').val(params.city || '');
+                        $('.selection-hr input[name="brand"]').val(params.brand || '');
+                        $('.selection-hr input[name="department"]').val(params.department || '');
+
+                        // If you need to set some global variables:
+                        // if (params.jobtitle) selectedJobtitle = params.jobtitle;
+                        // if (params.city) selectedCity = params.city;
+                        // if (params.country) selectedCountry = params.country;
+                        // if (params.brand) selectedBrand = params.brand;
+                        // if (params.department) selectedDepartment = params.department;
+                    }
+
+                   globalParams = params;
+                   console.log("globalParams", globalParams);
+                  filterListByParams(params);
+                }
+//*************FILTER LIST WITH PARAMETER*******************/  
+                function filterListByParams(params) {
+                  resultJobArr = [];
+                  console.log("Params used for filtering:", params);
+                  console.log("Fetched jobs:", fetchedJobs);
+
+                  for (let job of fetchedJobs) {
+                    let matchesJobs = true;
+
+                    if (params.city?.trim().toLowerCase()) {
+                      if (!job.city?.toLowerCase().includes(params.city.trim().toLowerCase())) {
+                        matchesJobs = false;
+                      }
+                    }
+
+                    if (params.brand?.trim().toLowerCase()) {
+                      if (!job.brand?.toLowerCase().includes(params.brand.trim().toLowerCase())) {
+                        matchesJobs = false;
+                      }
+                    }
+
+                    if (params.department?.trim().toLowerCase()) {
+                      if (!job.department?.toLowerCase().includes(params.department.trim().toLowerCase())) {
+                        matchesJobs = false;
+                      }
+                    }
+
+                    if (params.jobtitle?.trim().toLowerCase()) {
+                      if (!job.title?.toLowerCase().includes(params.jobtitle.trim().toLowerCase())) {
+                        matchesJobs = false;
+                      }
+                    }
+
+                    if (matchesJobs) {
+                      resultJobArr.push(job);
+                    }
+                  }
+
+                  globalParams = params;
+                  message(resultJobArr.length);
+
+                  if (resultJobArr.length > 0) {
+                    splittArray(resultJobArr);
+                    generateDropdownOptions(resultJobArr);
+                  } else {
+                    window.history.pushState({}, document.title, window.location.pathname);
+                  }
+                }    
+
+                
+                function checkParams() {
+                  const urlParams = new URLSearchParams(window.location.search);
+                  if (urlParams.toString() === "") {
+                    resultJobArr = fetchedJobs;
+                    globalParams = {};
+                    generateDropdownOptions(resultJobArr);
+                    splittArray(resultJobArr);
+                    message(resultJobArr.length);
+                  } else {
+                      getParameter();
+                  }
+              }
+              checkParams();
+                // Event Listener für externe Filter-Aufrufe
+              //window.addEventListener("checkParamsApplied", checkParams);
+
+            } else {
+                console.error("Fehler beim Abrufen der Job-Daten:", data);
+            }
+        })
+        .catch(error => console.error("Fetch-Fehler:", error));
+  });
+
+})(jQuery);

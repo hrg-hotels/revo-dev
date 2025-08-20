@@ -130,7 +130,7 @@ add_action('wp_ajax_nopriv_jobportal_fetch', 'jobportal_fetch_data');
 function jobportal_enqueue_scripts() {
     if (is_page(array('jobs', 'jobportal'))) {
 
-        // CSS für das Template laden
+        // CSS
         wp_enqueue_style(
             'jobportal-style',
             JOBPORTAL_URL . 'assets/jobportal-template.css',
@@ -138,37 +138,24 @@ function jobportal_enqueue_scripts() {
             JOBPORTAL_VERSION
         );
 
-        // CSS für die Filter-Funktionalitäten
-        wp_enqueue_style(
-            'jobportal-filter-style',
-            JOBPORTAL_URL . 'assets/jobfilter/jobfilter.css',
-            array(),
-            JOBPORTAL_VERSION
-        );
-        // jQuery als Abhängigkeit hinzufügen
+        // jQuery (WP liefert es; in Webpack als external konfiguriert)
         wp_enqueue_script('jquery');
 
-        // Haupt-JavaScript als Modul laden
+        // NEU: das Webpack-Bundle laden (statt der alten jobportal-template.js)
         wp_enqueue_script(
-            'jobportal-main',
-            JOBPORTAL_URL . 'assets/jobportal-template.js',
-            array(),
-            null,
+            'jobportal-bundle',
+            JOBPORTAL_URL . 'assets/js/dist/jobportal.bundle.js',
+            array('jquery'),
+            filemtime(JOBPORTAL_DIR . 'assets/js/dist/jobportal.bundle.js'),
             true
         );
 
-        // AJAX-URL an JS übergeben
-        wp_localize_script('jobportal-main', 'jobPortal', array(
+        // Globals (Ajax-URL etc.) an das Bundle übergeben
+        wp_localize_script('jobportal-bundle', 'jobPortal', array(
             'ajaxurl' => admin_url('admin-ajax.php')
         ));
 
-        // `type="module"` setzen
-        add_filter('script_loader_tag', function ($tag, $handle, $src) {
-            if ($handle === 'jobportal-main') {
-                return '<script type="module" src="' . esc_url($src) . '"></script>';
-            }
-            return $tag;
-        }, 10, 3);
+        // Wichtig: KEIN type="module" mehr setzen – Webpack erzeugt reguläres Bundle.
     }
 }
 add_action('wp_enqueue_scripts', 'jobportal_enqueue_scripts');
@@ -179,7 +166,7 @@ add_action('wp_enqueue_scripts', 'jobportal_enqueue_scripts');
  */
 function jobportal_display_grid() {
     ob_start();
-    include JOBPORTAL_DIR . 'assets/jobportal-template.php';
+    include JOBPORTAL_DIR . '/jobportal-template.php';
     return ob_get_clean();
 }
 add_shortcode('jobportal', 'jobportal_display_grid');
