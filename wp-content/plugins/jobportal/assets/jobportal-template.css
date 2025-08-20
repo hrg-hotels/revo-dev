@@ -3,7 +3,7 @@ red:var(--awb-color5);
 text:var(--awb-text-color);
 custom-black: var(--awb-text-color);
 
-*******************************************/
+***************************************************************************/
 #hotel-portfolio-container {
     display: flex;
     justify-content: start;
@@ -134,6 +134,7 @@ font-style: var(--h4_typography-font-style, normal);
 .hotel-email a {
     text-decoration: none;
 }
+/***************************************************************************/
 .btn-container {
     margin-top:20px;
     width: 100%;
@@ -169,8 +170,68 @@ font-style: var(--h4_typography-font-style, normal);
 .btn-container a:hover::after {
     width: 100%;
 }
-
-
+/*****************************Job Wrapper**********************************************/
+/**********************JobList***************************/
+#jobportal-container{
+        flex-wrap: wrap;
+    display: flex;
+    justify-content: flex-start;
+}
+.job-list{
+width:100%;
+display: flex;
+    column-gap: 10px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.job-list-item{
+    margin-bottom: 10px;
+    width:100%;
+    position:relative;
+    background: white;
+    cursor: pointer;
+    padding:20px;
+}
+@media (min-width: 768px) {
+    .job-list-item{
+        width: 49.4%;
+    }
+}
+.job-header{
+   /** padding: 20px 20px 0 20px;**/
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.job-header h3{
+    font-size: 1.4rem;
+    text-transform: none;
+}
+.job-header h3:hover{
+    color:#4FB5AA;
+}
+.key-row{
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 10px;
+    flex-wrap: wrap;
+}
+.key-container{
+    text-align:center;
+background: #DCEFEE;
+    padding: 4px 8px;
+    margin-right: 10px;
+    color: #024c44;
+    width: 46%;
+    margin: 5px;
+}
+.key-container p{
+    	font-size:12px;
+}
+.keywords-list-view{
+    background:none;
+    color:#737B7D;
+}
 
 /************************Pagination*******************************************/
 .portfolio-pagination{

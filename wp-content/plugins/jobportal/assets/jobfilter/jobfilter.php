@@ -9,7 +9,7 @@ defined('ABSPATH') or die('No script kiddies please!');
 // }
 
 // WordPress dazu zwingen, die Sprache zu wechseln
-switch_to_locale($lang);
+//switch_to_locale($lang);
 
 ?>
 <script>

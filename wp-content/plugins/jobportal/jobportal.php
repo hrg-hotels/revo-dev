@@ -70,16 +70,52 @@ function jobportal_admin_page() {
 function jobportal_fetch_data() {
     global $wpdb;
 
-    $results = $wpdb->get_results("SELECT 
-        reference_id, channel, title, tasks, requirement_content, offer, 
-        location_countrycode, language, location_city, location_postalcode, location_streetname, location_buildingnumber, 
-        joblocation_type, keywords, apply_url, images_header0, images_header1, images_header2, 
-        images_backgroundimage, video, companyname, employment_type, recruiter_position, recruiter_firstname, 
-        recruiter_phone, careerlevels, categories, seo_category, published_at 
-        FROM {$wpdb->prefix}jobportal", ARRAY_A);
+    $lang = isset($_GET['lang']) ? sanitize_text_field($_GET['lang']) : 'de';
+
+    $sql = "
+        SELECT 
+            h.reference_id, 
+            h.channel, 
+            h.title, 
+            h.tasks, 
+            h.requirement_content, 
+            h.offer, 
+            COALESCE(ct.translation, h.location_countrycode, 'Unknown') AS country, 
+            h.language, 
+            COALESCE(cty.translation, h.location_city, 'Unknown') AS city,
+            h.location_postalcode, 
+            h.location_streetname, 
+            h.location_buildingnumber, 
+            h.joblocation_type, 
+            h.keywords, 
+            h.apply_url, 
+            h.images_header0, 
+            h.images_header1, 
+            h.images_header2, 
+            h.images_backgroundimage, 
+            h.video, 
+            h.companyname, 
+            COALESCE(h.companyname, 'Unknown') AS brand, 
+            h.employment_type, 
+            h.recruiter_position, 
+            h.recruiter_firstname, 
+            h.recruiter_phone, 
+            h.careerlevels, 
+            h.categories, 
+            COALESCE(h.seo_category, 'Unknown') AS department,
+            h.published_at 
+        FROM {$wpdb->prefix}jobportal h
+        LEFT JOIN {$wpdb->prefix}hotel_translation ct 
+            ON ct.code = h.location_countrycode AND ct.lang = %s AND ct.type = 'country'
+        LEFT JOIN {$wpdb->prefix}hotel_translation cty 
+            ON cty.code = h.location_city AND cty.lang = %s AND cty.type = 'city'
+    ";
+
+    $prepared_sql = $wpdb->prepare($sql, $lang, $lang);
+    $results = $wpdb->get_results($prepared_sql, ARRAY_A);
 
     if ($results) {
-        wp_send_json_success(["jobListDB" => $results]);
+        wp_send_json_success($results);
     } else {
         wp_send_json_error(__('Keine Daten gefunden.', 'jobportal'));
     }
@@ -87,22 +123,56 @@ function jobportal_fetch_data() {
 add_action('wp_ajax_jobportal_fetch', 'jobportal_fetch_data');
 add_action('wp_ajax_nopriv_jobportal_fetch', 'jobportal_fetch_data');
 
+
 /**
  * JavaScript und Styles sicher einbinden.
  */
 function jobportal_enqueue_scripts() {
     if (is_page(array('jobs', 'jobportal'))) {
-        wp_enqueue_style('jobportal-style', JOBPORTAL_URL . 'assets/jobportal-template.css', array(), JOBPORTAL_VERSION);
-        wp_enqueue_script('jobportal-ajax', JOBPORTAL_URL . 'assets/jobportal-template.js', array('jquery'), null, true);
-        
-        wp_localize_script('jobportal-ajax', 'jobPortal', array(
+
+        // CSS für das Template laden
+        wp_enqueue_style(
+            'jobportal-style',
+            JOBPORTAL_URL . 'assets/jobportal-template.css',
+            array(),
+            JOBPORTAL_VERSION
+        );
+
+        // CSS für die Filter-Funktionalitäten
+        wp_enqueue_style(
+            'jobportal-filter-style',
+            JOBPORTAL_URL . 'assets/jobfilter/jobfilter.css',
+            array(),
+            JOBPORTAL_VERSION
+        );
+        // jQuery als Abhängigkeit hinzufügen
+        wp_enqueue_script('jquery');
+
+        // Haupt-JavaScript als Modul laden
+        wp_enqueue_script(
+            'jobportal-main',
+            JOBPORTAL_URL . 'assets/jobportal-template.js',
+            array(),
+            null,
+            true
+        );
+
+        // AJAX-URL an JS übergeben
+        wp_localize_script('jobportal-main', 'jobPortal', array(
             'ajaxurl' => admin_url('admin-ajax.php')
         ));
-        wp_enqueue_style('hotel-portfolio-filter', JOBPORTAL_URL .  'assets/jobfilter/jobfilter.css', array(), JOBPORTAL_VERSION);
-        wp_enqueue_script('hotel-portfolio-filter', JOBPORTAL_URL .  'assets/jobfilter/jobfilter.js', array('jquery'), null, true);
+
+        // `type="module"` setzen
+        add_filter('script_loader_tag', function ($tag, $handle, $src) {
+            if ($handle === 'jobportal-main') {
+                return '<script type="module" src="' . esc_url($src) . '"></script>';
+            }
+            return $tag;
+        }, 10, 3);
     }
 }
 add_action('wp_enqueue_scripts', 'jobportal_enqueue_scripts');
+
 
 /**
  * Shortcode für die Job-Grid-Anzeige mit Template-Einbindung.

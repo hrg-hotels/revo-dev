@@ -32,19 +32,23 @@
                 let currentPageNumber = 1;
                 let prevPageNumber = 0;
                 let nextPageNumber = 2;
+                                // Functions to clear and reset values
+                  function clearJobList() {
+                      renderHook.innerHTML = "";
+              }
 
-                  /*************Filter**************************************************/                
+/*************Filter**************************************************/                
                 //Dropdown-Werte setzen
-                function generateDropdownOptions(resultJobArr) {
 
-                 const getUniqueSortedValues = (key) => {
-                  return [...new Set(resultJobArr.map(h => h[key]).filter(Boolean))].sort();
+                function generateDropdownOptions(resultJobArr) {
+                    const getUniqueSortedValues = (key) => {
+                    return [...new Set(resultJobArr.map(h => h[key]).filter(Boolean))].sort();
                 };
 
                 const jobtitle = getUniqueSortedValues('title');
-                 const cities = getUniqueSortedValues('location_city');
+                 const cities = getUniqueSortedValues('city');
                  const brand = getUniqueSortedValues('companyname');
-                 const department = getUniqueSortedValues('seo_category');
+                 const department = getUniqueSortedValues('department');
 
                   const populateDropdown = (id, values) => {
                     const dropdown = document.getElementById(id);
@@ -87,7 +91,7 @@
                     });
                     // Filter-Logik beim Tippen (Input Suggestions)
                       header.on("input", function () {
-                        // handleEvent();
+                        handleEvent();
                         const searchTerm = $(this).val().toLowerCase();
                         const visibleOptions = options.children("li").filter(function () {
                           return $(this).text().toLowerCase().startsWith(searchTerm);
@@ -121,7 +125,7 @@
                 $(document).on("click", ".clear-button", function () {
                   const inputId = $(this).data("input");
                   $("#" + inputId).val(""); // Leert das Input-Feld
-                  // handleEvent(); // Aktualisiert die Suche
+                  handleEvent(); // Aktualisiert die Suche
                 });
 
                 // INPUT-SUGGESTION & LIVE-FILTERUNG FÜR ALLE DROPDOWNS
@@ -193,7 +197,7 @@
                           options.eq(currentFocus).click();
                       } else {
                           // ✅ Wenn KEINE Option ausgewählt ist, führe handleEvent direkt aus
-                          // handleEvent();
+                          handleEvent();
                           optionsList.slideUp();
                       }
                   }
@@ -218,7 +222,7 @@
                     });
 
                     currentFocus = -1;
-                    // handleEvent();
+                    handleEvent();
                 });
 
                 //SCHLIEßEN BEI KLICK AUSSERHALB
@@ -232,7 +236,7 @@
                 // Event Listener for pressing enter key
                 $(document).on('keypress', function (e) {
                   if (e.which === 13) {
-                    // handleEvent();
+                    handleEvent();
                       $(".select-options").slideUp();
                   }
                 });
@@ -268,26 +272,394 @@
                 // setupDropdown("category-header", "category-options");
                 setupDropdown("brand-header", "brand-options");
                 setupDropdown("department-header", "department-options");
+                //************RESET FUNCTION******************************/
+                $("#btn-reset").click(function () {
+                    removeShowClass();
+                    $(".nfg").remove(); // Entfernt Elemente mit Klasse "nfg"
+                    window.history.pushState({}, document.title, window.location.pathname); // Entfernt URL-Parameter
+
+                    // Felder zurücksetzen
+                    const filters = [
+                        { id: "jobtitle", placeholder: "Jobtitle" },
+                        { id: "city", placeholder: hotelFilterTranslations.city },
+                        { id: "country", placeholder: hotelFilterTranslations.country },
+                        { id: "brand", placeholder: hotelFilterTranslations.brand },
+                        { id: "department", placeholder: "Department" }
+                    ];
+
+                    filters.forEach(({ id, placeholder }) => {
+                        $(`#${id}-header`).val("").attr("placeholder", placeholder);
+                        $(`#${id}-options li`).show();
+                        $(`.selection-hr input[name="${id.replace("-", " ")}"]`).val("");
+                    });
+
+                    checkParams(); // Jobliste aktualisieren
+                });
                 
+//************SPLIT AND RENDER FUNCTIONALITY******************************/
+                //SPLIT RESULT TO SITE OBJECTS FOR PAGINATION
+                function splittArray(resOrigin) {
+                    splittResult = [];
+                    currentPageNumber = 1;
+                    prevPageNumber = 0;
+                    nextPageNumber = 2;
+                    let startIdx = 0;
+                    let pageNumber = 1;
+                    while (startIdx < resOrigin.length) {
+                        let endIdx = startIdx + 6;
+                        let pageArray = resOrigin.slice(startIdx, endIdx);
+                        splittResult.push({ pageNumber, pageArray });
+                        startIdx = endIdx;
+                        pageNumber++;
+                    }
+                    renderPageCont(splittResult[0].pageArray);
+                    updatePagination();
+                   // updateMapViewBtn();
+                    console.log("splittResult", splittResult);
+                }
+                //renderPagination
+                function renderPageCont(arr) {
+                  renderList(arr);
+                }
+                //buttons pagination
+                $(".arrow-pag").click((event) => {
+                  //left arrow
+                  if ($(event.currentTarget).hasClass("pleft")) {
+                    if (currentPageNumber > 1) {
+                      currentPageNumber--;
+                      prevPageNumber = currentPageNumber - 1;
+                      nextPageNumber = currentPageNumber + 1;
+                      renderPageCont(splittResult[currentPageNumber - 1].pageArray);
+                      updatePagination();
+                      $('html, body').animate({ scrollTop: $('#scroll-link').offset().top },100);
+                    } else {
+                      return;
+                    }
+                  }
+                  //right arrow
+                  else {
+                    if (splittResult.length > currentPageNumber) {
+                      currentPageNumber++;
+                      prevPageNumber = currentPageNumber - 1;
+                      nextPageNumber = currentPageNumber + 1;
+                      renderPageCont(splittResult[currentPageNumber - 1].pageArray);
+                      updatePagination();
+                      $('html, body').animate({ scrollTop: $('#scroll-link').offset().top }, 100);
+                    } else {
+                      return;
+                    }
+                  }
+                });
+                //UPDATE PAGINATION ELEMENTS
+                function updatePagination() {
+                  $("#current-page").text(currentPageNumber);
+                  $("#prev-page").text(prevPageNumber);
+                  $("#next-page").text(nextPageNumber);
+                  if (prevPageNumber == 0) {
+                    $(".pleft").css("display", "none");
+                    $("#prev-page").text(" ").css("background-color", "transparent");
+                  } else {
+                    $(".pleft").css("display", "flex");
+                    $("#prev-page").css("background-color", "white");
+                  }
+                  if (nextPageNumber > splittResult.length) {
+                    $(".pright, #next-page").css("display", "none");
+                    $("#next-page").text(" ").css("background-color", "transparent");
+                  } else {
+                    $(".pright").css("display", "flex");
+                    $("#next-page").css("background-color", "white");
+                  }
+                  if (splittResult.length < 2) {
+                    $("#prev-page, #next-page").css("display", "none");
+                  } else {
+                    $("#prev-page, #next-page").css("display", "block");
+                  }
+                }
+                //RENDER LIST OF CARDS
+                function renderList(resultJobArr) {
+                  //remove old job list
+                  clearJobList();
+
+                  for (let job of resultJobArr) {
+                    let jobItem = document.createElement("div");
+                    jobItem.classList.add("job-list-item");
+
+                    jobItem.innerHTML = `
+                                        <div class="job-header">
+                                            <h3>${job.title}</h3>
+                                        </div>
+                                        <div class="company-list-item">
+                                            <div class="comp-col2">
+                                                <p class="line-hight-160"><strong>${job.companyname}</strong></p>
+                                                <div class="item-location">
+                                                    <img src="https://www.hrg-hotels.com/hubfs/Website/_icons/location_on.png" alt="icon location" class="search-icon list-loc-icon">
+                                                    <p class="line-hight-160 pd-cit">${job.city}, ${job.city}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="key-row">
+                                            <div class="key-container">
+                                                <p>${job.city}, ${job.country}</p>
+                                            </div>
+                                            <div class="key-container">
+                                                <p>${job.careerlevels}</p>
+                                            </div>
+                                            <div class="key-container">
+                                                <p>${job.employment_type}</p>
+                                            </div>
+                                            <div class="key-container">
+                                                <p>${job.joblocation_type}</p>
+                                            </div>
+                                            <div class="key-container">
+                                                <p>${job.categories}</p>
+                                            </div>
+                                        </div>
+                                        <button class="det-btn btn btn-card btn-job">
+                                        <img src="https://www.hrg-hotels.com/hubfs/Website/_global%20assets/Icons/Jobportal/arrow_forward.png" alt="arrow">
+                                        </button> 
+                                      `;
+
+                    document.getElementById("jobportal-container").appendChild(jobItem);
+                  }
+                }
+//*************MESSAGE CONTAINER/ERROR MESSAGE ***********/
+                function message(resultLength) {              
+                                  $("#message-container").remove();
+                                  $(".not-found-graphic").remove();
+
+                                  let messageContainer = $("<div></div>");
+                                  messageContainer.attr("id", "message-container");
+
+                                  // if no hotels are found, display not found graphic
+                                  if (resultLength === 0) {
+                                    //clear job List
+                                    clearJobList();
+                                    //hide pagination
+                                    $(".portfolio-pagination").hide();
+                                    //hide sort buttons
+                                    $(".btn-sort").hide();
+                                    //not found graphic
+                                    let notFoundGraphic = $("<img></img>");
+                                    notFoundGraphic.attr(
+                                      "src",
+                                      imgPath + "not-found-graphic.png"
+                                    );
+                                    notFoundGraphic.attr("alt", "not found graphic");
+                                    notFoundGraphic.attr("class", "not-found-graphic");
+
+                                    // Create div with class nfg and append the img element
+                                    let nfgDiv = $("<div></div>").addClass("nfg");
+                                    nfgDiv.append(notFoundGraphic);
+
+                                    // message text
+                                    messageContainer.css({
+                                      "background-color": "var(--awb-color5)",
+                                      "color": "white"
+                                    });
+                                    messageContainer.html(`
+                                      <div class="message-txt red">${hotelFilterTranslations.noResult}</div>  
+                                    `);
+                                    $("#message-wrapper").append(messageContainer);
+                                    $("#message-wrapper").append(nfgDiv);
+                                  }
+                                  // if hotels are found
+                                  else {
+                                    //show pagination
+                                    $(".portfolio-pagination").show();
+                                    //message text
+                                
+                                    messageContainer.html(`
+                                      <div class="message-txt green">
+                                            <h4 id="message-headline">${hotelFilterTranslations.yourSelection}: </h4>
+                                            <div class="message-filter-result">
+                                              <div class="result-title" id="title-jobtitle"><span class="txt-black">Jobtitle:</span><span class="txt-gray"> ${globalParams.jobtitle}</span></div>
+                                              <div class="result-title" id="title-country"><span class="txt-black">${hotelFilterTranslations.country}:</span><span class="txt-gray"> ${globalParams.country}</span></div>
+                                              <div class="result-title" id="title-city"><span class="txt-black">${hotelFilterTranslations.city}:</span><span class="txt-gray"> ${globalParams.city}</span></div>
+                                              <div class="result-title" id="title-department"><span class="txt-black">Department:</span><span class="txt-gray"> ${globalParams.department}</span></div>
+                                              <div class="result-title" id="title-brand"><span class="txt-black">${hotelFilterTranslations.brand}:</span><span class="txt-gray"> ${globalParams.brand}</span></div>
+                                            </div>
+                                            <div><p class="result-message">${hotelFilterTranslations.searchResultet} <span class="txt-black"> ${resultLength} </span>${hotelFilterTranslations.hits}.</p></div>
+                                          </div>          
+                                      `);
+                                    
+                                    $("#message-wrapper").append(messageContainer);
+                                    if (resultJobArr.length === fetchedJobs.length) { 
+                                      $(".result-message").html(`<span class="txt-black">Hotels:</span> ${resultJobArr.length}`);
+                                  }
+                                    updateMessageContainer();
+                                  }
+                                }
+                //update message container
+                function updateMessageContainer(){
+                  //remove show class from message elements
+                  removeShowClass();
+
+                  if (Object.keys(globalParams).length === 0) {
+                  $('#message-headline').css('display','none');
+                  }
+                  if (globalParams.country && globalParams.country !== "" && globalParams.country !== 'Country') {
+                    $("#title-country").addClass("show");
+                  }
+                  if (globalParams.city && globalParams.city !== "" && globalParams.city !== 'City') {
+                    $("#title-city").addClass("show");
+                  }
+                  if (globalParams.brand && globalParams.brand !== "" && globalParams.brand !=='Brand') {
+                    $("#title-brand").addClass("show");
+                  }
+                  if (globalParams.jobtitle && globalParams.jobtitle !== "" && globalParams.jobtitle !== 'jobtitle') {
+                    $("#title-jobtitle").addClass("show");
+                  }
+                  if (globalParams.department && globalParams.department !== "" && globalParams.department !== 'Department') {
+                    $("#title-department").addClass("show");
+                  }
+                }
+              //remove show class from message elements
+                function removeShowClass(){
+                  let messageTitleArray = ['country', 'city', 'brand', 'department', 'jobtitle'];
+                  messageTitleArray.forEach((element) => {
+                    $(`#title-${element}`).removeClass("show");
+                  });
+                }
+                //**********SEARCH FUNCTION (get values from inputs)******************************/
+                function handleEvent() {
+                    $(".nfg").remove();
+                    let argObj = {};
+                    let jobtitle = $("#jobtitle-header").val().trim();
+                    let city = $("#city-header").val().trim();
+                    let department = $("#department-header").val().trim();
+                    let brand = $("#brand-header").val().trim();
+                
+                    if (jobtitle!== "" && jobtitle !== undefined) {
+                        argObj["jobtitle"] = jobtitle;
+                    }
+                    if (brand !== "" && brand !== undefined) {
+                        argObj["brand"] = brand;
+                    }
+                    if (city !== "" && city !== undefined) {
+                        argObj["city"] = city;
+                    }
+                    if (department !== "" && department !== undefined) {
+                        argObj["department"] = department;
+                    }
+                    // 🔹 URL aktualisieren
+                    pushArgToURL(argObj);
+                }
+                //*************PUSH ARGUMENTS TO URL*********************/
+                function pushArgToURL(argObj) {
+                
+                    // Entferne das `#` aus der Basis-URL
+                    let baseUrl = window.location.href.split("?")[0].split("#")[0];
+                
+                    let queryString = Object.keys(argObj)
+                    .map((key) => key + "=" + encodeURIComponent(argObj[key]))
+                    .join("&");
+                
+                    let url = baseUrl;
+                    if (queryString) {
+                    url += "?" + queryString;
+                    }
+                
+                    window.history.pushState({ path: url }, "", url);
+                    
+                    // pull parameters from URL and call filterListByParams
+                    checkParams();
+                }
+
+//*************GET URL PARAMETER ***************************/ 
+                function getParameter() { 
+                    const params = {};
+                    const urlParams = new URLSearchParams(window.location.search);
+                    for (const [key, value] of urlParams.entries()) {
+                        params[key] = value;
+                    }
+                    console.log("params", params);
+
+                    // Map between URL param names and input names
+                    if (params.jobtitle||params.country || params.city || params.brand || params.department) {
+                        // Set the values using input[name=...]
+                        $('.selection-hr input[name="jobtitle"]').val(params.jobtitle || '');
+                        //$('.selection-hr input[name="country"]').val(params.country || '');
+                        $('.selection-hr input[name="city"]').val(params.city || '');
+                        $('.selection-hr input[name="brand"]').val(params.brand || '');
+                        $('.selection-hr input[name="department"]').val(params.department || '');
+
+                        // If you need to set some global variables:
+                        // if (params.jobtitle) selectedJobtitle = params.jobtitle;
+                        // if (params.city) selectedCity = params.city;
+                        // if (params.country) selectedCountry = params.country;
+                        // if (params.brand) selectedBrand = params.brand;
+                        // if (params.department) selectedDepartment = params.department;
+                    }
+
+                   globalParams = params;
+                   console.log("globalParams", globalParams);
+                  filterListByParams(params);
+                }
+//*************FILTER LIST WITH PARAMETER*******************/  
+                function filterListByParams(params) {
+                  resultJobArr = [];
+                  console.log("Params used for filtering:", params);
+                  console.log("Fetched jobs:", fetchedJobs);
+
+                  for (let job of fetchedJobs) {
+                    let matchesJobs = true;
+
+                    if (params.city?.trim().toLowerCase()) {
+                      if (!job.city?.toLowerCase().includes(params.city.trim().toLowerCase())) {
+                        matchesJobs = false;
+                      }
+                    }
+
+                    if (params.brand?.trim().toLowerCase()) {
+                      if (!job.brand?.toLowerCase().includes(params.brand.trim().toLowerCase())) {
+                        matchesJobs = false;
+                      }
+                    }
+
+                    if (params.department?.trim().toLowerCase()) {
+                      if (!job.department?.toLowerCase().includes(params.department.trim().toLowerCase())) {
+                        matchesJobs = false;
+                      }
+                    }
+
+                    if (params.jobtitle?.trim().toLowerCase()) {
+                      if (!job.title?.toLowerCase().includes(params.jobtitle.trim().toLowerCase())) {
+                        matchesJobs = false;
+                      }
+                    }
+
+                    if (matchesJobs) {
+                      resultJobArr.push(job);
+                    }
+                  }
+
+                  globalParams = params;
+                  message(resultJobArr.length);
+
+                  if (resultJobArr.length > 0) {
+                    splittArray(resultJobArr);
+                    generateDropdownOptions(resultJobArr);
+                  } else {
+                    window.history.pushState({}, document.title, window.location.pathname);
+                  }
+                }    
+
                 
                 function checkParams() {
                   const urlParams = new URLSearchParams(window.location.search);
                   if (urlParams.toString() === "") {
-                    resultJobArr =  Array.isArray(fetchedJobs.jobListDB) ? fetchedJobs.jobListDB : [];
+                    resultJobArr = fetchedJobs;
                     globalParams = {};
                     generateDropdownOptions(resultJobArr);
-                    // message(resultJobArr.length);
-                    // splittArray(resultJobArr);
+                    splittArray(resultJobArr);
+                    message(resultJobArr.length);
                   } else {
                       getParameter();
                   }
               }
               checkParams();
-                              // Event Listener für externe Filter-Aufrufe
-                              window.addEventListener("checkParamsApplied", checkParams);
-
-
-
+                // Event Listener für externe Filter-Aufrufe
+              //window.addEventListener("checkParamsApplied", checkParams);
 
             } else {
                 console.error("Fehler beim Abrufen der Job-Daten:", data);
