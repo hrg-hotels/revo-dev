@@ -2,7 +2,6 @@
   "name": "jobportal",
   "version": "1.0.0",
   "private": true,
-  "type": "commonjs",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --watch",
     "build": "cross-env NODE_ENV=production webpack"
@@ -14,7 +13,7 @@
   "devDependencies": {
     "@babel/core": "^7.28.3",
     "@babel/preset-env": "^7.28.3",
-    "babel-loader": "^10.0.0",
+    "babel-loader": "^9.2.1",
     "core-js": "^3.45.0",
     "cross-env": "^7.0.3",
     "webpack": "^5.101.3",

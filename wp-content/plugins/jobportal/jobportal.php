@@ -143,11 +143,11 @@ function jobportal_enqueue_scripts() {
 
         // NEU: das Webpack-Bundle laden (statt der alten jobportal-template.js)
         wp_enqueue_script(
-            'jobportal-bundle',
-            JOBPORTAL_URL . 'assets/js/dist/jobportal.bundle.js',
-            array('jquery'),
-            filemtime(JOBPORTAL_DIR . 'assets/js/dist/jobportal.bundle.js'),
-            true
+        'jobportal-bundle',
+        JOBPORTAL_URL . 'assets/js/dist/jobportal.bundle.js',
+        array('jquery'),
+        filemtime(JOBPORTAL_DIR . 'assets/js/dist/jobportal.bundle.js'),
+        true
         );
 
         // Globals (Ajax-URL etc.) an das Bundle übergeben

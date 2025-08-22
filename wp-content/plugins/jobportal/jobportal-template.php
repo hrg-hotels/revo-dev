@@ -5,7 +5,7 @@ defined('ABSPATH') or die('No script kiddies please!');
 <?php include JOBPORTAL_DIR . 'jobfilter.php'; ?>
 
 <div id="jobportal-container">
-    <p>⏳ Hotels werden geladen...</p>
+   <!--<p>⏳ Hotels werden geladen...</p>-->
 </div>
 <div id="message-wrapper" style="position:relative;"></div>
 <div class="portfolio-pagination">

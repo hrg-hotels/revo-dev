@@ -6,7 +6,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'assets/js/dist'),
     filename: 'jobportal.bundle.js',
-    clean: true, // räumt alte Builds im dist-Ordner auf
+    clean: true
   },
   devtool: process.env.NODE_ENV === 'development' ? 'source-map' : false,
   module: {
@@ -17,18 +17,13 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [
-              ['@babel/preset-env', {
-                useBuiltIns: 'usage',
-                corejs: 3
-              }]
-            ]
+            sourceType: 'unambiguous',
+            presets: [['@babel/preset-env', { useBuiltIns: 'usage', corejs: 3 }]]
+            // alternativ statt presets: configFile: path.resolve(__dirname, 'babel.config.json')
           }
         }
       }
     ]
   },
-  externals: {
-    jquery: 'jQuery' // wichtig: WP liefert jQuery selbst
-  }
+  externals: { jquery: 'jQuery' }
 };
