@@ -25,23 +25,17 @@ __webpack_require__.r(__webpack_exports__);
 
 function checkParams() {
   const urlParams = new URLSearchParams(window.location.search);
-  const {
-    fetchedJobs: resJobArr
-  } = (0,_state__WEBPACK_IMPORTED_MODULE_0__.getState)();
-  https:
-  //pullman-stuttgart.com/
-
   if (!urlParams.toString()) {
-    // Arbeitsarray = Kopie der Originaldaten
-    (0,_state__WEBPACK_IMPORTED_MODULE_0__.setResultJobs)(resJobArr);
+    console.log('No URL parameters found 1', (0,_state__WEBPACK_IMPORTED_MODULE_0__.getState)().resultJobArr);
+    (0,_state__WEBPACK_IMPORTED_MODULE_0__.setResultJobs)((0,_state__WEBPACK_IMPORTED_MODULE_0__.getState)().fetchedJobs);
     (0,_state__WEBPACK_IMPORTED_MODULE_0__.setGlobalParams)({});
-    (0,_modules_dropdowns__WEBPACK_IMPORTED_MODULE_1__.generateDropdownOptions)(resJobArr);
-    (0,_modules_pagination__WEBPACK_IMPORTED_MODULE_2__.splittArray)(resJobArr);
-    (0,_modules_messageBox__WEBPACK_IMPORTED_MODULE_3__.message)(resJobArr.length);
-    console.log('No URL parameters found');
+    (0,_modules_dropdowns__WEBPACK_IMPORTED_MODULE_1__.generateDropdownOptions)();
+    (0,_modules_pagination__WEBPACK_IMPORTED_MODULE_2__.splittArray)();
+    (0,_modules_messageBox__WEBPACK_IMPORTED_MODULE_3__.message)();
+    console.log('No URL parameters found 2', (0,_state__WEBPACK_IMPORTED_MODULE_0__.getState)().resultJobArr);
   } else {
     (0,_getParameter__WEBPACK_IMPORTED_MODULE_4__.getParameter)();
-    console.log('URL parameters found');
+    console.log('URL parameters found', (0,_state__WEBPACK_IMPORTED_MODULE_0__.getState)().resultJobArr);
   }
 }
 
@@ -167,13 +161,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _handleEvent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../handleEvent */ "./assets/js/src/handleEvent.js");
 /* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../state */ "./assets/js/src/state.js");
 /* harmony import */ var _checkParams__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../checkParams */ "./assets/js/src/checkParams.js");
+/* harmony import */ var _messageBox__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./messageBox */ "./assets/js/src/modules/messageBox.js");
 
 
 
 
-function generateDropdownOptions(resultJobArr) {
+
+function generateDropdownOptions() {
+  let localResultJobArr = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getState)().resultJobArr;
   const getUniqueSortedValues = key => {
-    return [...new Set(resultJobArr.map(h => h[key]).filter(Boolean))].sort();
+    return [...new Set(localResultJobArr.map(h => h[key]).filter(Boolean))].sort();
   };
   const jobtitle = getUniqueSortedValues('title');
   const cities = getUniqueSortedValues('city');
@@ -191,7 +188,6 @@ function generateDropdownOptions(resultJobArr) {
   // Populiere Dropdowns
   populateDropdown("jobtitle-options", jobtitle);
   populateDropdown("city-options", cities);
-  // populateDropdown("category-options", category);
   populateDropdown("brand-options", brand);
   populateDropdown("department-options", department);
 }
@@ -208,7 +204,7 @@ function setupDropdown(headerId, optionsId) {
   }
 
   // Öffnen/Schließen der Dropdown-Optionen
-  header.click(function (e) {
+  header.on("click", function (e) {
     e.stopPropagation(); // Verhindert, dass document.click() es sofort schließt
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(".select-options").not(options).slideUp(); // Schließt andere Dropdowns
     options.slideToggle();
@@ -261,8 +257,6 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).on("click", ".clear-butt
 // INPUT-SUGGESTION & LIVE-FILTERUNG FÜR ALLE DROPDOWNS
 let currentFocus = -1;
 jquery__WEBPACK_IMPORTED_MODULE_0___default()(".select-header input").on("input", function () {
-  (0,_state__WEBPACK_IMPORTED_MODULE_2__.setResultJobs)([]);
-  window.history.pushState({}, document.title, window.location.pathname);
   (0,_checkParams__WEBPACK_IMPORTED_MODULE_3__.checkParams)();
   const input = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
   const filter = input.val().toLowerCase();
@@ -315,8 +309,8 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(".select-header input").on("keydow
     e.preventDefault();
     const options = visibleOptions.length ? visibleOptions : allOptions;
     if (currentFocus > -1 && options.eq(currentFocus).length) {
-      // ✅ Wenn eine Option ausgewählt ist, wähle sie aus
-      options.eq(currentFocus).click();
+      // ✅ Wenn eine Option ausgewählt ist, löse das Click-Event aus
+      options.eq(currentFocus).trigger("click");
     } else {
       // ✅ Wenn KEINE Option ausgewählt ist, führe handleEvent direkt aus
       (0,_handleEvent__WEBPACK_IMPORTED_MODULE_1__.handleEvent)();
@@ -386,12 +380,10 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(".select-options").on("click", "li
 });
 
 //************RESET FUNCTION******************************/
-jquery__WEBPACK_IMPORTED_MODULE_0___default()("#btn-reset").click(function () {
-  removeShowClass();
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()(".nfg").remove(); // Entfernt Elemente mit Klasse "nfg"
-  window.history.pushState({}, document.title, window.location.pathname); // Entfernt URL-Parameter
-
-  // Felder zurücksetzen
+jquery__WEBPACK_IMPORTED_MODULE_0___default()("#btn-reset").on("click", function () {
+  (0,_messageBox__WEBPACK_IMPORTED_MODULE_4__.removeShowClass)();
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()(".nfg").remove();
+  window.history.pushState({}, document.title, window.location.pathname);
   const filters = [{
     id: "jobtitle",
     placeholder: "Jobtitle"
@@ -416,7 +408,7 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()("#btn-reset").click(function () {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(`#${id}-options li`).show();
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(`.selection-hr input[name="${id.replace("-", " ")}"]`).val("");
   });
-  (0,_checkParams__WEBPACK_IMPORTED_MODULE_3__.checkParams)(); // Jobliste aktualisieren
+  (0,_checkParams__WEBPACK_IMPORTED_MODULE_3__.checkParams)();
 });
 
 /***/ }),
@@ -440,11 +432,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function filterListByParams() {
+  console.log("filterListByParams called");
   const params = (0,_state__WEBPACK_IMPORTED_MODULE_0__.getState)().globalParams;
   (0,_state__WEBPACK_IMPORTED_MODULE_0__.setResultJobs)([]);
+  let localJobArr = [];
   console.log("Filtering jobs with params:", params);
   const fetchedJobs = (0,_state__WEBPACK_IMPORTED_MODULE_0__.getState)().fetchedJobs;
-  console.log("Fetched jobs:", fetchedJobs);
   for (let job of fetchedJobs) {
     let matchesJobs = true;
     if (params.city?.trim().toLowerCase()) {
@@ -468,17 +461,19 @@ function filterListByParams() {
       }
     }
     if (matchesJobs) {
-      (0,_state__WEBPACK_IMPORTED_MODULE_0__.setResultJobs)(job);
-      console.log("Job matches:", job);
+      localJobArr.push(job);
     }
   }
-  let resultJobArr = (0,_state__WEBPACK_IMPORTED_MODULE_0__.getState)().resultJobArr;
-  console.log("Filtered jobs:", resultJobArr);
-  (0,_messageBox__WEBPACK_IMPORTED_MODULE_3__.message)(resultJobArr.length);
-  if (resultJobArr.length > 0) {
-    (0,_pagination__WEBPACK_IMPORTED_MODULE_1__.splittArray)(resultJobArr);
-    (0,_dropdowns__WEBPACK_IMPORTED_MODULE_2__.generateDropdownOptions)(resultJobArr);
+  console.log("Filtered jobs:", localJobArr);
+  (0,_state__WEBPACK_IMPORTED_MODULE_0__.setResultJobs)(localJobArr);
+  let jobAmount = (0,_state__WEBPACK_IMPORTED_MODULE_0__.getState)().resultJobArr.length;
+  (0,_messageBox__WEBPACK_IMPORTED_MODULE_3__.message)(jobAmount);
+  if (jobAmount > 0) {
+    console.log("Jobs found, updating URL parameters");
+    (0,_pagination__WEBPACK_IMPORTED_MODULE_1__.splittArray)();
+    (0,_dropdowns__WEBPACK_IMPORTED_MODULE_2__.generateDropdownOptions)();
   } else {
+    console.log("No jobs found, clearing URL parameters");
     window.history.pushState({}, document.title, window.location.pathname);
   }
 }
@@ -504,9 +499,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const globalParams = (0,_state__WEBPACK_IMPORTED_MODULE_1__.getState)().globalParams;
-const allJobs = (0,_state__WEBPACK_IMPORTED_MODULE_1__.getState)().fetchedJobs;
-function message(resultLength) {
+function message() {
+  const globalParams = (0,_state__WEBPACK_IMPORTED_MODULE_1__.getState)().globalParams || {};
+  const allJobs = (0,_state__WEBPACK_IMPORTED_MODULE_1__.getState)().fetchedJobs || [];
+  const resultLength = (0,_state__WEBPACK_IMPORTED_MODULE_1__.getState)().resultJobArr.length || 0;
+  console.log("globalParams in message", globalParams);
   jquery__WEBPACK_IMPORTED_MODULE_0___default()("#message-container").remove();
   jquery__WEBPACK_IMPORTED_MODULE_0___default()(".not-found-graphic").remove();
   let messageContainer = jquery__WEBPACK_IMPORTED_MODULE_0___default()("<div></div>");
@@ -569,24 +566,25 @@ function message(resultLength) {
 }
 //update message container
 function updateMessageContainer() {
+  const globalParams = (0,_state__WEBPACK_IMPORTED_MODULE_1__.getState)().globalParams || {};
   //remove show class from message elements
   removeShowClass();
   if (Object.keys(globalParams).length === 0) {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()('#message-headline').css('display', 'none');
   }
-  if (globalParams.country && globalParams.country !== "" && globalParams.country !== 'Country') {
+  if (globalParams.country && globalParams.country !== "" && globalParams.country !== 'Country' && globalParams.country !== undefined) {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()("#title-country").addClass("show");
   }
-  if (globalParams.city && globalParams.city !== "" && globalParams.city !== 'City') {
+  if (globalParams.city && globalParams.city !== "" && globalParams.city !== 'City' && globalParams.city !== undefined) {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()("#title-city").addClass("show");
   }
-  if (globalParams.brand && globalParams.brand !== "" && globalParams.brand !== 'Brand') {
+  if (globalParams.brand && globalParams.brand !== "" && globalParams.brand !== 'Brand' && globalParams.brand !== undefined) {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()("#title-brand").addClass("show");
   }
-  if (globalParams.jobtitle && globalParams.jobtitle !== "" && globalParams.jobtitle !== 'jobtitle') {
+  if (globalParams.jobtitle && globalParams.jobtitle !== "" && globalParams.jobtitle !== 'jobtitle' && globalParams.jobtitle !== undefined) {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()("#title-jobtitle").addClass("show");
   }
-  if (globalParams.department && globalParams.department !== "" && globalParams.department !== 'Department') {
+  if (globalParams.department && globalParams.department !== "" && globalParams.department !== 'Department' && globalParams.department !== undefined) {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()("#title-department").addClass("show");
   }
 }
@@ -608,50 +606,58 @@ function removeShowClass() {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   splittArray: function() { return /* binding */ splittArray; },
-/* harmony export */   updatePagination: function() { return /* binding */ updatePagination; }
+/* harmony export */   splittArray: function() { return /* binding */ splittArray; }
 /* harmony export */ });
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "jquery");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _render__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./render */ "./assets/js/src/modules/render.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../state */ "./assets/js/src/state.js");
 
 
-let splittResult = [];
-let current = 1;
-let prev = 0;
-let next = 2;
-let currentPageNumber = 1;
-let prevPageNumber = 0;
-let nextPageNumber = 2;
+
+
 //SPLIT RESULT TO SITE OBJECTS FOR PAGINATION
-function splittArray(resOrigin) {
-  splittResult = [];
-  currentPageNumber = 1;
-  prevPageNumber = 0;
-  nextPageNumber = 2;
+function splittArray() {
+  const localResultJobArr = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getState)().resultJobArr;
   let startIdx = 0;
   let pageNumber = 1;
-  while (startIdx < resOrigin.length) {
+  const newSplittResult = [];
+  while (startIdx < localResultJobArr.length) {
     let endIdx = startIdx + 6;
-    let pageArray = resOrigin.slice(startIdx, endIdx);
-    splittResult.push({
+    let pageArray = localResultJobArr.slice(startIdx, endIdx);
+    newSplittResult.push({
       pageNumber,
       pageArray
     });
     startIdx = endIdx;
     pageNumber++;
   }
-  (0,_render__WEBPACK_IMPORTED_MODULE_1__.renderList)(splittResult[0].pageArray);
+
+  // im State speichern
+  (0,_state__WEBPACK_IMPORTED_MODULE_2__.setSplittResult)(newSplittResult);
+
+  // Pagination im State zurücksetzen
+  (0,_state__WEBPACK_IMPORTED_MODULE_2__.setPagination)({
+    currentPageNumber: 1,
+    prevPageNumber: 0,
+    nextPageNumber: 2
+  });
+  (0,_render__WEBPACK_IMPORTED_MODULE_1__.renderList)(newSplittResult[0]?.pageArray || []);
   updatePagination();
-  // updateMapViewBtn();
-  console.log("splittResult", splittResult);
 }
+
 //UPDATE PAGINATION ELEMENTS
 function updatePagination() {
+  const {
+    currentPageNumber,
+    prevPageNumber,
+    nextPageNumber,
+    splittResult
+  } = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getState)();
   jquery__WEBPACK_IMPORTED_MODULE_0___default()("#current-page").text(currentPageNumber);
   jquery__WEBPACK_IMPORTED_MODULE_0___default()("#prev-page").text(prevPageNumber);
   jquery__WEBPACK_IMPORTED_MODULE_0___default()("#next-page").text(nextPageNumber);
-  if (prevPageNumber == 0) {
+  if (prevPageNumber === 0) {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(".pleft").css("display", "none");
     jquery__WEBPACK_IMPORTED_MODULE_0___default()("#prev-page").text(" ").css("background-color", "transparent");
   } else {
@@ -671,36 +677,38 @@ function updatePagination() {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()("#prev-page, #next-page").css("display", "block");
   }
 }
+
 //buttons pagination
-jquery__WEBPACK_IMPORTED_MODULE_0___default()(".arrow-pag").click(event => {
-  //left arrow
+jquery__WEBPACK_IMPORTED_MODULE_0___default()(".arrow-pag").on("click", event => {
+  const {
+    currentPageNumber,
+    splittResult
+  } = (0,_state__WEBPACK_IMPORTED_MODULE_2__.getState)();
   if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.currentTarget).hasClass("pleft")) {
     if (currentPageNumber > 1) {
-      currentPageNumber--;
-      prevPageNumber = currentPageNumber - 1;
-      nextPageNumber = currentPageNumber + 1;
-      (0,_render__WEBPACK_IMPORTED_MODULE_1__.renderList)(splittResult[currentPageNumber - 1].pageArray);
+      (0,_state__WEBPACK_IMPORTED_MODULE_2__.setPagination)({
+        currentPageNumber: currentPageNumber - 1,
+        prevPageNumber: currentPageNumber - 2,
+        nextPageNumber: currentPageNumber
+      });
+      (0,_render__WEBPACK_IMPORTED_MODULE_1__.renderList)(splittResult[(0,_state__WEBPACK_IMPORTED_MODULE_2__.getState)().currentPageNumber - 1].pageArray);
       updatePagination();
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('html, body').animate({
         scrollTop: jquery__WEBPACK_IMPORTED_MODULE_0___default()('#scroll-link').offset().top
       }, 100);
-    } else {
-      return;
     }
-  }
-  //right arrow
-  else {
+  } else {
     if (splittResult.length > currentPageNumber) {
-      currentPageNumber++;
-      prevPageNumber = currentPageNumber - 1;
-      nextPageNumber = currentPageNumber + 1;
-      (0,_render__WEBPACK_IMPORTED_MODULE_1__.renderList)(splittResult[currentPageNumber - 1].pageArray);
+      (0,_state__WEBPACK_IMPORTED_MODULE_2__.setPagination)({
+        currentPageNumber: currentPageNumber + 1,
+        prevPageNumber: currentPageNumber,
+        nextPageNumber: currentPageNumber + 2
+      });
+      (0,_render__WEBPACK_IMPORTED_MODULE_1__.renderList)(splittResult[(0,_state__WEBPACK_IMPORTED_MODULE_2__.getState)().currentPageNumber - 1].pageArray);
       updatePagination();
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('html, body').animate({
         scrollTop: jquery__WEBPACK_IMPORTED_MODULE_0___default()('#scroll-link').offset().top
       }, 100);
-    } else {
-      return;
     }
   }
 });
@@ -718,19 +726,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clearJobList: function() { return /* binding */ clearJobList; },
 /* harmony export */   renderList: function() { return /* binding */ renderList; }
 /* harmony export */ });
-/* harmony import */ var _dom__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../dom */ "./assets/js/src/dom.js");
-// assets/js/src/modules/render.js
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "jquery");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../dom */ "./assets/js/src/dom.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../state */ "./assets/js/src/state.js");
 
+
+
+(0,_dom__WEBPACK_IMPORTED_MODULE_1__.initDom)();
+let hook = (0,_dom__WEBPACK_IMPORTED_MODULE_1__.getRenderHook)();
 function clearJobList() {
-  const hook = (0,_dom__WEBPACK_IMPORTED_MODULE_0__.getRenderHook)();
+  console.log("Clearing job list in hook:", hook);
   if (!hook) return;
   hook.innerHTML = "";
 }
-function renderList(resultJobArr) {
+function renderList(splittResult) {
+  console.log("Rendering job list:", splittResult);
   //remove old job list
   clearJobList();
-  const hook = document.getElementById("jobportal-container");
-  for (let job of resultJobArr) {
+  for (let job of splittResult) {
     let jobItem = document.createElement("div");
     jobItem.classList.add("job-list-item");
     jobItem.innerHTML = `
@@ -815,9 +829,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   setFetchedJobs: function() { return /* binding */ setFetchedJobs; },
 /* harmony export */   setGlobalParams: function() { return /* binding */ setGlobalParams; },
 /* harmony export */   setPagination: function() { return /* binding */ setPagination; },
-/* harmony export */   setResultJobs: function() { return /* binding */ setResultJobs; }
+/* harmony export */   setResultJobs: function() { return /* binding */ setResultJobs; },
+/* harmony export */   setSplittResult: function() { return /* binding */ setSplittResult; }
 /* harmony export */ });
 // assets/js/src/state.js
+
 const state = {
   fetchedJobs: [],
   resultJobArr: [],
@@ -828,7 +844,11 @@ const state = {
     jobtitle: "",
     brand: "",
     department: ""
-  }
+  },
+  currentPageNumber: 1,
+  prevPageNumber: 0,
+  nextPageNumber: 2,
+  splittResult: []
 };
 
 // Getter
@@ -841,14 +861,16 @@ const setFetchedJobs = list => {
 const setResultJobs = list => {
   state.resultJobArr = Array.isArray(list) ? [...list] : [];
 };
+const setSplittResult = list => {
+  state.splittResult = Array.isArray(list) ? [...list] : [];
+};
 const setGlobalParams = obj => {
   state.globalParams = obj || {};
 };
 const setPagination = patch => {
-  state.pagination = {
-    ...state.pagination,
-    ...patch
-  };
+  state.currentPageNumber = patch.currentPageNumber ?? state.currentPageNumber;
+  state.prevPageNumber = patch.prevPageNumber ?? state.prevPageNumber;
+  state.nextPageNumber = patch.nextPageNumber ?? state.nextPageNumber;
 };
 
 /***/ }),
@@ -957,7 +979,6 @@ __webpack_require__.r(__webpack_exports__);
     }).then(data => {
       if (data.success) {
         (0,_state__WEBPACK_IMPORTED_MODULE_1__.setFetchedJobs)(data.data);
-        console.log('Fetched Jobs:', (0,_state__WEBPACK_IMPORTED_MODULE_1__.getState)().fetchedJobs);
         (0,_checkParams__WEBPACK_IMPORTED_MODULE_2__.checkParams)();
       } else {
         console.error("Fehler beim Abrufen der Job-Daten:", data);

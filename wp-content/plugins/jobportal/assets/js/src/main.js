@@ -17,11 +17,7 @@ import { checkParams } from "./checkParams";
         .then(data => {
             if (data.success) {
                 setFetchedJobs(data.data);
-                console.log('Fetched Jobs:', getState().fetchedJobs);
-
-              checkParams();
-
-
+                checkParams();
             } else {
                 console.error("Fehler beim Abrufen der Job-Daten:", data);
             }

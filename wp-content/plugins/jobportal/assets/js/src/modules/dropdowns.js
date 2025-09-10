@@ -3,13 +3,17 @@ import $ from 'jquery';
 import { handleEvent } from "../handleEvent";
 import { setResultJobs, getState } from '../state';
 import { checkParams } from '../checkParams';
+import { removeShowClass } from './messageBox';
 
-export function generateDropdownOptions(resultJobArr) {
+
+
+export function generateDropdownOptions() {
+    let localResultJobArr = getState().resultJobArr;
     const getUniqueSortedValues = (key) => {
-    return [...new Set(resultJobArr.map(h => h[key]).filter(Boolean))].sort();
-};
+    return [...new Set(localResultJobArr.map(h => h[key]).filter(Boolean))].sort();
+    };
 
-const jobtitle = getUniqueSortedValues('title');
+    const jobtitle = getUniqueSortedValues('title');
     const cities = getUniqueSortedValues('city');
     const brand = getUniqueSortedValues('companyname');
     const department = getUniqueSortedValues('department');
@@ -29,7 +33,6 @@ const jobtitle = getUniqueSortedValues('title');
     // Populiere Dropdowns
     populateDropdown("jobtitle-options", jobtitle);
     populateDropdown("city-options", cities);
-    // populateDropdown("category-options", category);
     populateDropdown("brand-options", brand);
     populateDropdown("department-options", department);
 
@@ -48,11 +51,11 @@ export function setupDropdown(headerId, optionsId) {
     }
 
     // Öffnen/Schließen der Dropdown-Optionen
-    header.click(function (e) {
-        e.stopPropagation(); // Verhindert, dass document.click() es sofort schließt
-        $(".select-options").not(options).slideUp(); // Schließt andere Dropdowns
-        options.slideToggle();
-    });
+        header.on("click", function (e) {
+            e.stopPropagation(); // Verhindert, dass document.click() es sofort schließt
+            $(".select-options").not(options).slideUp(); // Schließt andere Dropdowns
+            options.slideToggle();
+        });
     // Filter-Logik beim Tippen (Input Suggestions)
         header.on("input", function () {
         handleEvent();
@@ -102,8 +105,7 @@ $(document).on("click", ".clear-button", function () {
 // INPUT-SUGGESTION & LIVE-FILTERUNG FÜR ALLE DROPDOWNS
 let currentFocus = -1;
 $(".select-header input").on("input", function () {
-    setResultJobs([]);
-    window.history.pushState({}, document.title, window.location.pathname);
+
     checkParams();
     
     const input = $(this);
@@ -158,19 +160,20 @@ $(".select-header input").on("keydown", function (e) {
         if (currentFocus < 0) currentFocus = visibleOptions.length - 1;
         highlightOption(visibleOptions.length ? visibleOptions : allOptions);
     } 
-    else if (e.key === "Enter") {
-        e.preventDefault();
-        const options = visibleOptions.length ? visibleOptions : allOptions;
+else if (e.key === "Enter") {
+    e.preventDefault();
+    const options = visibleOptions.length ? visibleOptions : allOptions;
 
-        if (currentFocus > -1 && options.eq(currentFocus).length) {
-            // ✅ Wenn eine Option ausgewählt ist, wähle sie aus
-            options.eq(currentFocus).click();
-        } else {
-            // ✅ Wenn KEINE Option ausgewählt ist, führe handleEvent direkt aus
-            handleEvent();
-            optionsList.slideUp();
-        }
+    if (currentFocus > -1 && options.eq(currentFocus).length) {
+        // ✅ Wenn eine Option ausgewählt ist, löse das Click-Event aus
+        options.eq(currentFocus).trigger("click");
+    } else {
+        // ✅ Wenn KEINE Option ausgewählt ist, führe handleEvent direkt aus
+        handleEvent();
+        optionsList.slideUp();
     }
+}
+
 });
 
 // OPTION HERVORHEBEN
@@ -237,25 +240,24 @@ $("#jobtitle-header, #city-header, #brand-header","#department-header")
 });
 
 //************RESET FUNCTION******************************/
-$("#btn-reset").click(function () {
-    removeShowClass();
-    $(".nfg").remove(); // Entfernt Elemente mit Klasse "nfg"
-    window.history.pushState({}, document.title, window.location.pathname); // Entfernt URL-Parameter
+$("#btn-reset").on("click", function () {
+  removeShowClass();
+  $(".nfg").remove();
+  window.history.pushState({}, document.title, window.location.pathname);
 
-    // Felder zurücksetzen
-    const filters = [
-        { id: "jobtitle", placeholder: "Jobtitle" },
-        { id: "city", placeholder: "city" },
-        { id: "country", placeholder: "country" },
-        { id: "brand", placeholder: "brand" },
-        { id: "department", placeholder: "Department" }
-    ];
+  const filters = [
+    { id: "jobtitle", placeholder: "Jobtitle" },
+    { id: "city", placeholder: "city" },
+    { id: "country", placeholder: "country" },
+    { id: "brand", placeholder: "brand" },
+    { id: "department", placeholder: "Department" }
+  ];
 
-    filters.forEach(({ id, placeholder }) => {
-        $(`#${id}-header`).val("").attr("placeholder", placeholder);
-        $(`#${id}-options li`).show();
-        $(`.selection-hr input[name="${id.replace("-", " ")}"]`).val("");
-    });
+  filters.forEach(({ id, placeholder }) => {
+    $(`#${id}-header`).val("").attr("placeholder", placeholder);
+    $(`#${id}-options li`).show();
+    $(`.selection-hr input[name="${id.replace("-", " ")}"]`).val("");
+  });
 
-    checkParams(); // Jobliste aktualisieren
+  checkParams();
 });

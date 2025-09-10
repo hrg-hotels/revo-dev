@@ -1,12 +1,13 @@
 import $ from 'jquery';
-import { getState } from '../state';
+import { getState} from "../state";
 import { clearJobList } from './render';
 
 
-const globalParams = getState().globalParams;
-const allJobs = getState().fetchedJobs;
-
-export function message(resultLength) {       
+export function message() {      
+const globalParams = getState().globalParams || {};
+const allJobs = getState().fetchedJobs || [];
+const resultLength = getState().resultJobArr.length || 0;
+console.log("globalParams in message", globalParams);
 
     $("#message-container").remove();
     $(".not-found-graphic").remove();
@@ -75,25 +76,26 @@ export function message(resultLength) {
                 }
 //update message container
  export function updateMessageContainer(){
+    const globalParams = getState().globalParams || {};
     //remove show class from message elements
     removeShowClass();
 
     if (Object.keys(globalParams).length === 0) {
     $('#message-headline').css('display','none');
     }
-    if (globalParams.country && globalParams.country !== "" && globalParams.country !== 'Country') {
+    if (globalParams.country && globalParams.country !== "" && globalParams.country !== 'Country' && globalParams.country !== undefined) {
     $("#title-country").addClass("show");
     }
-    if (globalParams.city && globalParams.city !== "" && globalParams.city !== 'City') {
+    if (globalParams.city && globalParams.city !== "" && globalParams.city !== 'City' && globalParams.city !== undefined) {
     $("#title-city").addClass("show");
     }
-    if (globalParams.brand && globalParams.brand !== "" && globalParams.brand !=='Brand') {
+    if (globalParams.brand && globalParams.brand !== "" && globalParams.brand !=='Brand' && globalParams.brand !== undefined) {
     $("#title-brand").addClass("show");
     }
-    if (globalParams.jobtitle && globalParams.jobtitle !== "" && globalParams.jobtitle !== 'jobtitle') {
+    if (globalParams.jobtitle && globalParams.jobtitle !== "" && globalParams.jobtitle !== 'jobtitle' && globalParams.jobtitle !== undefined) {
     $("#title-jobtitle").addClass("show");
     }
-    if (globalParams.department && globalParams.department !== "" && globalParams.department !== 'Department') {
+    if (globalParams.department && globalParams.department !== "" && globalParams.department !== 'Department' && globalParams.department !== undefined) {
     $("#title-department").addClass("show");
     }
 }

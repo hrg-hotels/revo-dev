@@ -8,18 +8,16 @@ import { getParameter } from './getParameter';
 
 export function checkParams() {
   const urlParams = new URLSearchParams(window.location.search);
-  const { fetchedJobs: resJobArr } = getState();https://pullman-stuttgart.com/
-
   if (!urlParams.toString()) {
-    // Arbeitsarray = Kopie der Originaldaten
-    setResultJobs(resJobArr);
+    console.log('No URL parameters found 1', getState().resultJobArr);
+    setResultJobs(getState().fetchedJobs);
     setGlobalParams({});
-    generateDropdownOptions(resJobArr);
-    splittArray(resJobArr);
-    message(resJobArr.length);
-    console.log('No URL parameters found');
+    generateDropdownOptions();
+    splittArray();
+    message();
+    console.log('No URL parameters found 2', getState().resultJobArr);
   } else {
     getParameter();
-    console.log('URL parameters found');
+    console.log('URL parameters found', getState().resultJobArr);
   }
 }

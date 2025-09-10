@@ -1,17 +1,23 @@
-// assets/js/src/modules/render.js
-import { getRenderHook } from '../dom';
+import $ from 'jquery';
+import { getRenderHook ,initDom} from '../dom';
+import { getState } from '../state';
+
+initDom();
+let hook= getRenderHook();
 
 export function clearJobList() {
-  const hook = getRenderHook();
+
+  console.log("Clearing job list in hook:", hook);
   if (!hook) return;
   hook.innerHTML = "";
 }
 
-export function renderList(resultJobArr) {
+export function renderList(splittResult) {
+    console.log("Rendering job list:", splittResult);
   //remove old job list
   clearJobList();
-  const hook = document.getElementById("jobportal-container");
-  for (let job of resultJobArr) {
+
+  for (let job of splittResult) {
     let jobItem = document.createElement("div");
     jobItem.classList.add("job-list-item");
 

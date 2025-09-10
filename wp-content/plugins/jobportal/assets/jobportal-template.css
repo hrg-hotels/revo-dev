@@ -425,9 +425,7 @@ background: #DCEFEE;
 #message-wrapper{
   margin-top:20px;
 }
-.result-title{
-  display:none;
-}
+
 #message-headline{
   margin-bottom:5px;
   font-size: 1.4rem;
@@ -441,6 +439,9 @@ background: #DCEFEE;
 }
 .result-message{
   margin-bottom:0 !important;
+}
+.result-title{
+    display:none;
 }
 @media only screen and (min-width: 768px){
   #btn-reset{
