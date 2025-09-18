@@ -78,6 +78,7 @@ function jobportal_fetch_data() {
             h.channel, 
             h.title, 
             h.tasks, 
+            h.description,
             h.requirement_content, 
             h.offer, 
             COALESCE(ct.translation, h.location_countrycode, 'Unknown') AS country, 
@@ -132,11 +133,12 @@ function jobportal_enqueue_scripts() {
 
         // CSS
         wp_enqueue_style(
-            'jobportal-style',
-            JOBPORTAL_URL . 'assets/jobportal-template.css',
-            array(),
-            JOBPORTAL_VERSION
+        'jobportal-style',
+        JOBPORTAL_URL . 'assets/css/dist/jobportal.css',
+        array(),
+        filemtime(JOBPORTAL_DIR . 'assets/css/dist/jobportal.css')
         );
+
 
         // jQuery (WP liefert es; in Webpack als external konfiguriert)
         wp_enqueue_script('jquery');

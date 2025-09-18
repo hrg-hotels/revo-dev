@@ -1,0 +1,280 @@
+.pop-headline{
+    line-height:100%;
+    text-transform: none;
+}
+.pop-logo img{
+    width: 100px;
+    height: auto;
+}
+
+.pop-up {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border: 1px solid #000;
+  padding: 20px;
+  z-index: 1000;
+  max-height: 700px;
+  width: 90%;
+  background:#F7F7F8;
+  scroll-behavior: smooth;
+  overflow: scroll;
+  cursor: default;
+}
+.close {
+    padding: 5px;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    cursor: pointer;
+    font-size:30px;
+}
+.layer {
+    height: 180%;
+    width: 500%;
+    position: absolute;
+    background: #6c6f6e75;
+    top: -500px;
+    z-index: 20;
+    left: -100%;
+}
+.pop-logo{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.pop-title h2{
+    font-size: 16px;
+    margin:0;
+}
+.pop-title {
+    width: 100%;
+    text-align: center;
+    margin-top: 25px;
+}
+.pop-key-wrap {
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px 0;
+    flex-wrap:wrap;
+}
+.pop-up-window{
+    display: flex;
+    flex-wrap: wrap;
+}
+.pop-content {
+    display: flex;
+    flex-direction: column;
+    width: -webkit-fill-available;
+}
+.cont-pop{
+    margin:40px 0;
+    border-bottom: 1px solid #E4E5E8;
+}
+.cont-pop:last-child{
+    border-bottom: none;
+}
+.cont-pop div img{
+max-width:100%;
+}
+.pop-content h3{
+    font-size: 16px;
+    text-transform: none;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+.pop-content p{
+    font-size: 12px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.pop-content ul li{
+    font-size: 12px !important;
+    margin-bottom: 0;
+}
+.pop-col-01{
+    width:100%;
+}
+.pop-col-02{
+    width:100%;
+}
+.pop-card{
+    background: white;
+    border: 1px solid #E4E5E8;
+    padding: 20px;
+    display: flex;
+    margin-top: 10px;
+}
+.pop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-direction: column;
+    width: 100%;
+}
+.pop-apply{
+    position: absolute;
+    z-index: 10000;
+    right: 20px;
+    top: 180px;
+}
+.pop-apply-mobile{
+    display:none;
+    position: fixed;
+    margin-top: 40px;
+    top: 220px;
+    z-index: 10000;
+    right: 20px;
+}
+.btn-apply{
+    margin:0;
+    padding: 8px 12px;
+}
+.pop-card-col-1-2:first-child{
+    border-right: 1px solid #E4E5E8;
+}
+
+.apply-btn-wrap{
+    display:flex;
+    flex-direction:column;
+    width:100%;
+  }
+  .whatsapp-icon{
+    width: 50px;
+  }
+  .apply-item{
+    display:flex;
+    justify-content:center;
+    margin-bottom:20px;
+  }
+     .pop-col-01{
+        width:40%;
+        padding-right:20px;
+    }
+    .pop-col-02{
+        width:60%;
+    }
+    .pop-card-col-1-2:first-child{
+        border-right: 1px solid #E4E5E8;
+    }
+    .pop-card-col-1-2{
+        padding: 0 20px;
+    }
+    .pop-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .pop-title {
+        text-align: left;
+        margin-top: 0;
+    }
+
+    .btn-social{
+       margin-top:0;
+    }
+    .pop-apply{
+        position: fixed;
+        top: 200px;
+    }
+    .pop-apply-mobile{
+        display:none;
+    }
+    .icon-26 {
+    width: 26px;
+}
+ @media (min-width: 768px) {
+        .pop-content {
+        display: flex;
+        flex-direction:row;
+        width: 100%;
+    }
+    .pop-col-01{
+        width:60%;
+    }
+    .pop-col-02{
+        width:40%;
+    }
+    .pop-card{
+        background: white;
+        border: 1px solid #E4E5E8;
+        padding: 20px;
+        display: flex;
+        margin-left: 10px;
+        margin-top:0;
+    }
+    .pop-up{
+        width: 90%;
+        padding:50px;
+        top:57%;
+        max-width:1500px;
+        }
+    .pop-header {
+        flex-direction: row;
+        width:auto;
+    }
+    .pop-key-wrap {
+        flex-direction: row;
+    }
+    .key-container {
+        width: auto;
+    }
+    .pop-up-window{
+        display:block;
+    }
+    .pop-logo{
+        width: 10%;
+        display: block;
+        margin-right: 20px;
+        margin-top: -15px;
+    }
+
+    .pop-title{
+        width: 80%;
+        text-align: left;
+        margin-top: 0;
+    }
+    .pop-apply{
+        top: auto;
+        position: relative;
+        width: 25%;
+        display: flex;
+        justify-content: flex-end;
+        right: auto;
+    }
+    .pop-apply-mobile{
+        display:none;
+    }
+    .det-btn{
+    display:block !important;
+    }
+ }
+@media (min-width: 992px) {
+      .apply-btn-wrap {
+          flex-direction: row;
+          justify-content: flex-start;
+      }
+      .apply-item {
+        justify-content: end;
+        flex-direction: column;
+    }
+    .whatsapp-icon{
+      margin-left:20px;
+    }
+  }
+@media only screen and (min-width: 1280px){
+
+    .pop-header {
+        justify-content: flex-start;
+        }
+    .pop-card{
+        padding:50px 30px;
+    }
+
+    .btn-social{
+       margin-top:0;
+    }
+}

@@ -1,62 +1,57 @@
+// assets/js/src/modules/render.js
 import $ from 'jquery';
-import { getRenderHook ,initDom} from '../dom';
-import { getState } from '../state';
+import { getRenderHook, initDom } from '../dom';
+import { openJob } from './popup';
 
 initDom();
-let hook= getRenderHook();
+let hook = getRenderHook();
 
 export function clearJobList() {
-
-  console.log("Clearing job list in hook:", hook);
   if (!hook) return;
-  hook.innerHTML = "";
+  hook.innerHTML = '';
 }
 
-export function renderList(splittResult) {
-    console.log("Rendering job list:", splittResult);
-  //remove old job list
+/**
+ * Rendert die übergebene Seite (Array von Jobs).
+ * KEIN State-Read hier; die Seite kommt aus pagination.splittArray().
+ */
+export function renderList(list = []) {
+  if (!hook) return;
+
   clearJobList();
 
-  for (let job of splittResult) {
-    let jobItem = document.createElement("div");
-    jobItem.classList.add("job-list-item");
+  if (!Array.isArray(list) || list.length === 0) return;
+
+  for (let job of list) {
+    const jobItem = document.createElement('div');
+    jobItem.classList.add('job-list-item');
 
     jobItem.innerHTML = `
-                        <div class="job-header">
-                            <h3>${job.title}</h3>
-                        </div>
-                        <div class="company-list-item">
-                            <div class="comp-col2">
-                                <p class="line-hight-160"><strong>${job.companyname}</strong></p>
-                                <div class="item-location">
-                                    <img src="${imgPath}location_on.svg" alt="icon location" class="search-icon list-loc-icon">
-                                    <p class="line-hight-160 pd-cit">${job.city}, ${job.city}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="key-row">
-                            <div class="key-container">
-                                <p>${job.city}, ${job.country}</p>
-                            </div>
-                            <div class="key-container">
-                                <p>${job.careerlevels}</p>
-                            </div>
-                            <div class="key-container">
-                                <p>${job.employment_type}</p>
-                            </div>
-                            <div class="key-container">
-                                <p>${job.joblocation_type}</p>
-                            </div>
-                            <div class="key-container">
-                                <p>${job.categories}</p>
-                            </div>
-                        </div>
-                        <button class="det-btn btn btn-card btn-job">
-                        <img src="${imgPath}arrow_black.svg" alt="arrow">
-                        </button> 
-                      `;
+      <div class="job-header">
+        <h3 class="heading">${job.title ?? ''}</h3>
+      </div>
+      <div class="company-list-item">
+        <div class="comp-col2">
+          <div class="card-jp-icons">
+            <img src="${imgPath}rh-logo.png" alt="logo" class="search-icon list-loc-icon">
+          </div>
+          <h4 class="heading-small">${job.companyname ?? ''}</h4>
+          <div class="card-jp-icons">
+            <img src="${imgPath}location_on.svg" alt="icon location" class="search-icon list-loc-icon">
+            <p class="line-hight-160 pd-cit">${job.city ?? ''}, ${job.city ?? ''}</p>
+          </div>
+        </div>
+      </div>
+      <div class="key-row">
+        <div class="key-container"><p>${job.city ?? ''}, ${job.country ?? ''}</p></div>
+        <div class="key-container"><p>${job.careerlevels ?? ''}</p></div>
+        <div class="key-container"><p>${job.employment_type ?? ''}</p></div>
+        <div class="key-container"><p>${job.joblocation_type ?? ''}</p></div>
+        <div class="key-container"><p>${job.categories ?? ''}</p></div>
+      </div>
+    `;
 
+    jobItem.addEventListener('click', () => openJob(job, jobItem));
     hook.appendChild(jobItem);
   }
 }
-

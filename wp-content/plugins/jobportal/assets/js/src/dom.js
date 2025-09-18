@@ -1,5 +1,7 @@
 const dom = {
-  renderHook: null
+  renderHook: null,
+  jobPortalWrapper: document.getElementById("jobportal-wrapper"),
+  extendedFilterHook: document.getElementById("extended-filter")
 };
 
 export function initDom() {
@@ -8,4 +10,12 @@ export function initDom() {
 
 export function getRenderHook() {
   return dom.renderHook;
+}
+
+export function getJobPortalWrapper() {
+  return dom.jobPortalWrapper;
+}
+
+export function getExtendedFilterHook() {
+  return dom.extendedFilterHook;
 }

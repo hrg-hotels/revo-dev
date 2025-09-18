@@ -1,11 +1,8 @@
 
 import $ from 'jquery';
 import { handleEvent } from "../handleEvent";
-import { setResultJobs, getState } from '../state';
+import { getState } from '../state';
 import { checkParams } from '../checkParams';
-import { removeShowClass } from './messageBox';
-
-
 
 export function generateDropdownOptions() {
     let localResultJobArr = getState().resultJobArr;
@@ -239,25 +236,3 @@ $("#jobtitle-header, #city-header, #brand-header","#department-header")
     setTimeout(() => input.focus(), 100);
 });
 
-//************RESET FUNCTION******************************/
-$("#btn-reset").on("click", function () {
-  removeShowClass();
-  $(".nfg").remove();
-  window.history.pushState({}, document.title, window.location.pathname);
-
-  const filters = [
-    { id: "jobtitle", placeholder: "Jobtitle" },
-    { id: "city", placeholder: "city" },
-    { id: "country", placeholder: "country" },
-    { id: "brand", placeholder: "brand" },
-    { id: "department", placeholder: "Department" }
-  ];
-
-  filters.forEach(({ id, placeholder }) => {
-    $(`#${id}-header`).val("").attr("placeholder", placeholder);
-    $(`#${id}-options li`).show();
-    $(`.selection-hr input[name="${id.replace("-", " ")}"]`).val("");
-  });
-
-  checkParams();
-});

@@ -46,6 +46,7 @@ console.log("globalParams in message", globalParams);
                     `);
                     $("#message-wrapper").append(messageContainer);
                     $("#message-wrapper").append(nfgDiv);
+
                     }
                     // if hotels are found
                     else {
@@ -53,56 +54,139 @@ console.log("globalParams in message", globalParams);
                     $(".portfolio-pagination").show();
                     //message text
                 
-                    messageContainer.html(`
-                        <div class="message-txt green">
-                            <h4 id="message-headline">"Your Selection": </h4>
-                            <div class="message-filter-result">
-                                <div class="result-title" id="title-jobtitle"><span class="txt-black">"Jobtitle":</span><span class="txt-gray"> ${globalParams.jobtitle}</span></div>
-                                <div class="result-title" id="title-country"><span class="txt-black">"country":</span><span class="txt-gray"> ${globalParams.country}</span></div>
-                                <div class="result-title" id="title-city"><span class="txt-black">"city":</span><span class="txt-gray"> ${globalParams.city}</span></div>
-                                <div class="result-title" id="title-department"><span class="txt-black">"Department":</span><span class="txt-gray"> ${globalParams.department}</span></div>
-                                <div class="result-title" id="title-brand"><span class="txt-black">"Brand":</span><span class="txt-gray"> ${globalParams.brand}</span></div>
-                            </div>
-                            <div><p class="result-message">"search resulted" <span class="txt-black"> ${resultLength} </span>"hits".</p></div>
-                            </div>          
-                        `);
+                  messageContainer.html(`
+                    <div class="message-txt green">
+                        <h3 id="message-headline" class="heading black">Your Selection:</h3>
+                        <div class="message-filter-result">
+
+                        <div class="result-title" id="title-jobtitle">
+                            <span class="txt-black">Jobtitle:</span>
+                            <span class="txt-gray">${globalParams.jobtitle || ''}</span>
+                        </div>
+
+                        <div class="result-title" id="title-country">
+                            <span class="txt-black">Country:</span>
+                            <span class="txt-gray">${globalParams.country || ''}</span>
+                        </div>
+
+                        <div class="result-title" id="title-city">
+                            <span class="txt-black">City:</span>
+                            <span class="txt-gray">${globalParams.city || ''}</span>
+                        </div>
+
+                        <div class="result-title" id="title-department">
+                            <span class="txt-black">Department:</span>
+                            <span class="txt-gray">${globalParams.department || ''}</span>
+                        </div>
+
+                        <div class="result-title" id="title-brand">
+                            <span class="txt-black">Brand:</span>
+                            <span class="txt-gray">${globalParams.brand || ''}</span>
+                        </div>
+
+                        <!-- Extended Filter -->
+                        <div class="result-title" id="title-careerlevels">
+                            <span class="txt-black">Careerlevel:</span>
+                            <span class="txt-gray">${globalParams.careerlevels || ''}</span>
+                        </div>
+
+                        <div class="result-title" id="title-employment-type">
+                            <span class="txt-black">Employment Type:</span>
+                            <span class="txt-gray">${globalParams['employment-type'] || ''}</span>
+                        </div>
+
+                        <div class="result-title" id="title-joblocation-type">
+                            <span class="txt-black">Joblocation Type:</span>
+                            <span class="txt-gray">${globalParams['joblocation-type'] || ''}</span>
+                        </div>
+
+                        <div class="result-title" id="title-keywords">
+                            <span class="txt-black">Keywords:</span>
+                            <span class="txt-gray">${globalParams.keyword ? globalParams.keyword.split(',').join(', ') : ''}</span>
+                        </div>
+
+                        </div>
+
+                        <div>
+                        <p class="result-message">
+                            Search resulted in <span class="txt-black">${resultLength}</span> hits.
+                        </p>
+                        </div>
+                    </div>
+                    `);
+
                     
                     $("#message-wrapper").append(messageContainer);
                     if (resultLength === allJobs.length) { 
-                        $(".result-message").html(`<span class="txt-black">Hotels:</span> ${resultLength}`);
+                        $(".result-message").html(`<span class="heading black">${resultLength} offene Stellen</span>`);
                     }
                     updateMessageContainer();
                     }
                 }
-//update message container
- export function updateMessageContainer(){
-    const globalParams = getState().globalParams || {};
-    //remove show class from message elements
-    removeShowClass();
+ function updateMessageContainer() {
+  const globalParams = getState().globalParams || {};
 
-    if (Object.keys(globalParams).length === 0) {
-    $('#message-headline').css('display','none');
-    }
-    if (globalParams.country && globalParams.country !== "" && globalParams.country !== 'Country' && globalParams.country !== undefined) {
-    $("#title-country").addClass("show");
-    }
-    if (globalParams.city && globalParams.city !== "" && globalParams.city !== 'City' && globalParams.city !== undefined) {
-    $("#title-city").addClass("show");
-    }
-    if (globalParams.brand && globalParams.brand !== "" && globalParams.brand !=='Brand' && globalParams.brand !== undefined) {
-    $("#title-brand").addClass("show");
-    }
-    if (globalParams.jobtitle && globalParams.jobtitle !== "" && globalParams.jobtitle !== 'jobtitle' && globalParams.jobtitle !== undefined) {
-    $("#title-jobtitle").addClass("show");
-    }
-    if (globalParams.department && globalParams.department !== "" && globalParams.department !== 'Department' && globalParams.department !== undefined) {
-    $("#title-department").addClass("show");
-    }
+  // alle .show-Klassen zurücksetzen
+  removeShowClass();
+
+  // Headline ein-/ausblenden
+  if (!globalParams || Object.keys(globalParams).length === 0) {
+    $('#message-headline').css('display', 'none');
+  } else {
+    $('#message-headline').css('display', '');
+  }
+
+  // Helper zum schnellen Prüfen
+  const hasVal = v => v !== undefined && v !== null && String(v).trim() !== '';
+
+  // Basis-Filter
+  if (hasVal(globalParams.country) && globalParams.country !== 'Country') {
+    $('#title-country').addClass('show');
+  }
+  if (hasVal(globalParams.city) && globalParams.city !== 'City') {
+    $('#title-city').addClass('show');
+  }
+  if (hasVal(globalParams.brand) && globalParams.brand !== 'Brand') {
+    $('#title-brand').addClass('show');
+  }
+  if (hasVal(globalParams.jobtitle) && globalParams.jobtitle !== 'jobtitle') {
+    $('#title-jobtitle').addClass('show');
+  }
+  if (hasVal(globalParams.department) && globalParams.department !== 'Department') {
+    $('#title-department').addClass('show');
+  }
+
+  // Extended-Filter
+  if (hasVal(globalParams.careerlevels)) {
+    $('#title-careerlevels').addClass('show');
+  }
+  if (hasVal(globalParams['employment-type'])) {
+    $('#title-employment-type').addClass('show');
+  }
+  if (hasVal(globalParams['joblocation-type'])) {
+    $('#title-joblocation-type').addClass('show');
+  }
+  if (hasVal(globalParams.keyword)) {
+    $('#title-keywords').addClass('show');
+  }
 }
-//remove show class from message elements
-export function removeShowClass(){
-    let messageTitleArray = ['country', 'city', 'brand', 'department', 'jobtitle'];
-    messageTitleArray.forEach((element) => {
-    $(`#title-${element}`).removeClass("show");
-    });
+
+// remove show class from message elements
+export function removeShowClass() {
+  // alle möglichen Titel-IDs hier aufführen
+  const messageTitleIds = [
+    'country',
+    'city',
+    'brand',
+    'department',
+    'jobtitle',
+    'careerlevels',
+    'employment-type',
+    'joblocation-type',
+    'keywords'
+  ];
+
+  messageTitleIds.forEach(key => {
+    $(`#title-${key}`).removeClass('show');
+  });
 }

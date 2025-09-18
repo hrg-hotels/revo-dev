@@ -1,0 +1,118 @@
+.extended-filter{
+    margin-top:20px;
+}
+.ext-filter-header {
+    border-bottom: 1px solid #E4E5E8;
+    cursor: pointer;
+    background: white;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+.article-title::before {
+    content: url('https://www.hrg-hotels.com/hubfs/Website/_icons/filter.png');
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 20px; 
+    position:absolute;
+    top:7px;
+    left:20px;
+    opacity: 0.5;
+}
+.article-title {
+    display: block;
+    position: relative;
+    margin: 0;
+    padding: 0.625em 0.625em 0.625em 2em;
+    cursor: pointer;
+    padding-left: 50px;
+    width:40%;
+}
+.extended-search{
+    width:30%;
+}
+.accordion-container .content-entry i {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+#arrow-cont{
+    height: 100%;
+    width: 20px;
+    margin: auto;
+}
+#arrow-cont img{
+    width: 20px ;
+}
+#arrow-cont.arrow-open{
+    rotate: 180deg;
+    margin:auto;
+}
+.accordion-content {
+    display: none;
+    display: flex;
+    justify-content: space-between;
+    padding: 30px 50px 30px 50px;
+    height: 250px;
+    flex-direction: row;
+}
+.filter-set{
+    display:flex;
+    width:42%;
+    padding-top: 4px;
+}
+.acc-col{
+    display:flex;
+    flex-wrap:wrap;
+    margin-top:10px;
+}
+#content {
+		width: 100%;
+}
+#description {
+    width: 90%;
+    margin: 1.875em auto;
+}
+#description p {
+    line-height: 1.5;
+}
+
+#description h2 {
+		text-align: center;
+}
+.badge{
+    border-bottom: 1px solid var(--awb-color3);
+    cursor:pointer;
+    width:46%;
+    color:black;
+}
+.badge p {
+    margin: 10px 0 10px 0 !important;
+}
+
+.badge:hover{
+    color: var(--awb-color5);
+}
+.search-active{
+   color: var(--awb-color5);
+}
+/***first column***/
+.acc-col-inner{
+    flex-wrap: wrap;
+    }
+/******Acc New**/
+.ext-filter-cont{
+    display: none;
+}
+
+.ext-filter-wrap {
+    position: relative;
+    background: white;
+    margin-bottom: 10px;
+}
+.ext-filter-header {
+    border-bottom: 1px solid #E4E5E8;
+    cursor: pointer;
+    background:white;
+}

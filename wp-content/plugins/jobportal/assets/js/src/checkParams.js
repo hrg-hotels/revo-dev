@@ -2,7 +2,7 @@
 import { getState, setResultJobs, setGlobalParams } from './state';
 import { generateDropdownOptions } from './modules/dropdowns';
 import { splittArray } from './modules/pagination';
-import { message } from './modules/messageBox';
+import { message} from './modules/messageBox';
 import { getParameter } from './getParameter';
 
 

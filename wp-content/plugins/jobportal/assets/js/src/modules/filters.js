@@ -1,56 +1,44 @@
-import { setResultJobs, getState, setGlobalParams } from '../state';
-import { splittArray } from "./pagination";
-import { generateDropdownOptions } from "./dropdowns";
+// assets/js/src/modules/filters.js
+import { setResultJobs, getState } from '../state';
+import { splittArray } from './pagination';
+import { generateDropdownOptions } from './dropdowns';
 import { message } from './messageBox';
 
 export function filterListByParams() {
-    console.log("filterListByParams called");
-    const params = getState().globalParams;
-    setResultJobs([]);
-    let localJobArr = [];
-    console.log("Filtering jobs with params:", params);
+  const params = getState().globalParams || {};
+  const fetchedJobs = getState().fetchedJobs || [];
+  const out = [];
 
-    const fetchedJobs = getState().fetchedJobs;
+  for (const job of fetchedJobs) {
+    let ok = true;
 
-    for (let job of fetchedJobs) {
-    let matchesJobs = true;
-    if (params.city?.trim().toLowerCase()) {
-        if (!job.city?.toLowerCase().includes(params.city.trim().toLowerCase())) {
-        matchesJobs = false;
-        }
-    }
-    if (params.brand?.trim().toLowerCase()) {
-        if (!job.brand?.toLowerCase().includes(params.brand.trim().toLowerCase())) {
-        matchesJobs = false;
-        }
-    }
-    if (params.department?.trim().toLowerCase()) {
-        if (!job.department?.toLowerCase().includes(params.department.trim().toLowerCase())) {
-        matchesJobs = false;
-        }
-    }
-    if (params.jobtitle?.trim().toLowerCase()) {
-        if (!job.title?.toLowerCase().includes(params.jobtitle.trim().toLowerCase())) {
-        matchesJobs = false;
-        }
-    }
-    if (matchesJobs) {
-        localJobArr.push(job);
-     }
-    }
-    console.log("Filtered jobs:", localJobArr);
-    setResultJobs(localJobArr);
+    if (params.city?.trim()       && !job.city?.toLowerCase().includes(params.city.trim().toLowerCase())) ok = false;
+    if (params.brand?.trim()      && !job.brand?.toLowerCase().includes(params.brand.trim().toLowerCase())) ok = false;
+    if (params.department?.trim() && !job.department?.toLowerCase().includes(params.department.trim().toLowerCase())) ok = false;
+    if (params.jobtitle?.trim()   && !job.title?.toLowerCase().includes(params.jobtitle.trim().toLowerCase())) ok = false;
 
-    let jobAmount = getState().resultJobArr.length;
-    message(jobAmount);
+    if (params.careerlevels?.trim()        && !job.careerlevels?.toLowerCase().includes(params.careerlevels.trim().toLowerCase())) ok = false;
+    if (params['employment-type']?.trim()  && !job.employment_type?.toLowerCase().includes(params['employment-type'].trim().toLowerCase())) ok = false;
+    if (params['joblocation-type']?.trim() && !job.joblocation_type?.toLowerCase().includes(params['joblocation-type'].trim().toLowerCase())) ok = false;
 
-    if (jobAmount > 0) {
-        console.log("Jobs found, updating URL parameters");
-        
-        splittArray();
-        generateDropdownOptions();
-    } else {
-        console.log("No jobs found, clearing URL parameters");
-        window.history.pushState({}, document.title, window.location.pathname);
+    if (params.keyword?.trim()) {
+      const selected = params.keyword.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+      const jobKeywords = Array.isArray(job.keywords)
+        ? job.keywords.map(k => String(k).toLowerCase())
+        : String(job.keywords || '').toLowerCase().split(',').map(s => s.trim());
+      const allMatch = selected.every(kw => jobKeywords.some(jk => jk.includes(kw)));
+      if (!allMatch) ok = false;
     }
-}    
+
+    if (ok) out.push(job);
+  }
+
+  generateDropdownOptions(out); // Update Dropdowns
+  setResultJobs(out);
+  message(); // Update Message Box
+
+  // Downstream der Pipeline:
+  // - splittArray erzeugt Seiten + ruft renderList(pageArray) SELBST
+  splittArray();
+
+}
