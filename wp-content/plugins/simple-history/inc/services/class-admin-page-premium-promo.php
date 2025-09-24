@@ -13,7 +13,7 @@ use Simple_History\Menu_Page;
 class Admin_Page_Premium_Promo extends Service {
 	/** @inheritdoc */
 	public function loaded() {
-		add_action( 'admin_menu', array( $this, 'add_promo_upsell_page' ), 20 );
+		add_action( 'admin_menu', array( $this, 'add_promo_upsell_page' ), 50 );
 	}
 
 	/**
@@ -32,7 +32,7 @@ class Admin_Page_Premium_Promo extends Service {
 			->set_menu_slug( 'simple_history_promo_upsell' )
 			->set_callback( [ $this, 'promo_upsell_page_output' ] )
 			->set_icon( 'workspace_premium' )
-			->set_order( 999 );
+			->set_order( 6 );
 
 		// Set different options depending on location.
 		if ( in_array( $admin_page_location, [ 'top', 'bottom' ], true ) ) {
@@ -56,7 +56,7 @@ class Admin_Page_Premium_Promo extends Service {
 	public function promo_upsell_page_output() {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo Admin_Pages::header_output();
-		
+
 		?>
 		<div class="wrap">
 			<?php

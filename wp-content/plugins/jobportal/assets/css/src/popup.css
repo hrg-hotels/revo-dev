@@ -86,12 +86,12 @@ max-width:100%;
     margin-top: 20px;
 }
 .pop-content p{
-    font-size: 12px;
+    font-size:14px;
     margin-top: 20px;
     margin-bottom: 20px;
 }
 .pop-content ul li{
-    font-size: 12px !important;
+    font-size: 14px !important;
     margin-bottom: 0;
 }
 .pop-col-01{
@@ -102,10 +102,10 @@ max-width:100%;
 }
 .pop-card{
     background: white;
-    border: 1px solid #E4E5E8;
     padding: 20px;
     display: flex;
     margin-top: 10px;
+    font-size: 14px;
 }
 .pop-header {
     display: flex;
@@ -133,14 +133,23 @@ max-width:100%;
     margin:0;
     padding: 8px 12px;
 }
+.col-1-2 {
+    width: 50%;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    padding-right: 10px;
+}
 .pop-card-col-1-2:first-child{
     border-right: 1px solid #E4E5E8;
 }
 
 .apply-btn-wrap{
     display:flex;
-    flex-direction:column;
     width:100%;
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
   }
   .whatsapp-icon{
     width: 50px;
@@ -150,41 +159,48 @@ max-width:100%;
     justify-content:center;
     margin-bottom:20px;
   }
-     .pop-col-01{
-        width:40%;
-        padding-right:20px;
-    }
-    .pop-col-02{
-        width:60%;
-    }
-    .pop-card-col-1-2:first-child{
-        border-right: 1px solid #E4E5E8;
-    }
-    .pop-card-col-1-2{
-        padding: 0 20px;
-    }
-    .pop-header {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .pop-title {
-        text-align: left;
-        margin-top: 0;
-    }
 
-    .btn-social{
-       margin-top:0;
-    }
-    .pop-apply{
-        position: fixed;
-        top: 200px;
-    }
-    .pop-apply-mobile{
-        display:none;
-    }
-    .icon-26 {
-    width: 26px;
+.pop-card-col-1-2:first-child{
+    border-right: 1px solid #E4E5E8;
+}
+.pop-card-col-1-2{
+    padding: 0 20px;
+}
+.pop-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.pop-title {
+    text-align: left;
+    margin-top: 0;
+}
+
+.btn-social {
+    margin-top: 0;
+    margin-right: 20px;
+    background: #E9E9E9;
+    padding: 10px;
+    align-content: center;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.pop-apply{
+    position: fixed;
+    top: 200px;
+}
+.pop-apply-mobile{
+    display:none;
+}
+.icon-26 {
+width: 26px;
+margin-bottom:15px;
+}
+.whatsapp-icon{
+    margin-left:20px;
 }
  @media (min-width: 768px) {
         .pop-content {
@@ -200,10 +216,12 @@ max-width:100%;
     }
     .pop-card{
         background: white;
-        border: 1px solid #E4E5E8;
         padding: 20px;
         display: flex;
         margin-left: 10px;
+        margin-top:10px;
+    }
+    .pop-card:first-child{
         margin-top:0;
     }
     .pop-up{
@@ -253,16 +271,9 @@ max-width:100%;
     }
  }
 @media (min-width: 992px) {
-      .apply-btn-wrap {
-          flex-direction: row;
-          justify-content: flex-start;
-      }
       .apply-item {
         justify-content: end;
         flex-direction: column;
-    }
-    .whatsapp-icon{
-      margin-left:20px;
     }
   }
 @media only screen and (min-width: 1280px){

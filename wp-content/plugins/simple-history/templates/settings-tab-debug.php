@@ -4,6 +4,7 @@ namespace Simple_History;
 
 use Simple_History\Services\Admin_Pages;
 use Simple_History\Services\Stealth_Mode;
+use Simple_History\Compat;
 
 defined( 'ABSPATH' ) || die();
 
@@ -153,13 +154,27 @@ echo Admin_Pages::header_output();
 		echo '</p>';
 	} else {
 		$total_logged_events_count = Helpers::get_total_logged_events_count();
-		$plugin_install_date_local = wp_date( 'Y-m-d H:i:s', strtotime( $plugin_install_date ) );
+		$plugin_install_date_local = Compat::wp_date( 'Y-m-d H:i:s', strtotime( $plugin_install_date ) );
 		echo '<p>';
 		printf(
 			/* translators: %d number of logged events. */
 			esc_html_x( '%1$s logged events since %2$s.', 'debug dropin', 'simple-history' ),
 			esc_html( number_format_i18n( $total_logged_events_count ) ),
 			esc_html( $plugin_install_date_local )
+		);
+		echo '</p>';
+	}
+
+	// Date of oldest event.
+	$oldest_event = ( new Events_Stats() )->get_oldest_event();
+
+	if ( $oldest_event ) {
+		echo '<p>';
+		printf(
+			/* translators: %s date of oldest event. */
+			esc_html_x( 'Oldest event is from %1$s and has id %2$s.', 'debug dropin', 'simple-history' ),
+			esc_html( $oldest_event['date'] ),
+			esc_html( $oldest_event['id'] )
 		);
 		echo '</p>';
 	}

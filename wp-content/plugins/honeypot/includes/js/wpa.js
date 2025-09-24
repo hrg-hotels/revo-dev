@@ -5,7 +5,7 @@ jQuery(document).ready(function(){
 	wpa_unique_id 	= wpa_field_info.wpa_field_value;
 	wpa_add_test 	= wpa_field_info.wpa_add_test;
 
-	wpa_hidden_field 			= "<div id='altEmail_container' class='altEmail_container'><label for='alt_s'>Alternative:</label><input type='text' id='alt_s' name='alt_s' ></div><span class='wpa_hidden_field' style='display:none;height:0;width:0;'><label>WPA <input type='text' name='"+wpa_field_name+"' value='"+wpa_unique_id+"' /></label></span>";
+	wpa_hidden_field 			= "<div id='altEmail_container' class='altEmail_container'><label for='alt_s'>Alternative:</label><input type='text' id='alt_s' name='alt_s' ></div><span class='wpa_hidden_field' style='display:none;height:0;width:0;'><label for='"+wpa_field_name+"'>WPA</label> <input type='text' name='"+wpa_field_name+"' id='"+wpa_field_name+"' value='"+wpa_unique_id+"' /></span>";
 
 	wpa_add_honeypot_field();
 
@@ -54,13 +54,24 @@ function wpa_add_honeypot_field(){
 	    'form.wpa_form',						   // Generic Class
 	    '.wpa_form form',					   // Generic Class	
 
+	    '.um-form form',						// Ulimate Membership Form
+
 	    // Login forms
 	    'form.spectra-pro-login-form',         // SPECTRA LOGIN FORM
 	    'form#loginform',                      // Default Login Form
 	    'form#edd_login_form',                 // EDD LOGIN FORM
 	    'form.uwp-login-form',                 // USER WP LOGIN FORM
 	    '.et_pb_login_form form',			   // For Elementor login form
-	    'form.eael-login-form',				   // essential-addons login form	
+	    'form.eael-login-form',				   // essential-addons login form
+	    'form.user-registration-form-login',   // User Registration & Membership for WordPress
+
+	    'form#lostpasswordform',			   // Lost Password Form
+	    'form.lost_reset_password',            // Tutor Password Form
+	    'form.ur_lost_reset_password',    	   // User Registration & Membership for WordPress	    
+
+	    
+	    //Registration Forms
+	    'form.register',            		   // User Registration & Membership for WordPress
 
 	    // Comment forms
 	    'form#commentform',                    // WP Comment with ID
@@ -69,6 +80,7 @@ function wpa_add_honeypot_field(){
 	    'form.comment-form',                   // WP Comment with class
 	    '.review-form form',                   // LearnPress Review
 	    'form#edd-reviews-form',               // EDD Reviews with ID
+	    'form.wpr-comment-form',				
 
 	    // BBPress forms
 	    '.bbp-topic-form form',                // BBPress Topic Form

@@ -106,45 +106,62 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+/**
+ * Liest URL-Parameter, schreibt sie in Inputs & Badges
+ * und setzt globalParams im State. Danach wird die zentrale
+ * Pipeline (filterListByParams) angestoßen.
+ */
 function getParameter() {
   const params = Object.fromEntries(new URLSearchParams(window.location.search).entries());
 
-  // Inputs setzen
+  /** ---------------- Inputs setzen ---------------- */
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('.selection-hr input[name="jobtitle"]').val(params.jobtitle || '');
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('.selection-hr input[name="city"]').val(params.city || '');
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('.selection-hr input[name="brand"]').val(params.brand || '');
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('.selection-hr input[name="department"]').val(params.department || '');
 
-  // Badges setzen (Single-Select resetten)
+  /** ---------------- Badges zurücksetzen ---------------- */
+  function resetGroup(selector) {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()(selector).removeClass('search-active').attr('aria-checked', 'false');
+  }
+
+  // Careerlevels (Single-Select)
   if ('careerlevels' in params) {
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('.badge.careerlevels').removeClass('search-active').css('background', '').attr('aria-checked', 'false');
-    if (params.careerlevels) jquery__WEBPACK_IMPORTED_MODULE_0___default()(`.badge.careerlevels[name="${params.careerlevels}"]`).addClass('search-active').attr('aria-checked', 'true');
+    resetGroup('.badge.careerlevels');
+    if (params.careerlevels) {
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()(`.badge.careerlevels[name="${params.careerlevels}"]`).addClass('search-active').attr('aria-checked', 'true');
+    }
   }
+
+  // Employment-Type (Single-Select)
   if ('employment-type' in params) {
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('.badge.employment-type').removeClass('search-active').css('background', '').attr('aria-checked', 'false');
-    if (params['employment-type']) jquery__WEBPACK_IMPORTED_MODULE_0___default()(`.badge.employment-type[name="${params['employment-type']}"]`).addClass('search-active').attr('aria-checked', 'true');
+    resetGroup('.badge.employment-type');
+    if (params['employment-type']) {
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()(`.badge.employment-type[name="${params['employment-type']}"]`).addClass('search-active').attr('aria-checked', 'true');
+    }
   }
+
+  // Joblocation-Type (Single-Select)
   if ('joblocation-type' in params) {
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('.badge.joblocation-type').removeClass('search-active').css('background', '').attr('aria-checked', 'false');
-    if (params['joblocation-type']) jquery__WEBPACK_IMPORTED_MODULE_0___default()(`.badge.joblocation-type[name="${params['joblocation-type']}"]`).addClass('search-active').attr('aria-checked', 'true');
+    resetGroup('.badge.joblocation-type');
+    if (params['joblocation-type']) {
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()(`.badge.joblocation-type[name="${params['joblocation-type']}"]`).addClass('search-active').attr('aria-checked', 'true');
+    }
   }
-  // Keywords (Multi)
+
+  // Keywords (Multi-Select)
   if ('keyword' in params) {
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()('.badge.keyword').removeClass('search-active').css('background', '').attr('aria-checked', 'false');
+    resetGroup('.badge.keyword');
     if (params.keyword) {
       params.keyword.split(',').map(s => s.trim()).filter(Boolean).forEach(kw => {
         jquery__WEBPACK_IMPORTED_MODULE_0___default()(`.badge.keyword[name="${kw}"]`).addClass('search-active').attr('aria-checked', 'true');
       });
     }
   }
-
-  // State setzen
+  /** ---------------- State & Pipeline ---------------- */
   (0,_state__WEBPACK_IMPORTED_MODULE_1__.setGlobalParams)(params);
-
-  // Counter aktualisieren
   (0,_modules_extended_filter__WEBPACK_IMPORTED_MODULE_3__.updateFilterCount)(jquery__WEBPACK_IMPORTED_MODULE_0___default()('#filter-count'));
-
-  // zentrale Filter/Render-Pipeline
   (0,_modules_filters__WEBPACK_IMPORTED_MODULE_2__.filterListByParams)();
 }
 
@@ -168,33 +185,42 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+function getUrlParams() {
+  return Object.fromEntries(new URLSearchParams(window.location.search).entries());
+}
+function upsert(argObj, key, value) {
+  const v = (value ?? '').toString().trim();
+  if (v) argObj[key] = v;else delete argObj[key]; // leeren -> aus URL entfernen
+}
 
 /**
  * Zentraler Einstieg bei jeder Änderung (Inputs/Badges/Enter/etc.)
- * - liest Input-Felder
- * - merged optionalen Patch (Badges)
- * - aktualisiert URL
- * - triggert checkParams() (→ Rest der Pipeline)
+ * - nimmt bestehende URL-Params als Basis (so bleiben Extended-Filter erhalten)
+ * - merged Input-Felder und Patch (Patch gewinnt)
+ * - entfernt explizit leere Keys
+ * - aktualisiert URL und triggert die Pipeline
  */
 function handleEvent(patch = {}) {
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('.nfg').remove();
-  const jobtitle = (jquery__WEBPACK_IMPORTED_MODULE_0___default()('#jobtitle-header').val() || '').trim();
-  const city = (jquery__WEBPACK_IMPORTED_MODULE_0___default()('#city-header').val() || '').trim();
-  const department = (jquery__WEBPACK_IMPORTED_MODULE_0___default()('#department-header').val() || '').trim();
-  const brand = (jquery__WEBPACK_IMPORTED_MODULE_0___default()('#brand-header').val() || '').trim();
-  const argObj = {};
-  if (jobtitle) argObj.jobtitle = jobtitle;
-  if (brand) argObj.brand = brand;
-  if (city) argObj.city = city;
-  if (department) argObj.department = department;
 
-  // Badge-Patch überschreibt Input-Keys (falls gleichnamig)
-  Object.assign(argObj, patch);
+  // 1) Basis = aktuelle URL-Parameter (so verlieren wir Extended-Filter nicht)
+  const argObj = {
+    ...getUrlParams()
+  };
 
-  // URL setzen/aufräumen
+  // 2) Inputs übernehmen (leere Werte -> Key löschen)
+  upsert(argObj, 'jobtitle', jquery__WEBPACK_IMPORTED_MODULE_0___default()('#jobtitle-header').val());
+  upsert(argObj, 'city', jquery__WEBPACK_IMPORTED_MODULE_0___default()('#city-header').val());
+  upsert(argObj, 'department', jquery__WEBPACK_IMPORTED_MODULE_0___default()('#department-header').val());
+  upsert(argObj, 'brand', jquery__WEBPACK_IMPORTED_MODULE_0___default()('#brand-header').val());
+
+  // 3) Patch (Badges) mergen (Patch gewinnt; leere / entfernte -> Key löschen)
+  Object.keys(patch || {}).forEach(k => upsert(argObj, k, patch[k]));
+
+  // 4) URL setzen/aufräumen
   (0,_pushArgToURL__WEBPACK_IMPORTED_MODULE_1__.pushArgToURL)(argObj);
 
-  // → ab hier übernimmt deine Pipeline
+  // 5) → ab hier übernimmt deine Pipeline
   (0,_checkParams__WEBPACK_IMPORTED_MODULE_2__.checkParams)();
 }
 
@@ -447,10 +473,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "jquery");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../state */ "./assets/js/src/state.js");
-/* harmony import */ var _handleEvent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../handleEvent */ "./assets/js/src/handleEvent.js");
+/* harmony import */ var _handleEvent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../handleEvent */ "./assets/js/src/handleEvent.js");
 // assets/js/src/modules/extended-filter.js
-
 
 
 const SINGLE_GROUPS = ['careerlevels', 'employment-type', 'joblocation-type'];
@@ -493,8 +517,10 @@ function initAccordion() {
       $arrow.removeClass('arrow-open');
     }
   }
-  $head.on('click', togglePanel);
-  $head.on('keydown', e => {
+
+  // Events namespacen, doppelte Bindings verhindern
+  $head.off('click.extHead').on('click.extHead', togglePanel);
+  $head.off('keydown.extHead').on('keydown.extHead', e => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       togglePanel();
@@ -509,97 +535,82 @@ function initAccordion() {
   });
 
   // Delegation: Klick/Keyboard -> toggleBadge
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).on('click', '.badge', function () {
-    toggleBadge(jquery__WEBPACK_IMPORTED_MODULE_0___default()(this));
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).off('click.extBadge', '.badge').on('click.extBadge', '.badge', function () {
+    toggleBadge(jquery__WEBPACK_IMPORTED_MODULE_0___default()(this)); // WICHTIG: $badge wird übergeben; KEIN $(this) in der Funktion selbst benutzen
   });
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).on('keydown', '.badge', function (e) {
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).off('keydown.extBadge', '.badge').on('keydown.extBadge', '.badge', function (e) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       toggleBadge(jquery__WEBPACK_IMPORTED_MODULE_0___default()(this));
     }
   });
 
-  // Initial Counter anzeigen
+  // Initial Counter (aus DOM) anzeigen
   updateFilterCount(jquery__WEBPACK_IMPORTED_MODULE_0___default()('#filter-count'));
 }
 
 /**
  * Toggle eines Badges:
- * - schreibt DIREKT in globalParams (Single Source of Truth)
- * - aktualisiert die Optik (Klassen/ARIA)
- * - triggert deine Pipeline über handleEvent(globalParams)
+ * - ändert NUR die DOM-Optik (Klassen/ARIA)
+ * - baut ein Patch-Objekt aus der aktuellen DOM-Auswahl
+ * - triggert deine Pipeline über handleEvent(patch)
  */
 function toggleBadge($badge) {
+  if (!$badge || !$badge.length) return;
   const name = ($badge.attr('name') || '').trim();
   if (!name) return;
-  const gp = {
-    ...((0,_state__WEBPACK_IMPORTED_MODULE_1__.getState)().globalParams || {})
-  };
-  if ($badge.hasClass('keyword')) {
-    // Multi-Select: Keyword in CSV toggeln
-    gp.keyword = toggleKeywordInCommaList(gp.keyword, name);
-    const activeNow = includesKeyword(gp.keyword, name);
-    $badge.toggleClass('search-active', activeNow).attr('aria-checked', String(activeNow));
-  } else {
-    // Single-Select: gesamte Gruppe resetten, dann ggf. setzen
-    const group = SINGLE_GROUPS.find(g => $badge.hasClass(g));
-    if (!group) return;
-    const isAlreadyActive = $badge.hasClass('search-active') && gp[group] === name;
 
-    // Optik-Gruppe zurücksetzen
+  // Gruppe bestimmen
+  const group = $badge.hasClass('careerlevels') ? 'careerlevels' : $badge.hasClass('employment-type') ? 'employment-type' : $badge.hasClass('joblocation-type') ? 'joblocation-type' : $badge.hasClass('keyword') ? 'keyword' : null;
+  if (!group) return;
+  let patch = {};
+  if (group === 'keyword') {
+    // Multi-Select: einzelnes Badge toggeln
+    const willActivate = !$badge.hasClass('search-active');
+    $badge.toggleClass('search-active', willActivate).attr('aria-checked', String(willActivate));
+
+    // Patch = gesamte aktuelle Keyword-Liste ('' → URL-Key wird gelöscht)
+    const keywords = collectNames('.badge.keyword.search-active');
+    patch.keyword = keywords.join(',');
+  } else {
+    // Single-Select: direktes Umschalten innerhalb der Gruppe
+    const wasActive = $badge.hasClass('search-active');
+
+    // Gruppe im DOM leeren
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(`.badge.${group}`).removeClass('search-active').attr('aria-checked', 'false');
-    if (isAlreadyActive) {
-      // Deselektieren: Key entfernen
-      delete gp[group];
+    if (wasActive) {
+      // Deselect → Key explizit leeren, damit er aus der URL entfernt wird
+      patch[group] = '';
     } else {
-      // Auswählen: Key setzen
-      gp[group] = name;
+      // Neues Badge aktivieren
       $badge.addClass('search-active').attr('aria-checked', 'true');
+      patch[group] = name;
     }
   }
 
-  // State aktualisieren (Single Source of Truth)
-  (0,_state__WEBPACK_IMPORTED_MODULE_1__.setGlobalParams)(gp);
-
-  // Counter nur aus State berechnen
+  // Counter sofort aus DOM aktualisieren
   updateFilterCount(jquery__WEBPACK_IMPORTED_MODULE_0___default()('#filter-count'));
 
-  // Zentrale Pipeline starten:
-  // handleEvent pusht URL aus den aktuellen globalParams und ruft checkParams -> getParameter -> filterListByParams -> splittArray -> renderList
-  (0,_handleEvent__WEBPACK_IMPORTED_MODULE_2__.handleEvent)((0,_state__WEBPACK_IMPORTED_MODULE_1__.getState)().globalParams);
+  // Zentrale Pipeline starten (URL mergen, leere Keys löschen, dann checkParams → ...)
+  (0,_handleEvent__WEBPACK_IMPORTED_MODULE_1__.handleEvent)(patch);
 }
 
 /**
- * Counter ausschließlich aus globalParams.
+ * Zähler ausschließlich aus DOM (aktive Badges).
+ * Zeigt: 1 pro aktivem Single-Select + 1 pro aktivem Keyword.
  */
 function updateFilterCount($countEl) {
-  const {
-    globalParams = {}
-  } = (0,_state__WEBPACK_IMPORTED_MODULE_1__.getState)();
-  let count = 0;
-  if (globalParams.careerlevels) count++;
-  if (globalParams['employment-type']) count++;
-  if (globalParams['joblocation-type']) count++;
-  if (globalParams.keyword) {
-    count += String(globalParams.keyword).split(',').map(s => s.trim()).filter(Boolean).length;
-  }
-  if ($countEl && $countEl.length) $countEl.text(count);
+  const n = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.badge.search-active').length;
+  if ($countEl && $countEl.length) $countEl.text(n);
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()('#ext-filter-head').toggleClass('has-active', n > 0); // optionales UI-Feedback
 }
 
-/* ----------------- Helpers für Keywords (CSV) ----------------- */
+/* ----------------- Helpers ----------------- */
 
-function includesKeyword(csv, val) {
-  return String(csv || '').split(',').map(s => s.trim()).filter(Boolean).includes(val);
-}
-function toggleKeywordInCommaList(csv, val) {
-  const arr = String(csv || '').split(',').map(s => s.trim()).filter(Boolean);
-  const idx = arr.indexOf(val);
-  if (idx >= 0) {
-    arr.splice(idx, 1); // entfernen
-  } else {
-    arr.push(val); // hinzufügen
-  }
-  return arr.join(',');
+function collectNames(selector) {
+  return jquery__WEBPACK_IMPORTED_MODULE_0___default()(selector).map(function () {
+    return (jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).attr('name') || '').trim();
+  }).get().filter(Boolean);
 }
 
 /***/ }),
@@ -1014,145 +1025,152 @@ function renderJobDetails(job) {
   let popUp = document.createElement("div");
   popUp.classList.add("pop-up");
   popUp.innerHTML = `
-    <div class="pop-up-window">
+      <div class="pop-up-window">
         <span class="close" style="position: absolute; z-index: 5000;">&times;</span>
         <div class="pop-header">
-          <!---  <div class="pop-logo">
-            <img src="${job.brand_url}" 
-            >
-            </div>--->
-            <div class="pop-title">
-                <h3 class="heading">${job.title}</h3>
-                <p class="mt-10 heading-small">${job.companyname}</p>
-                <div class="pop-key-wrap">
-                  <div class="key-container">
-                      <p>${job.employment_type}</p>
-                  </div>
-                  <div class="key-container">
-                      <p>${job.careerlevels}</p>
-                  </div>
-                  <div class="key-container">
-                      <p>${job.joblocation_type}</p>
-                  </div>
-                  <div class="key-container">
-                    <p>${job.categories}</p>
-                  </div>
-                </div>
+          <!--
+          <div class="pop-logo">
+            <img src="${job.brand_url}">
+          </div>
+          -->
+          <div class="pop-title">
+            <h3 class="heading">${job.title}</h3>
+            <p class="mt-10 heading-small">${job.companyname}</p>
+            <div class="pop-key-wrap">
+              <div class="key-container">
+                <p>${job.employment_type}</p>
+              </div>
+              <div class="key-container">
+                <p>${job.careerlevels}</p>
+              </div>
+              <div class="key-container">
+                <p>${job.joblocation_type}</p>
+              </div>
+              <div class="key-container">
+                <p>${job.categories}</p>
+              </div>
             </div>
-
+          </div>
         </div>
+
         <div class="pop-content">
-            <div class="pop-col-01">
-                <div class="pop-header-image">
-                  <img src="${job.images_header0}" 
-                  alt="job header image" 
+          <div class="pop-col-01">
+            <div class="pop-header-image">
+              <img src="${job.images_header0}"
+                  alt="job header image"
                   style="width: -webkit-fill-available;">
-                </div>
-                <div class="cont-pop description">${job.description}</div>
-                <div class="cont-pop tasks">${job.tasks}</div>
-                <div class="cont-pop requirement">${job.requirement_content}</div>
-                <div class="cont-pop offer">${job.offer}</div>
             </div>
-            <div class="pop-col-02">            
-                <div class="pop-card">
-                    <div class="col-1-2">
-                        <div style="font-size: 12px;">
-                            <div class="w-100">
-                                 <img src="${imgPath}map.svg" class="icon-26" alt="map"> 
-                            </div>
-                            <strong>Adresseeee</strong><br>
-                            <div class="color-dark-gray">
-                                ${job.companyname}<br>
-                                ${job.street} ${job.buildingnumber}<br>
-                                ${job.postalcode} ${job.city}<br>
-                                ${job.country}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-1-2">
-                        <div style="font-size: 12px;">
-                        <div class="w-100">
-                           <img src="${imgPath}account_circle.svg" class="icon-26" alt="circle"> 
-                        </div>
-                            <strong>contactPerson</strong><br>
-                            ${job.recruiter_firstname} ${job.recruiter_lastname}
-                        </div>
-                    </div>
-                </div>
+            <div class="cont-pop description">${job.description}</div>
+            <div class="cont-pop tasks">${job.tasks}</div>
+            <div class="cont-pop requirement">${job.requirement_content}</div>
+            <div class="cont-pop offer">${job.offer}</div>
+          </div>
 
-                <div class="pop-card flex-col">
-                    <span  class="font-12"><strong>jobOverview</strong></span>
-                    <div class="row">
-                        <div class="col-1-2">
-                            <img src="${imgPath}work.svg" class="icon-26" alt="work-icon"> 
-                            <span class="color-dark-gray font-12 m-t-5">Scope:</span>
-                            <span class="font-12"><strong>${job.categories}</strong></span>
-                        </div>
-                        <div class="col-1-2">
-                            <img src="${imgPath}layers.svg" class="icon-26" alt="icon"> 
-                            <span class="color-dark-gray font-12 m-t-5">Level:</span>
-                            <span class="font-12"><strong>${job.careerlevels}</strong></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-1-2">
-                            <img src="${imgPath}avg_pace.svg" class="icon-26" alt="work-icon"> 
-                            <span class="color-dark-gray font-12 m-t-5">Employment Form:</span>
-                            <span class="font-12"><strong>${job.employment_type}</strong></span>
-                        </div>
-                        <div class="col-1-2">
-                            <img src="${imgPath}location_away.svg" class="icon-26" alt="work-icon"> 
-                            <span class="color-dark-gray font-12 m-t-5">Joblocation Type:</span>
-                            <span class="font-12"><strong>${job.joblocation_type}</strong></span>
-                        </div>
-                    </div>
-                </div> 
-                <div class="pop-card border-top flex-col">
-                    <div class="row">
-                        <span class="font-12"><strong>Follow us</strong></span>
-                    </div>
-                    <div class="row">
-                        <a href="https://www.linkedin.com/company/hotels-by-hr-gmbh/mycompany/" target=“_blank“ rel=“noopener“ class="btn-social">
-                          <img src="${imgPath}icon_linkedin.png" class="icon-20" alt="icon linkedIn">
-                        </a>
-                        <a href="https://www.xing.com/pages/hrghotelsgmbh" target=“_blank“ rel=“noopener“ class="btn-social">
-                          <img src="${imgPath}icon_xing.png" class="icon-20" alt="icon xing">
-                        </a>
-                        <a href="https://www.facebook.com/HRGroup.Hotels" target=“_blank“ rel=“noopener“ class="btn-social">
-                          <img src="${imgPath}icon_facebook.png" class="icon-20" alt="icon facebook">
-                        </a>
-                        <a href="https://www.youtube.com/channel/UCUP45iVsv0K4ie7u5BqY_PQ" target=“_blank“ rel=“noopener“ class="btn-social" >
-                           <img src="${imgPath}icon_youtube.png" class="icon-20" alt="icon youtube">
-                        </a>
-                        <a href="https://www.instagram.com/hrg.community/" target=“_blank“ rel=“noopener“ class="btn-social" >
-                          <img src="${imgPath}icon_insta.png" class="icon-20" alt="icon instagram">
-                       </a>
-                       <a href="https://www.tiktok.com/@hrg.hotels" target=“_blank“ rel=“noopener“ class="btn-social" >
-                          <img src="${imgPath}icon_tiktok.png" class="icon-20" alt="icon tiktok">
-                        </a>
-                    </div>
-                    
-                    <div class="row">
-                      <div class="apply-btn-wrap">
-                        <div class="apply-item">
-                          <a class="btn btn-apply m-b-0" target="_blank" rel="noopener nofollow" href="">apply!</a>
-                        </div>
-                        <div class="apply-item">
-                          <a href="https://of-hrg-hotels.pitchyou.de/go/${job.reference_id}" target=“_blank“ rel=“noopener“>
-                            <img src="${imgPath}icon_whatsapp.png" class="whatsapp-icon" alt="icon">
-                          </a>
-                        </div>
-                      </div>
-                    </div>
+          <div class="pop-col-02">
+            <div class="pop-card">
+              <div class="col-1-2">
+                <div>
+                  <div class="w-100">
+                    <img src="${imgPath}map.svg" class="icon-26" alt="map">
+                  </div>
+                  <h3 class="heading mb-20">Adresse</h3>
+                  <div class="color-dark-gray">
+                    ${job.companyname}<br>
+                    ${job.street} ${job.buildingnumber}<br>
+                    ${job.postalcode} ${job.city}<br>
+                    ${job.country}
+                  </div>
                 </div>
+              </div>
+
+              <div class="col-1-2">
+                <div>
+                  <div class="w-100">
+                    <img src="${imgPath}account_circle.svg" class="icon-26" alt="circle">
+                  </div>
+                  <h3 class="heading mb-20">contactPerson</h3>
+                  ${job.recruiter_firstname} ${job.recruiter_lastname}
+                </div>
+              </div>
             </div>
-        </div>   
-        <div class="row">
-        <div class="btn-bottom-desktop">
 
+            <div class="pop-card flex-col">
+              <div class="mb-20">
+                <h3 class="heading">JobOverview</h3>
+              </div>
+
+              <div class="flex">
+                <div class="col-1-2">
+                  <img src="${imgPath}work.svg" class="icon-26" alt="work-icon">
+                  <span class="color-dark-gray font-12 m-t-5">Scope:</span>
+                  <span class="font-12 black"> ${job.categories} </span>
+                </div>
+                <div class="col-1-2">
+                  <img src="${imgPath}layers.svg" class="icon-26" alt="icon">
+                  <span class="color-dark-gray font-12 m-t-5">Level:</span>
+                  <span class="font-12 black"> ${job.careerlevels} </span>
+                </div>
+              </div>
+
+              <div class="flex mt-20">
+                <div class="col-1-2">
+                  <img src="${imgPath}avg_pace.svg" class="icon-26" alt="work-icon">
+                  <span class="color-dark-gray font-12 m-t-5">Employment Form:</span>
+                  <span class="font-12 black"> ${job.employment_type} </span>
+                </div>
+                <div class="col-1-2">
+                  <img src="${imgPath}location_away.svg" class="icon-26" alt="work-icon">
+                  <span class="color-dark-gray font-12 m-t-5">Joblocation Type:</span>
+                  <span class="font-12 black"> ${job.joblocation_type} </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pop-card border-top flex-col">
+              <div class="mb-20">
+                <h3 class="heading">Follow us</h3>
+              </div>
+              <div class="flex">
+                <a href="https://www.linkedin.com/company/hotels-by-hr-gmbh/mycompany/" target="_blank" rel="noopener" class="btn-social">
+                  <img src="${imgPath}icon_linkedin.png" class="icon-20" alt="icon linkedIn">
+                </a>
+                <a href="https://www.xing.com/pages/hrghotelsgmbh" target="_blank" rel="noopener" class="btn-social">
+                  <img src="${imgPath}icon_xing.png" class="icon-20" alt="icon xing">
+                </a>
+                <a href="https://www.facebook.com/HRGroup.Hotels" target="_blank" rel="noopener" class="btn-social">
+                  <img src="${imgPath}icon_facebook.png" class="icon-20" alt="icon facebook">
+                </a>
+                <a href="https://www.youtube.com/channel/UCUP45iVsv0K4ie7u5BqY_PQ" target="_blank" rel="noopener" class="btn-social">
+                  <img src="${imgPath}icon_youtube.png" class="icon-20" alt="icon youtube">
+                </a>
+                <a href="https://www.instagram.com/hrg.community/" target="_blank" rel="noopener" class="btn-social">
+                  <img src="${imgPath}icon_insta.png" class="icon-20" alt="icon instagram">
+                </a>
+                <a href="https://www.tiktok.com/@hrg.hotels" target="_blank" rel="noopener" class="btn-social">
+                  <img src="${imgPath}icon_tiktok.png" class="icon-20" alt="icon tiktok">
+                </a>
+              </div>
+
+              <div class="mb-20 mt-20">
+                <h3 class="heading">Hier Bewerben</h3>
+              </div>
+
+              <div class="apply-btn-wrap">
+                <div class="apply-item">
+                  <a class="fusion-button button-flat fusion-button-default-size button-custom fusion-button-default button-2 fusion-button-default-span fusion-button-default-type"
+                    target="_blank" rel="noopener nofollow" href="">apply!</a>
+                </div>
+                <div class="apply-item">
+                  <a href="https://of-hrg-hotels.pitchyou.de/go/${job.reference_id}" target="_blank" rel="noopener">
+                    <img src="${imgPath}icon_whatsapp.png" class="whatsapp-icon" alt="icon">
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-    </div>
-    </div>
+      </div> 
+
     `;
   //append to current job
   let currentEl = document.getElementById("current-job");
@@ -1303,6 +1321,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   setFetchedJobs: function() { return /* binding */ setFetchedJobs; },
 /* harmony export */   setGlobalParams: function() { return /* binding */ setGlobalParams; },
 /* harmony export */   setPagination: function() { return /* binding */ setPagination; },
+/* harmony export */   setReferenceId: function() { return /* binding */ setReferenceId; },
 /* harmony export */   setResultJobs: function() { return /* binding */ setResultJobs; },
 /* harmony export */   setSplittResult: function() { return /* binding */ setSplittResult; }
 /* harmony export */ });
@@ -1313,6 +1332,7 @@ const state = {
   resultJobArr: [],
   urlParams: "",
   globalParams: {},
+  reference_id: "",
   selections: {
     city: "",
     jobtitle: "",
@@ -1321,8 +1341,8 @@ const state = {
   },
   currentPageNumber: 1,
   prevPageNumber: 0,
-  nextPageNumber: 2,
-  splittResult: []
+  nextPageNumber: 2
+  // splittResult: [],s
 };
 
 // Getter
@@ -1340,6 +1360,9 @@ const setSplittResult = list => {
 };
 const setGlobalParams = obj => {
   state.globalParams = obj || {};
+};
+const setReferenceId = str => {
+  state.reference_id = str || "";
 };
 const setPagination = patch => {
   state.currentPageNumber = patch.currentPageNumber ?? state.currentPageNumber;
@@ -1361,31 +1384,34 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "jquery");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./state */ "./assets/js/src/state.js");
-/* harmony import */ var _modules_messageBox__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/messageBox */ "./assets/js/src/modules/messageBox.js");
-/* harmony import */ var _modules_extended_filter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/extended-filter */ "./assets/js/src/modules/extended-filter.js");
-/* harmony import */ var _handleEvent__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./handleEvent */ "./assets/js/src/handleEvent.js");
+/* harmony import */ var _modules_messageBox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/messageBox */ "./assets/js/src/modules/messageBox.js");
+/* harmony import */ var _modules_extended_filter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/extended-filter */ "./assets/js/src/modules/extended-filter.js");
+/* harmony import */ var _handleEvent__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./handleEvent */ "./assets/js/src/handleEvent.js");
+// assets/js/src/modules/ui-helper.js
 
 
 
 
 
+// Alle bekannten Query-Keys (Inputs + Extended Filter)
+const KNOWN_KEYS = ['jobtitle', 'city', 'country', 'brand', 'department', 'careerlevels', 'employment-type', 'joblocation-type', 'keyword'];
 
 /**
- * Bindet UI-Helfer wie den Reset-Button.
+ * UI-Helfer initialisieren (z. B. Reset-Button).
  * Aufruf in main.js nach DOMContentLoaded.
  */
 function initUIHelpers() {
   bindResetButton();
 }
 function bindResetButton() {
-  jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).off('click.ui-reset', '#btn-reset'); // doppelte Bindungen vermeiden
+  // doppelte Bindungen vermeiden
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).off('click.ui-reset', '#btn-reset');
   jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).on('click.ui-reset', '#btn-reset', function () {
-    // 1) Message-Tags zurücksetzen & Not-Found-Graphic entfernen
-    (0,_modules_messageBox__WEBPACK_IMPORTED_MODULE_2__.removeShowClass)();
+    // 1) Message-Tags & Not-Found-Graphic entfernen
+    (0,_modules_messageBox__WEBPACK_IMPORTED_MODULE_1__.removeShowClass)();
     jquery__WEBPACK_IMPORTED_MODULE_0___default()('.nfg').remove();
 
-    // 2) Inputs und Optionen zurücksetzen
+    // 2) Inputs & Optionen zurücksetzen
     const filters = [{
       id: 'jobtitle',
       placeholder: 'Jobtitle'
@@ -1411,19 +1437,18 @@ function bindResetButton() {
       jquery__WEBPACK_IMPORTED_MODULE_0___default()(`.selection-hr input[name="${id.replace('-', ' ')}"]`).val('');
     });
 
-    // 3) Alle Badges (Extended Filter) zurücksetzen (Optik + ARIA)
+    // 3) Alle Badges (Extended Filter) optisch & ARIA zurücksetzen
     jquery__WEBPACK_IMPORTED_MODULE_0___default()('.badge').removeClass('search-active').attr('aria-checked', 'false');
 
-    // 4) State leeren (Single source of truth)
-    (0,_state__WEBPACK_IMPORTED_MODULE_1__.setGlobalParams)({});
+    // 4) Counter direkt aus DOM neu berechnen
+    (0,_modules_extended_filter__WEBPACK_IMPORTED_MODULE_2__.updateFilterCount)(jquery__WEBPACK_IMPORTED_MODULE_0___default()('#filter-count'));
 
-    // 5) Zähler aktualisieren (nur aus State)
-    (0,_modules_extended_filter__WEBPACK_IMPORTED_MODULE_3__.updateFilterCount)(jquery__WEBPACK_IMPORTED_MODULE_0___default()('#filter-count'));
+    // 5) URL leeren: Patch mit allen Keys -> '' (damit pushArgToURL sie löscht)
+    const clearPatch = KNOWN_KEYS.reduce((acc, k) => (acc[k] = '', acc), {});
 
-    // 6) Pipeline starten:
-    //    'replace' → nur das (leere) Objekt verwenden, Inputs ignorieren,
-    //    pushArgToURL löscht damit alle bekannten Keys aus der URL.
-    (0,_handleEvent__WEBPACK_IMPORTED_MODULE_4__.handleEvent)({}, 'replace');
+    // 6) Zentrale Pipeline starten
+    //    handleEvent merged mit bestehenden URL-Params und löscht leere Keys
+    (0,_handleEvent__WEBPACK_IMPORTED_MODULE_3__.handleEvent)(clearPatch);
   });
 }
 

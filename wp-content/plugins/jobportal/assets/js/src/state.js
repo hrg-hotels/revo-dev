@@ -5,6 +5,7 @@ const state = {
   resultJobArr: [],
   urlParams: "",
   globalParams: {},
+  reference_id:"",
 
   selections: {
     city: "",
@@ -16,7 +17,7 @@ const state = {
   currentPageNumber: 1,
   prevPageNumber: 0,
   nextPageNumber: 2,
-  splittResult: [],
+  // splittResult: [],s
 };
 
 // Getter
@@ -37,6 +38,9 @@ export const setSplittResult = (list) => {
 
 export const setGlobalParams = (obj) => {
   state.globalParams = obj || {};
+};
+export const setReferenceId = (str) => {
+  state.reference_id = str || "";
 };
 
 export const setPagination = (patch) => {

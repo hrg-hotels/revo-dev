@@ -44,6 +44,15 @@ class Admin {
 	private $version;
 
 	/**
+	 * The suffix of the script.
+	 *
+	 * @since    3.0.0
+	 * @access   private
+	 * @var      string    $suffix    The suffix of the script.
+	 */
+	private $suffix;
+
+	/**
 	 * Admin modules of the plugin
 	 *
 	 * @var array
@@ -74,6 +83,7 @@ class Admin {
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
+		$this->suffix      = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		self::$modules     = $this->get_default_modules();
 		$this->load();
 		$this->add_notices();
@@ -118,7 +128,7 @@ class Admin {
 	 *
 	 * @return void
 	 */
-	public function add_review_notice() {
+	public function add_review_notice() {		
 		$expiry    = 30 * DAY_IN_SECONDS;
 		$settings  = new \CookieYes\Lite\Admin\Modules\Settings\Includes\Settings();
 		$installed = $settings->get_installed_date();
@@ -133,6 +143,7 @@ class Admin {
 			)
 		);
 	}
+
 	/**
 	 * Get the default modules array
 	 *
@@ -154,6 +165,8 @@ class Admin {
 			'review_feedback',
 			'upgrade',
 			'pageviews',
+			'dashboard_widget',
+			'connect_banner',
 		);
 		return $modules;
 	}
@@ -165,6 +178,7 @@ class Admin {
 	 */
 	public function get_active_modules() {
 	}
+
 	/**
 	 * Load all the modules
 	 *
@@ -196,7 +210,7 @@ class Admin {
 		if ( false === cky_is_admin_page() ) {
 			return;
 		}
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'dist/css/app.css', array(), $this->version );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'dist/css/app' . $this->suffix . '.css', array(), $this->version );
 	}
 
 	/**
@@ -228,6 +242,7 @@ class Admin {
 			}
 		}
 	}
+
 	/**
 	 * Register the JavaScript for the admin area.
 	 *
@@ -248,7 +263,7 @@ class Admin {
 			}
 		}
 		$notice = Notice::get_instance();
-		$expand = Connect_Notice::get_instance();
+		$connect_notice = Connect_Notice::get_instance();
 
 		$global_script  = $this->plugin_name . '-app';
 		$admin_url      = cky_parse_url( admin_url( 'admin.php' ) );
@@ -258,8 +273,8 @@ class Admin {
 			wp_enqueue_editor();
 		}
 
-		wp_enqueue_script( $this->plugin_name . '-vendors', plugin_dir_url( __FILE__ ) . 'dist/js/chunk-vendors.js', array(), $this->version, true );
-		wp_enqueue_script( $this->plugin_name . '-app', plugin_dir_url( __FILE__ ) . 'dist/js/app.js', array(), $this->version, true );
+		wp_enqueue_script( $this->plugin_name . '-vendors', plugin_dir_url( __FILE__ ) . 'dist/js/chunk-vendors' . $this->suffix . '.js', array(), $this->version, true );
+		wp_enqueue_script( $this->plugin_name . '-app', plugin_dir_url( __FILE__ ) . 'dist/js/app' . $this->suffix . '.js', array(), $this->version, true );
 
 		wp_localize_script(
 			$global_script,
@@ -355,7 +370,12 @@ class Admin {
 		wp_localize_script(
 			$global_script,
 			'ckyNoticeExpand',
-			$expand->get()
+			$connect_notice->get_accordion_status()
+		);
+		wp_localize_script(
+			$global_script,
+			'ckyConnectNotice',
+			$connect_notice->get_connect_notice_state()
 		);
 
 	}
@@ -386,6 +406,7 @@ class Admin {
 		);
 		return $data;
 	}
+
 	/**
 	 * Register main menu and sub menus
 	 *
@@ -449,6 +470,7 @@ class Admin {
 		}
 		return $menus;
 	}
+
 	/**
 	 * Main menu template
 	 *
@@ -559,6 +581,7 @@ class Admin {
 			delete_option( 'cky_first_time_activated_plugin' );
 		}
 	}
+
 	/**
 	 * Redirect the plugin to dashboard.
 	 *

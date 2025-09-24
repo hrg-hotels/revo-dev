@@ -3,7 +3,7 @@
     display: flex;
     width: 100%;
     flex-direction: column;
-    max-width: 1400px;
+    max-width: 1200px;
     margin: auto;
 }
 .row-search{
@@ -21,6 +21,7 @@
 .selection-hr input {
     font-size: 16px;
     color: #656A70 !important;
+    width: 100%;
     width: 100%;
     border: none !important;
     background: transparent !important;

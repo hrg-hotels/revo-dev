@@ -21,7 +21,7 @@ class Export_Dropin extends Dropin {
 	 * @inheritdoc
 	 */
 	public function loaded() {
-		add_action( 'admin_menu', array( $this, 'add_menu' ) );
+		add_action( 'admin_menu', array( $this, 'add_menu' ), 30 );
 		add_action( 'admin_init', array( $this, 'download_export' ) );
 	}
 
@@ -40,7 +40,8 @@ class Export_Dropin extends Dropin {
 			->set_page_title( _x( 'Simple History Export', 'dashboard title name', 'simple-history' ) )
 			->set_menu_slug( self::MENU_SLUG )
 			->set_callback( [ $this, 'output_export_page' ] )
-			->set_icon( 'download' );
+			->set_icon( 'download' )
+			->set_order( 3 );
 
 		// Set different options depending on location.
 		if ( in_array( $admin_page_location, [ 'top', 'bottom' ], true ) ) {
@@ -66,7 +67,12 @@ class Export_Dropin extends Dropin {
 		$action = sanitize_key( wp_unslash( $_POST['simple-history-action'] ?? '' ) );
 
 		// Bail of not correct page.
-		if ( $page !== self::MENU_SLUG ) {
+		// Check for both the export page slug and the settings page slug (when export is shown as a tab).
+		// When using a tab because SH is inside tools or dashboard:
+		// http://wordpress-stable-docker-mariadb.test:8282/wp-admin/options-general.php?page=simple_history_settings_page&selected-tab=simple_history_export_history
+		// When showing in main menu:
+		// http://wordpress-stable-docker-mariadb.test:8282/wp-admin/admin.php?page=simple_history_export_history.
+		if ( $page !== self::MENU_SLUG && $page !== Simple_History::SETTINGS_MENU_PAGE_SLUG ) {
 			return;
 		}
 
@@ -80,6 +86,8 @@ class Export_Dropin extends Dropin {
 
 		$export_format = sanitize_text_field( wp_unslash( $_POST['format'] ?? 'json' ) );
 
+		$csv_include_headers = isset( $_POST['csv_include_headers'] ) ? true : false;
+
 		$export = new Export();
 		$export->set_query_args(
 			[
@@ -89,6 +97,11 @@ class Export_Dropin extends Dropin {
 			]
 		);
 		$export->set_download_format( $export_format );
+		$export->set_options(
+			[
+				'include_headers' => $csv_include_headers,
+			]
+		);
 		$export->download();
 	}
 
@@ -119,12 +132,21 @@ class Export_Dropin extends Dropin {
 
 			<form method="post">
 
-				<h3><?php echo esc_html_x( 'Choose format to export to', 'Export dropin: format', 'simple-history' ); ?></h3>
+				<h3>
+					<?php echo esc_html_x( 'Choose format to export to', 'Export dropin: format', 'simple-history' ); ?>
+				</h3>
 
 				<p>
 					<label>
 						<input type="radio" name="format" value="csv" checked>
 						<?php echo esc_html_x( 'CSV', 'Export dropin: export format', 'simple-history' ); ?>
+					</label>
+				</p>
+
+				<p style="margin-left: 1rem;">
+					<label>
+						<input type="checkbox" name="csv_include_headers" value="1">
+						<?php echo esc_html_x( 'Include headers', 'Export dropin: include headers', 'simple-history' ); ?>
 					</label>
 				</p>
 

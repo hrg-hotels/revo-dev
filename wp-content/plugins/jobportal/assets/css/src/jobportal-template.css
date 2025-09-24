@@ -9,11 +9,16 @@ custom-black: var(--awb-text-color);
     font-style: normal !important;
     font-weight: 400 !important;
     margin: 0 !important;
-    font-size: 24px !important;
+    font-size: 20px !important;
     letter-spacing: 1px !important;
     font-family: var(--h4_typography-font-family) !important;
     font-weight: var(--h4_typography-font-weight)!important;
     text-transform: none !important;
+}
+@media only screen and (min-width: 768px) {
+    .heading{
+        font-size: 24px !important;
+    }
 }
 .heading-small{
     font-style: normal !important;
@@ -29,7 +34,8 @@ custom-black: var(--awb-text-color);
     color:black !important;
 }
 .post-content p {
-    margin-bottom: 0 !important;
+    line-height: 1.5 !important;
+    margin-bottom:0 !important;
 }
 .black{
     color: #000000 !important;
@@ -48,6 +54,33 @@ custom-black: var(--awb-text-color);
 .mt-20 {
     margin-top: 20px !important;
 }
+.mb-20 {
+    margin-bottom: 20px !important;
+}
+/********Flexbox**********************************************/
+.flex{
+    display: flex;
+}
+.flex-col{
+    display: flex;
+    flex-direction: column;
+}
+.flex-wrap{
+    flex-wrap: wrap;
+}
+.justify-center{
+    justify-content: center;
+}
+.justify-space-between{
+    justify-content: space-between;
+}
+.align-center{
+    align-items: center;
+}
+.text-center{
+    text-align: center;
+}
+
 
 /*****************************Job Wrapper**********************************************/
 #jobportal-wrapper{

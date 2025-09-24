@@ -2,8 +2,8 @@
 Contributors: managewp,freediver
 Tags: manage multiple sites, backup, security, migrate, performance, analytics, Manage WordPress, Managed WordPress, WordPress management, WordPress manager, WordPress management, site management, control multiple sites, WordPress management dashboard, administration, automate, automatic, comments, clone, dashboard, duplicate, google analytics, login, manage, managewp, multiple, multisite, remote, seo, spam
 Requires at least: 3.1
-Tested up to: 6.5
-Stable tag: trunk
+Tested up to: 6.8
+Stable tag: 4.9.24
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/quick-guide-gplv3.html
 
@@ -39,7 +39,7 @@ Connect multiple Google Analytics accounts, and keep track of all the important 
 Be the first to know when your website is down with both email and SMS notifications, and get your website back online before anyone else notices. [Read more](https://managewp.com/features/uptime-monitor "Uptime Monitor")
 
 = Cloning & Migration (bundled with premium Backup add-on) =
-What used to take you hours of work and nerves of steel is now a one-click operation. Pick a source website, pick a destination website, click Go. Within minutes, youw website will be alive and kicking on a new server. Yeah, it's that easy. [Read more](https://managewp.com/features/clone "Cloning & migration")
+What used to take you hours of work and nerves of steel is now a one-click operation. Pick a source website, pick a destination website, click Go. Within minutes, your website will be alive and kicking on a new server. Yeah, it's that easy. [Read more](https://managewp.com/features/clone "Cloning & migration")
 
 = SEO Ranking (premium add-on) =
 Be on top of your website rankings and figure out which keywords work best for you, as well as keeping on eye on your competitors. This way you will know how well you stack up against them. [Read more](https://managewp.com/features/seo-ranking "SEO Ranking")
@@ -55,6 +55,19 @@ Check out the [ManageWP promo video](https://vimeo.com/220647227).
 https://vimeo.com/220647227
 
 == Changelog ==
+= 4.9.24 =
+- Fix: One Click SSL compatibility update
+
+= 4.9.23 =
+- Fix: Use OpenSSL for SHA256 hashing
+
+= 4.9.22 =
+- WordPress 6.8 compatibility bump
+- Fix: Compatibility with OpenSSL 3+
+
+= 4.9.21 =
+- WordPress 6.7 compatibility bump
+
 = 4.9.20 =
 - WordPress 6.5 compatibility bump
 
@@ -62,7 +75,6 @@ https://vimeo.com/220647227
 - Fix: Absolute path on Windows systems
 - Code cleanup
 
-== Changelog ==
 = 4.9.18 =
 - Fix: PHP 8.X Compatibility notices
 - WordPress 6.4 compatibility bump

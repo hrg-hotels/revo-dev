@@ -1,6 +1,5 @@
 // assets/js/src/modules/extended-filter.js
 import $ from 'jquery';
-import { getState, setGlobalParams } from '../state';
 import { handleEvent } from '../handleEvent';
 
 const SINGLE_GROUPS = ['careerlevels', 'employment-type', 'joblocation-type'];
@@ -43,8 +42,9 @@ export function initAccordion() {
     }
   }
 
-  $head.on('click', togglePanel);
-  $head.on('keydown', (e) => {
+  // Events namespacen, doppelte Bindings verhindern
+  $head.off('click.extHead').on('click.extHead', togglePanel);
+  $head.off('keydown.extHead').on('keydown.extHead', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       togglePanel();
@@ -55,117 +55,96 @@ export function initAccordion() {
   $('.badge').attr({ role: 'checkbox', tabindex: 0, 'aria-checked': 'false' });
 
   // Delegation: Klick/Keyboard -> toggleBadge
-  $(document).on('click', '.badge', function () {
-    toggleBadge($(this));
+  $(document).off('click.extBadge', '.badge').on('click.extBadge', '.badge', function () {
+    toggleBadge($(this)); // WICHTIG: $badge wird übergeben; KEIN $(this) in der Funktion selbst benutzen
   });
-  $(document).on('keydown', '.badge', function (e) {
+  $(document).off('keydown.extBadge', '.badge').on('keydown.extBadge', '.badge', function (e) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       toggleBadge($(this));
     }
   });
 
-  // Initial Counter anzeigen
+  // Initial Counter (aus DOM) anzeigen
   updateFilterCount($('#filter-count'));
 }
 
 /**
  * Toggle eines Badges:
- * - schreibt DIREKT in globalParams (Single Source of Truth)
- * - aktualisiert die Optik (Klassen/ARIA)
- * - triggert deine Pipeline über handleEvent(globalParams)
+ * - ändert NUR die DOM-Optik (Klassen/ARIA)
+ * - baut ein Patch-Objekt aus der aktuellen DOM-Auswahl
+ * - triggert deine Pipeline über handleEvent(patch)
  */
 function toggleBadge($badge) {
+  if (!$badge || !$badge.length) return;
+
   const name = ($badge.attr('name') || '').trim();
   if (!name) return;
 
-  const gp = { ...(getState().globalParams || {}) };
+  // Gruppe bestimmen
+  const group =
+    $badge.hasClass('careerlevels')     ? 'careerlevels' :
+    $badge.hasClass('employment-type')  ? 'employment-type' :
+    $badge.hasClass('joblocation-type') ? 'joblocation-type' :
+    $badge.hasClass('keyword')          ? 'keyword' : null;
 
-  if ($badge.hasClass('keyword')) {
-    // Multi-Select: Keyword in CSV toggeln
-    gp.keyword = toggleKeywordInCommaList(gp.keyword, name);
+  if (!group) return;
 
-    const activeNow = includesKeyword(gp.keyword, name);
+  let patch = {};
+
+  if (group === 'keyword') {
+    // Multi-Select: einzelnes Badge toggeln
+    const willActivate = !$badge.hasClass('search-active');
     $badge
-      .toggleClass('search-active', activeNow)
-      .attr('aria-checked', String(activeNow));
+      .toggleClass('search-active', willActivate)
+      .attr('aria-checked', String(willActivate));
+
+    // Patch = gesamte aktuelle Keyword-Liste ('' → URL-Key wird gelöscht)
+    const keywords = collectNames('.badge.keyword.search-active');
+    patch.keyword = keywords.join(',');
   } else {
-    // Single-Select: gesamte Gruppe resetten, dann ggf. setzen
-    const group = SINGLE_GROUPS.find(g => $badge.hasClass(g));
-    if (!group) return;
+    // Single-Select: direktes Umschalten innerhalb der Gruppe
+    const wasActive = $badge.hasClass('search-active');
 
-    const isAlreadyActive = ($badge.hasClass('search-active') && gp[group] === name);
-
-    // Optik-Gruppe zurücksetzen
+    // Gruppe im DOM leeren
     $(`.badge.${group}`)
       .removeClass('search-active')
       .attr('aria-checked', 'false');
 
-    if (isAlreadyActive) {
-      // Deselektieren: Key entfernen
-      delete gp[group];
+    if (wasActive) {
+      // Deselect → Key explizit leeren, damit er aus der URL entfernt wird
+      patch[group] = '';
     } else {
-      // Auswählen: Key setzen
-      gp[group] = name;
+      // Neues Badge aktivieren
       $badge
         .addClass('search-active')
         .attr('aria-checked', 'true');
+      patch[group] = name;
     }
   }
 
-  // State aktualisieren (Single Source of Truth)
-  setGlobalParams(gp);
-
-  // Counter nur aus State berechnen
+  // Counter sofort aus DOM aktualisieren
   updateFilterCount($('#filter-count'));
 
-  // Zentrale Pipeline starten:
-  // handleEvent pusht URL aus den aktuellen globalParams und ruft checkParams -> getParameter -> filterListByParams -> splittArray -> renderList
-  handleEvent(getState().globalParams);
+  // Zentrale Pipeline starten (URL mergen, leere Keys löschen, dann checkParams → ...)
+  handleEvent(patch);
 }
 
 /**
- * Counter ausschließlich aus globalParams.
+ * Zähler ausschließlich aus DOM (aktive Badges).
+ * Zeigt: 1 pro aktivem Single-Select + 1 pro aktivem Keyword.
  */
 export function updateFilterCount($countEl) {
-  const { globalParams = {} } = getState();
-  let count = 0;
-
-  if (globalParams.careerlevels)        count++;
-  if (globalParams['employment-type'])  count++;
-  if (globalParams['joblocation-type']) count++;
-
-  if (globalParams.keyword) {
-    count += String(globalParams.keyword)
-      .split(',')
-      .map(s => s.trim())
-      .filter(Boolean).length;
-  }
-
-  if ($countEl && $countEl.length) $countEl.text(count);
+  const n = $('.badge.search-active').length;
+  if ($countEl && $countEl.length) $countEl.text(n);
+  $('#ext-filter-head').toggleClass('has-active', n > 0); // optionales UI-Feedback
 }
 
-/* ----------------- Helpers für Keywords (CSV) ----------------- */
+/* ----------------- Helpers ----------------- */
 
-function includesKeyword(csv, val) {
-  return String(csv || '')
-    .split(',')
-    .map(s => s.trim())
-    .filter(Boolean)
-    .includes(val);
-}
-
-function toggleKeywordInCommaList(csv, val) {
-  const arr = String(csv || '')
-    .split(',')
-    .map(s => s.trim())
+function collectNames(selector) {
+  return $(selector)
+    .map(function () { return ($(this).attr('name') || '').trim(); })
+    .get()
     .filter(Boolean);
-
-  const idx = arr.indexOf(val);
-  if (idx >= 0) {
-    arr.splice(idx, 1); // entfernen
-  } else {
-    arr.push(val);      // hinzufügen
-  }
-  return arr.join(',');
 }

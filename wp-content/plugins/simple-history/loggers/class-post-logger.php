@@ -85,6 +85,33 @@ class Post_Logger extends Logger {
 		add_action( 'init', array( $this, 'add_rest_hooks' ), 99 );
 
 		add_filter( 'simple_history/rss_item_link', array( $this, 'filter_rss_item_link' ), 10, 2 );
+
+		// This is fired from wp_after_insert_post? So that's after simple history has done it's thing.
+		add_action( '_wp_put_post_revision', array( $this, 'on_wp_put_post_revision' ), 1, 2 );
+	}
+
+	public function on_wp_put_post_revision( $revision_id, $post_id ) {
+		// Triggered when a post is saved using save button and does have changes.
+		// Does not track autosave.
+		// This is done after simple history has logged the post change.
+		// So we need to update the context with the revision id.
+
+		// Ensure that the last_insert_id is set.
+		if ( ! $this->last_insert_id ) {
+			return;
+		}
+
+		// Ensure that the revision is for the same post that we just logged.
+		if ( $this->last_insert_context['post_id'] !== $post_id ) {
+			return;
+		}
+
+		$this->append_context(
+			$this->last_insert_id,
+			[
+				'post_revision_id' => $revision_id,
+			]
+		);
 	}
 
 	/**
@@ -114,7 +141,6 @@ class Post_Logger extends Logger {
 
 			// Rest delete is fired "immediately after a single post is deleted or trashed via the REST API".
 			add_filter( "rest_delete_{$post_type->name}", array( $this, 'on_rest_delete' ), 10, 3 );
-
 		}
 	}
 
@@ -172,6 +198,10 @@ class Post_Logger extends Logger {
 
 	/**
 	 * Fires after a single post is completely created or updated via the REST API.
+	 *
+	 * This is fired when a post is saved:
+	 * - Using the Gutenberg block editor
+	 * - ...possible more times...
 	 *
 	 * Here we get the updated post, after it is updated in the db.
 	 *
@@ -533,6 +563,10 @@ class Post_Logger extends Logger {
 	/**
 	 * Maybe log a post creation, modification or deletion.
 	 *
+	 * Called from:
+	 * - on_transition_post_status
+	 * - on_rest_after_insert
+	 *
 	 * Todo:
 	 * - support password protect.
 	 * - post_password is set
@@ -846,6 +880,17 @@ class Post_Logger extends Logger {
 			// https://wordpress.stackexchange.com/questions/20904/the-encloseme-meta-key-conundrum
 			'_encloseme',
 		);
+
+		/**
+		 * Filters the array with custom field keys to ignore.
+		 *
+		 * @param  array $arr_meta_keys_to_ignore Array with custom field keys to ignore.
+		 * @param  array $context                 Array with context.
+		 * @return array                          Filtered array with custom field keys to ignore.
+		 *
+		 * @since 5.8.2
+		 */
+		$arr_meta_keys_to_ignore = apply_filters( 'simple_history/post_logger/meta_keys_to_ignore', $arr_meta_keys_to_ignore, $context );
 
 		$meta_changes = array(
 			'added' => array(),
@@ -1427,6 +1472,14 @@ class Post_Logger extends Logger {
 	 * @return string
 	 */
 	protected function label_for( $key, $label, $context ) {
+		/**
+		 * Filters the label for a key.
+		 *
+		 * @param string $label Label.
+		 * @param string $key Key.
+		 * @param array  $context Context.
+		 * @return string
+		 */
 		return apply_filters( 'simple_history/post_logger/label_for_key', $label, $key, $context );
 	}
 
@@ -1512,6 +1565,12 @@ class Post_Logger extends Logger {
 	 * @return array
 	 */
 	protected function add_keys_to_diff( $arr_keys_to_diff ) {
+		/**
+		 * Filters the keys to diff.
+		 *
+		 * @param array $arr_keys_to_diff Array with keys to diff.
+		 * @return array
+		 */
 		return apply_filters( 'simple_history/post_logger/keys_to_diff', $arr_keys_to_diff );
 	}
 

@@ -12,11 +12,16 @@ custom-black: var(--awb-text-color);
     font-style: normal !important;
     font-weight: 400 !important;
     margin: 0 !important;
-    font-size: 24px !important;
+    font-size: 20px !important;
     letter-spacing: 1px !important;
     font-family: var(--h4_typography-font-family) !important;
     font-weight: var(--h4_typography-font-weight)!important;
     text-transform: none !important;
+}
+@media only screen and (min-width: 768px) {
+    .heading{
+        font-size: 24px !important;
+    }
 }
 .heading-small{
     font-style: normal !important;
@@ -32,7 +37,8 @@ custom-black: var(--awb-text-color);
     color:black !important;
 }
 .post-content p {
-    margin-bottom: 0 !important;
+    line-height: 1.5 !important;
+    margin-bottom:0 !important;
 }
 .black{
     color: #000000 !important;
@@ -51,6 +57,33 @@ custom-black: var(--awb-text-color);
 .mt-20 {
     margin-top: 20px !important;
 }
+.mb-20 {
+    margin-bottom: 20px !important;
+}
+/********Flexbox**********************************************/
+.flex{
+    display: flex;
+}
+.flex-col{
+    display: flex;
+    flex-direction: column;
+}
+.flex-wrap{
+    flex-wrap: wrap;
+}
+.justify-center{
+    justify-content: center;
+}
+.justify-space-between{
+    justify-content: space-between;
+}
+.align-center{
+    align-items: center;
+}
+.text-center{
+    text-align: center;
+}
+
 
 /*****************************Job Wrapper**********************************************/
 #jobportal-wrapper{
@@ -119,7 +152,7 @@ custom-black: var(--awb-text-color);
     display: flex;
     width: 100%;
     flex-direction: column;
-    max-width: 1400px;
+    max-width: 1200px;
     margin: auto;
 }
 .row-search{
@@ -137,6 +170,7 @@ custom-black: var(--awb-text-color);
 .selection-hr input {
     font-size: 16px;
     color: #656A70 !important;
+    width: 100%;
     width: 100%;
     border: none !important;
     background: transparent !important;
@@ -313,7 +347,7 @@ custom-black: var(--awb-text-color);
     height: 20px;
     margin-right: 20px; 
     position:absolute;
-    top:7px;
+    top:10px;
     left:20px;
     opacity: 0.5;
 }
@@ -327,18 +361,39 @@ custom-black: var(--awb-text-color);
     width:40%;
 }
 .extended-search{
-    width:30%;
+    width:100%;
+    margin-bottom: 26px;
+}
+@media only screen and (min-width: 768px){
+    .extended-search{
+        width:30%;
+        margin-bottom: 0;
+    }
 }
 .accordion-container .content-entry i {
     position: absolute;
     top: 12px;
     right: 12px;
 }
+.red-circle{
+    background: var(--awb-color5);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    margin-top:12px;
+    text-align: center;
+    line-height: 20px;
+    margin-right: 6px;
+}
 #arrow-cont{
     height: 100%;
     width: 20px;
     margin: auto;
-}
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    }
 #arrow-cont img{
     width: 20px ;
 }
@@ -348,20 +403,25 @@ custom-black: var(--awb-text-color);
 }
 .accordion-content {
     display: none;
-    display: flex;
-    justify-content: space-between;
     padding: 30px 50px 30px 50px;
-    height: 250px;
-    flex-direction: row;
+
+}
+@media only screen and (min-width: 768px){
+    .accordion-content {
+        display: flex;
+        justify-content: space-between;
+        height: 360px;
+        flex-direction: row;
+    }
 }
 .filter-set{
     display:flex;
     width:42%;
-    padding-top: 4px;
 }
 .acc-col{
     display:flex;
     flex-wrap:wrap;
+    justify-content: space-between;
     margin-top:10px;
 }
 #content {
@@ -587,12 +647,12 @@ max-width:100%;
     margin-top: 20px;
 }
 .pop-content p{
-    font-size: 12px;
+    font-size:14px;
     margin-top: 20px;
     margin-bottom: 20px;
 }
 .pop-content ul li{
-    font-size: 12px !important;
+    font-size: 14px !important;
     margin-bottom: 0;
 }
 .pop-col-01{
@@ -603,10 +663,10 @@ max-width:100%;
 }
 .pop-card{
     background: white;
-    border: 1px solid #E4E5E8;
     padding: 20px;
     display: flex;
     margin-top: 10px;
+    font-size: 14px;
 }
 .pop-header {
     display: flex;
@@ -634,14 +694,23 @@ max-width:100%;
     margin:0;
     padding: 8px 12px;
 }
+.col-1-2 {
+    width: 50%;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    padding-right: 10px;
+}
 .pop-card-col-1-2:first-child{
     border-right: 1px solid #E4E5E8;
 }
 
 .apply-btn-wrap{
     display:flex;
-    flex-direction:column;
     width:100%;
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
   }
   .whatsapp-icon{
     width: 50px;
@@ -651,41 +720,48 @@ max-width:100%;
     justify-content:center;
     margin-bottom:20px;
   }
-     .pop-col-01{
-        width:40%;
-        padding-right:20px;
-    }
-    .pop-col-02{
-        width:60%;
-    }
-    .pop-card-col-1-2:first-child{
-        border-right: 1px solid #E4E5E8;
-    }
-    .pop-card-col-1-2{
-        padding: 0 20px;
-    }
-    .pop-header {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .pop-title {
-        text-align: left;
-        margin-top: 0;
-    }
 
-    .btn-social{
-       margin-top:0;
-    }
-    .pop-apply{
-        position: fixed;
-        top: 200px;
-    }
-    .pop-apply-mobile{
-        display:none;
-    }
-    .icon-26 {
-    width: 26px;
+.pop-card-col-1-2:first-child{
+    border-right: 1px solid #E4E5E8;
+}
+.pop-card-col-1-2{
+    padding: 0 20px;
+}
+.pop-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.pop-title {
+    text-align: left;
+    margin-top: 0;
+}
+
+.btn-social {
+    margin-top: 0;
+    margin-right: 20px;
+    background: #E9E9E9;
+    padding: 10px;
+    align-content: center;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.pop-apply{
+    position: fixed;
+    top: 200px;
+}
+.pop-apply-mobile{
+    display:none;
+}
+.icon-26 {
+width: 26px;
+margin-bottom:15px;
+}
+.whatsapp-icon{
+    margin-left:20px;
 }
  @media (min-width: 768px) {
         .pop-content {
@@ -701,10 +777,12 @@ max-width:100%;
     }
     .pop-card{
         background: white;
-        border: 1px solid #E4E5E8;
         padding: 20px;
         display: flex;
         margin-left: 10px;
+        margin-top:10px;
+    }
+    .pop-card:first-child{
         margin-top:0;
     }
     .pop-up{
@@ -754,16 +832,9 @@ max-width:100%;
     }
  }
 @media (min-width: 992px) {
-      .apply-btn-wrap {
-          flex-direction: row;
-          justify-content: flex-start;
-      }
       .apply-item {
         justify-content: end;
         flex-direction: column;
-    }
-    .whatsapp-icon{
-      margin-left:20px;
     }
   }
 @media only screen and (min-width: 1280px){

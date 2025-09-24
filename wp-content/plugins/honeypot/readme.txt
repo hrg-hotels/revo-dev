@@ -3,8 +3,8 @@ Contributors: dnesscarkey
 Donate link: https://www.patreon.com/wp_armour
 Tags: anti spam, spam protection, comment spam , contact form spam, akismet
 Requires at least: 5.0
-Tested up to: 6.7.2
-Stable tag: 2.2.09
+Tested up to: 6.8
+Stable tag: 2.3.02
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -143,6 +143,39 @@ With WP Armour - Honeypot Anti Spam plugin it is No. But if you want you can use
 1. Screenshot #11. Anti Spam for Fluent Forms
 
 == Changelog ==
+
+= = 2.3.02 =
+
+* Fixed the login issue. We are really sorry for the trouble it has occured. 
+
+= = 2.3.01 =
+
+* Divi Form Issue Fixed
+
+= = 2.3 =
+
+* Option to disable Jquery Usage.
+
+= = 2.2.14 =
+
+* Comment Form Fixes
+
+= = 2.2.13 =
+
+* Fixes for Ultimate Memebership form
+* Remove widgets for Non administrator. 
+
+= = 2.2.12 =
+
+* Registration and Login support for User Registration & Membership
+
+= = 2.2.11 =
+
+* Fixed Forgot Password issue for TutorLMS.
+
+= = 2.2.10 =
+
+* Fixed Forgot Password issue.
 
 = = 2.2.09 =
 
