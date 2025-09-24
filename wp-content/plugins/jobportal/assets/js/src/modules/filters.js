@@ -39,6 +39,6 @@ export function filterListByParams() {
 
   // Downstream der Pipeline:
   // - splittArray erzeugt Seiten + ruft renderList(pageArray) SELBST
-  splittArray();
+  splittArray();// this function create an object with pages you can find it in pagination.js
 
 }

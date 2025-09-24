@@ -1,6 +1,6 @@
 // assets/js/src/getParameter.js
 import $ from 'jquery';
-import { setGlobalParams } from './state';
+import { setGlobalParams, setReferenceId } from './state';
 import { filterListByParams } from './modules/filters';
 import { updateFilterCount } from './modules/extended-filter';
 
@@ -13,7 +13,7 @@ export function getParameter() {
   const params = Object.fromEntries(
     new URLSearchParams(window.location.search).entries()
   );
-
+console.log('paramssss:', params);
   /** ---------------- Inputs setzen ---------------- */
   $('.selection-hr input[name="jobtitle"]').val(params.jobtitle || '');
   $('.selection-hr input[name="city"]').val(params.city || '');
@@ -73,7 +73,13 @@ export function getParameter() {
     }
   }
   /** ---------------- State & Pipeline ---------------- */
+
   setGlobalParams(params);
+    if (!params.reference_id) {
+    setReferenceId("");
+  } else {
+    setReferenceId(params.reference_id);
+  };
   updateFilterCount($('#filter-count'));
   filterListByParams();
 }

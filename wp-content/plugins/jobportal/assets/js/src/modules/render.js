@@ -1,7 +1,8 @@
 // assets/js/src/modules/render.js
-import $ from 'jquery';
+import $, { get } from 'jquery';
 import { getRenderHook, initDom } from '../dom';
 import { openJob } from './popup';
+import { getState } from '../state';
 
 initDom();
 let hook = getRenderHook();
@@ -52,6 +53,9 @@ export function renderList(list = []) {
     `;
 
     jobItem.addEventListener('click', () => openJob(job, jobItem));
+    if (getState().reference_id === job.reference_id) {
+      openJob(job, jobItem);
+    }
     hook.appendChild(jobItem);
   }
 }

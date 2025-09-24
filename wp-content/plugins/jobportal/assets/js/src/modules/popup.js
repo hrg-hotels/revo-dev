@@ -1,11 +1,15 @@
-import $ from 'jquery';
+import $, { get } from 'jquery';
 import { getRenderHook } from '../dom';
+import { getState, setReferenceId } from '../state';
+import { generateDropdownOptions } from './dropdowns';
 //Open Job
 export function openJob(job, jobListItem) {
   $("#current-job").removeAttr("id");
   $(".layer").remove();
   $("body").css("overflow", "hidden");
   jobListItem.setAttribute("id", "current-job");
+
+  console.log("jobsss:", jobListItem);
   
   // Get the current URL
   let url = window.location.href;
@@ -20,14 +24,16 @@ export function openJob(job, jobListItem) {
       newUrl = url + "?reference_id=" + job.reference_id;
   }
 
-  // Push the new URL to the history
+  // Push the new URL to the history^
+  if (!getState().reference_id ) {
   window.history.pushState({ path: newUrl }, "", newUrl);
+  }
+  renderJobDetails(job,jobListItem);
 
-  renderJobDetails(job);
 }
 
   //Render Job Details
-  function renderJobDetails(job) {
+  function renderJobDetails(job,jobListItem) {
     if (job.images_header0 == "" || job.images_header0 == null) {
       job.images_header0 =
         "https://www.hrg-hotels.com/hubfs/Website/_global%20assets/header/Jobportal/jobs_default_header_img.jpg";
@@ -185,8 +191,8 @@ export function openJob(job, jobListItem) {
 
     `;
   //append to current job
-  let currentEl = document.getElementById("current-job");
-  currentEl.appendChild(popUp);
+
+  jobListItem.appendChild(popUp);
 
   popUp.style.display = "block";
 
@@ -196,15 +202,32 @@ export function openJob(job, jobListItem) {
   getRenderHook().appendChild(layer);
 
   // Close-Funktion
-  function closePopup() {
-    const url = window.location.href;
-    const newUrl = url.split("&reference_id")[0];
-    window.history.pushState({ path: newUrl }, "", newUrl);
-    $(".pop-up").remove();
-    $(currentEl).removeAttr("id");
-    $(".layer").remove();
-    $("body").css("overflow", "auto");
-  }
+function closePopup() {
+  const url = new URL(window.location.href);
+
+  // reference_id aus den Parametern löschen
+  url.searchParams.delete("reference_id");
+
+  // Wenn keine Params mehr übrig -> ? entfernen
+  const newUrl =
+    url.search && url.search.length > 1
+      ? url.toString()
+      : url.origin + url.pathname;
+
+  // URL im Verlauf aktualisieren
+  window.history.pushState({ path: newUrl }, "", newUrl);
+  // ReferenceId im State zurücksetzen
+  setReferenceId("");
+  // generateDropdownOptions(); // optional, falls nötig
+  generateDropdownOptions();
+
+  // UI zurücksetzen
+  $(".pop-up").remove();
+  $(jobListItem).removeAttr("id");
+  $(".layer").remove();
+  $("body").css("overflow", "auto");
+}
+
 
   // Layer-Klick -> schließen
   layer.addEventListener("click", closePopup);

@@ -114,7 +114,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 function getParameter() {
   const params = Object.fromEntries(new URLSearchParams(window.location.search).entries());
-
+  console.log('paramssss:', params);
   /** ---------------- Inputs setzen ---------------- */
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('.selection-hr input[name="jobtitle"]').val(params.jobtitle || '');
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('.selection-hr input[name="city"]').val(params.city || '');
@@ -160,7 +160,14 @@ function getParameter() {
     }
   }
   /** ---------------- State & Pipeline ---------------- */
+
   (0,_state__WEBPACK_IMPORTED_MODULE_1__.setGlobalParams)(params);
+  if (!params.reference_id) {
+    (0,_state__WEBPACK_IMPORTED_MODULE_1__.setReferenceId)("");
+  } else {
+    (0,_state__WEBPACK_IMPORTED_MODULE_1__.setReferenceId)(params.reference_id);
+  }
+  ;
   (0,_modules_extended_filter__WEBPACK_IMPORTED_MODULE_3__.updateFilterCount)(jquery__WEBPACK_IMPORTED_MODULE_0___default()('#filter-count'));
   (0,_modules_filters__WEBPACK_IMPORTED_MODULE_2__.filterListByParams)();
 }
@@ -661,7 +668,7 @@ function filterListByParams() {
 
   // Downstream der Pipeline:
   // - splittArray erzeugt Seiten + ruft renderList(pageArray) SELBST
-  (0,_pagination__WEBPACK_IMPORTED_MODULE_1__.splittArray)();
+  (0,_pagination__WEBPACK_IMPORTED_MODULE_1__.splittArray)(); // this function create an object with pages you can find it in pagination.js
 }
 
 /***/ }),
@@ -985,6 +992,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "jquery");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../dom */ "./assets/js/src/dom.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../state */ "./assets/js/src/state.js");
+/* harmony import */ var _dropdowns__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./dropdowns */ "./assets/js/src/modules/dropdowns.js");
+
+
 
 
 //Open Job
@@ -993,6 +1004,7 @@ function openJob(job, jobListItem) {
   jquery__WEBPACK_IMPORTED_MODULE_0___default()(".layer").remove();
   jquery__WEBPACK_IMPORTED_MODULE_0___default()("body").css("overflow", "hidden");
   jobListItem.setAttribute("id", "current-job");
+  console.log("jobsss:", jobListItem);
 
   // Get the current URL
   let url = window.location.href;
@@ -1007,15 +1019,17 @@ function openJob(job, jobListItem) {
     newUrl = url + "?reference_id=" + job.reference_id;
   }
 
-  // Push the new URL to the history
-  window.history.pushState({
-    path: newUrl
-  }, "", newUrl);
-  renderJobDetails(job);
+  // Push the new URL to the history^
+  if (!(0,_state__WEBPACK_IMPORTED_MODULE_2__.getState)().reference_id) {
+    window.history.pushState({
+      path: newUrl
+    }, "", newUrl);
+  }
+  renderJobDetails(job, jobListItem);
 }
 
 //Render Job Details
-function renderJobDetails(job) {
+function renderJobDetails(job, jobListItem) {
   if (job.images_header0 == "" || job.images_header0 == null) {
     job.images_header0 = "https://www.hrg-hotels.com/hubfs/Website/_global%20assets/header/Jobportal/jobs_default_header_img.jpg";
   }
@@ -1173,8 +1187,8 @@ function renderJobDetails(job) {
 
     `;
   //append to current job
-  let currentEl = document.getElementById("current-job");
-  currentEl.appendChild(popUp);
+
+  jobListItem.appendChild(popUp);
   popUp.style.display = "block";
 
   //Create layer and append to body
@@ -1184,13 +1198,26 @@ function renderJobDetails(job) {
 
   // Close-Funktion
   function closePopup() {
-    const url = window.location.href;
-    const newUrl = url.split("&reference_id")[0];
+    const url = new URL(window.location.href);
+
+    // reference_id aus den Parametern löschen
+    url.searchParams.delete("reference_id");
+
+    // Wenn keine Params mehr übrig -> ? entfernen
+    const newUrl = url.search && url.search.length > 1 ? url.toString() : url.origin + url.pathname;
+
+    // URL im Verlauf aktualisieren
     window.history.pushState({
       path: newUrl
     }, "", newUrl);
+    // ReferenceId im State zurücksetzen
+    (0,_state__WEBPACK_IMPORTED_MODULE_2__.setReferenceId)("");
+    // generateDropdownOptions(); // optional, falls nötig
+    (0,_dropdowns__WEBPACK_IMPORTED_MODULE_3__.generateDropdownOptions)();
+
+    // UI zurücksetzen
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(".pop-up").remove();
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()(currentEl).removeAttr("id");
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()(jobListItem).removeAttr("id");
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(".layer").remove();
     jquery__WEBPACK_IMPORTED_MODULE_0___default()("body").css("overflow", "auto");
   }
@@ -1226,7 +1253,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../dom */ "./assets/js/src/dom.js");
 /* harmony import */ var _popup__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./popup */ "./assets/js/src/modules/popup.js");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../state */ "./assets/js/src/state.js");
 // assets/js/src/modules/render.js
+
 
 
 
@@ -1273,6 +1302,9 @@ function renderList(list = []) {
       </div>
     `;
     jobItem.addEventListener('click', () => (0,_popup__WEBPACK_IMPORTED_MODULE_2__.openJob)(job, jobItem));
+    if ((0,_state__WEBPACK_IMPORTED_MODULE_3__.getState)().reference_id === job.reference_id) {
+      (0,_popup__WEBPACK_IMPORTED_MODULE_2__.openJob)(job, jobItem);
+    }
     hook.appendChild(jobItem);
   }
 }
