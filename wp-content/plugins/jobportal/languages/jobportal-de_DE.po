@@ -1,0 +1,89 @@
+msgid "country"
+msgstr "Land"
+
+msgid "city"
+msgstr "Stadt"
+
+msgid "brand"
+msgstr "Marke"
+
+msgid "category"
+msgstr "Kategorie"
+
+msgid "no-result"
+msgstr "Die Suche ergab keine Treffer"
+
+msgid "search-resultet"
+msgstr "Die Suche ergab"
+
+msgid "hits"
+msgstr "Treffer"
+
+msgid "area"
+msgstr "Konferenzfläche"
+
+msgid "people"
+msgstr "Teilnehmeranzahl"
+
+msgid "your-selection"
+msgstr "Ihre Auswahl"
+
+msgid "department"
+msgstr "Abteilung"
+
+msgid "more-filters"
+msgstr "Weitere Filter"
+
+msgid "career-levels"
+msgstr "Berufsstufen"
+
+msgid "employment-type"
+msgstr "Anstellungsform"
+
+msgid "job-location-type"
+msgstr "Anstellungsart"
+
+msgid "open-positions"
+msgstr "Offene Stellen"
+
+msgid "apprenticeship"
+msgstr "Ausbildung"
+
+msgid "student-jobs"
+msgstr "Studienjobs"
+
+msgid "career-starters"
+msgstr "Berufseinsteiger"
+
+msgid "experienced-professionals"
+msgstr "Berufserfahrene"
+
+msgid "executive"
+msgstr "Führungskraft"
+
+msgid "career-changer"
+msgstr "Quereinsteiger"
+
+msgid "part-time"
+msgstr "Teilzeit"
+
+msgid "full-time"
+msgstr "Vollzeit"
+
+msgid "hourly"
+msgstr "Stundenweise"
+
+msgid "contact-person"
+msgstr "Kontaktperson"
+
+msgid "job-overview"
+msgstr "Job Übersicht"
+
+msgid "follow-us"
+msgstr "Folge uns"
+
+msgid "apply-now"
+msgstr "Jetzt bewerben"
+
+msgid "address"
+msgstr "Adresse"

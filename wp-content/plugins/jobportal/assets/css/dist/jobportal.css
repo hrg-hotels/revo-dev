@@ -416,7 +416,7 @@ custom-black: var(--awb-text-color);
 }
 .filter-set{
     display:flex;
-    width:42%;
+    width:54%;
 }
 .acc-col{
     display:flex;

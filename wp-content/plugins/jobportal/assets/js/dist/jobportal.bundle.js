@@ -161,13 +161,13 @@ function getParameter() {
   }
   /** ---------------- State & Pipeline ---------------- */
 
-  (0,_state__WEBPACK_IMPORTED_MODULE_1__.setGlobalParams)(params);
   if (!params.reference_id) {
     (0,_state__WEBPACK_IMPORTED_MODULE_1__.setReferenceId)("");
   } else {
     (0,_state__WEBPACK_IMPORTED_MODULE_1__.setReferenceId)(params.reference_id);
   }
   ;
+  (0,_state__WEBPACK_IMPORTED_MODULE_1__.setGlobalParams)(params);
   (0,_modules_extended_filter__WEBPACK_IMPORTED_MODULE_3__.updateFilterCount)(jquery__WEBPACK_IMPORTED_MODULE_0___default()('#filter-count'));
   (0,_modules_filters__WEBPACK_IMPORTED_MODULE_2__.filterListByParams)();
 }
@@ -695,7 +695,8 @@ function message() {
   const globalParams = (0,_state__WEBPACK_IMPORTED_MODULE_1__.getState)().globalParams || {};
   const allJobs = (0,_state__WEBPACK_IMPORTED_MODULE_1__.getState)().fetchedJobs || [];
   const resultLength = (0,_state__WEBPACK_IMPORTED_MODULE_1__.getState)().resultJobArr.length || 0;
-  console.log("globalParams in message", globalParams);
+  // translations and paths
+  const t = window.jobportalTranslations || {};
   jquery__WEBPACK_IMPORTED_MODULE_0___default()("#message-container").remove();
   jquery__WEBPACK_IMPORTED_MODULE_0___default()(".not-found-graphic").remove();
   let messageContainer = jquery__WEBPACK_IMPORTED_MODULE_0___default()("<div></div>");
@@ -747,43 +748,43 @@ function message() {
                         </div>
 
                         <div class="result-title" id="title-country">
-                            <span class="txt-black">Country:</span>
+                            <span class="txt-black">${t.country}:</span>
                             <span class="txt-gray">${globalParams.country || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-city">
-                            <span class="txt-black">City:</span>
+                            <span class="txt-black">${t.city}:</span>
                             <span class="txt-gray">${globalParams.city || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-department">
-                            <span class="txt-black">Department:</span>
+                            <span class="txt-black">${t.department}:</span>
                             <span class="txt-gray">${globalParams.department || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-brand">
-                            <span class="txt-black">Brand:</span>
+                            <span class="txt-black">${t.brand}:</span>
                             <span class="txt-gray">${globalParams.brand || ''}</span>
                         </div>
 
                         <!-- Extended Filter -->
                         <div class="result-title" id="title-careerlevels">
-                            <span class="txt-black">Careerlevel:</span>
+                            <span class="txt-black">${t.careerLevels}:</span>
                             <span class="txt-gray">${globalParams.careerlevels || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-employment-type">
-                            <span class="txt-black">Employment Type:</span>
+                            <span class="txt-black">${t.employmentType}:</span>
                             <span class="txt-gray">${globalParams['employment-type'] || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-joblocation-type">
-                            <span class="txt-black">Joblocation Type:</span>
+                            <span class="txt-black">${t.jobLocationType}:</span>
                             <span class="txt-gray">${globalParams['joblocation-type'] || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-keywords">
-                            <span class="txt-black">Keywords:</span>
+                            <span class="txt-black">${t.keywords}:</span>
                             <span class="txt-gray">${globalParams.keyword ? globalParams.keyword.split(',').join(', ') : ''}</span>
                         </div>
 
@@ -791,14 +792,14 @@ function message() {
 
                         <div>
                         <p class="result-message">
-                            Search resulted in <span class="txt-black">${resultLength}</span> hits.
+                            <span class="txt-black">${resultLength}</span> ${t.openPositions}.
                         </p>
                         </div>
                     </div>
                     `);
     jquery__WEBPACK_IMPORTED_MODULE_0___default()("#message-wrapper").append(messageContainer);
     if (resultLength === allJobs.length) {
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()(".result-message").html(`<span class="heading black">${resultLength} offene Stellen</span>`);
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()(".result-message").html(`<span class="heading black">${resultLength} ${t.openPositions}</span>`);
     }
     updateMessageContainer();
   }
@@ -1004,7 +1005,6 @@ function openJob(job, jobListItem) {
   jquery__WEBPACK_IMPORTED_MODULE_0___default()(".layer").remove();
   jquery__WEBPACK_IMPORTED_MODULE_0___default()("body").css("overflow", "hidden");
   jobListItem.setAttribute("id", "current-job");
-  console.log("jobsss:", jobListItem);
 
   // Get the current URL
   let url = window.location.href;
@@ -1030,6 +1030,11 @@ function openJob(job, jobListItem) {
 
 //Render Job Details
 function renderJobDetails(job, jobListItem) {
+  const t = window.jobportalTranslations || {};
+  const _ = (k, d = '') => t[k] ?? d; // helper: translation or default
+  const imgPath = t.imgPath || window.jobPortalAssetsPath || '/wp-content/plugins/jobportal/assets/img/'; // Fallback
+  //job.apply_url bevorzugen, sonst PitchYou über reference_id
+  const applyHref = job.apply_url && job.apply_url.trim() ? job.apply_url : `https://of-hrg-hotels.pitchyou.de/go/${encodeURIComponent(job.reference_id || '')}`;
   if (job.images_header0 == "" || job.images_header0 == null) {
     job.images_header0 = "https://www.hrg-hotels.com/hubfs/Website/_global%20assets/header/Jobportal/jobs_default_header_img.jpg";
   }
@@ -1039,153 +1044,147 @@ function renderJobDetails(job, jobListItem) {
   let popUp = document.createElement("div");
   popUp.classList.add("pop-up");
   popUp.innerHTML = `
-      <div class="pop-up-window">
-        <span class="close" style="position: absolute; z-index: 5000;">&times;</span>
-        <div class="pop-header">
-          <!--
-          <div class="pop-logo">
-            <img src="${job.brand_url}">
+  <div class="pop-up-window">
+    <button type="button" class="close" aria-label="Close" style="position:absolute;z-index:5000;">&times;</button>
+
+    <div class="pop-header">
+      <div class="pop-title">
+        <h3 class="heading">${job.title ?? ''}</h3>
+        <p class="mt-10 heading-small">${job.companyname ?? ''}</p>
+        <div class="pop-key-wrap">
+          <div class="key-container"><p>${job.employment_type ?? ''}</p></div>
+          <div class="key-container"><p>${job.careerlevels ?? ''}</p></div>
+          <div class="key-container"><p>${job.joblocation_type ?? ''}</p></div>
+          <div class="key-container"><p>${job.categories ?? ''}</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pop-content">
+      <div class="pop-col-01">
+        <div class="pop-header-image">
+          ${job.images_header0 ? `
+            <img src="${job.images_header0}" alt="header" style="width:-webkit-fill-available;">
+          ` : ''}
+        </div>
+
+        ${job.description ? `<div class="cont-pop description">${job.description}</div>` : ''}
+        ${job.tasks ? `<div class="cont-pop tasks">${job.tasks}</div>` : ''}
+        ${job.requirement_content ? `<div class="cont-pop requirement">${job.requirement_content}</div>` : ''}
+        ${job.offer ? `<div class="cont-pop offer">${job.offer}</div>` : ''}
+      </div>
+
+      <div class="pop-col-02">
+        <!-- Address card -->
+        <div class="pop-card">
+          <div class="col-1-2">
+            <div>
+              <div class="w-100">
+                <img src="${imgPath}map.svg" class="icon-26" alt="map">
+              </div>
+              <h3 class="heading mb-20">${_('address', 'Address')}</h3>
+              <div class="color-dark-gray">
+                ${job.companyname ?? ''}<br>
+                ${job.location_streetname || job.street || ''} ${job.location_buildingnumber || job.buildingnumber || ''}<br>
+                ${job.location_postalcode || job.postalcode || ''} ${job.city || ''}<br>
+                ${job.country || ''}
+              </div>
+            </div>
           </div>
-          -->
-          <div class="pop-title">
-            <h3 class="heading">${job.title}</h3>
-            <p class="mt-10 heading-small">${job.companyname}</p>
-            <div class="pop-key-wrap">
-              <div class="key-container">
-                <p>${job.employment_type}</p>
+
+          <div class="col-1-2">
+            <div>
+              <div class="w-100">
+                <img src="${imgPath}account_circle.svg" class="icon-26" alt="contact">
               </div>
-              <div class="key-container">
-                <p>${job.careerlevels}</p>
-              </div>
-              <div class="key-container">
-                <p>${job.joblocation_type}</p>
-              </div>
-              <div class="key-container">
-                <p>${job.categories}</p>
-              </div>
+              <h3 class="heading mb-20">${_('contact-person', 'Contact person')}</h3>
+              ${job.recruiter_firstname || ''} ${job.recruiter_lastname || ''}
             </div>
           </div>
         </div>
 
-        <div class="pop-content">
-          <div class="pop-col-01">
-            <div class="pop-header-image">
-              <img src="${job.images_header0}"
-                  alt="job header image"
-                  style="width: -webkit-fill-available;">
-            </div>
-            <div class="cont-pop description">${job.description}</div>
-            <div class="cont-pop tasks">${job.tasks}</div>
-            <div class="cont-pop requirement">${job.requirement_content}</div>
-            <div class="cont-pop offer">${job.offer}</div>
+        <!-- Job overview -->
+        <div class="pop-card flex-col">
+          <div class="mb-20">
+            <h3 class="heading">${_('job-overview', 'Job overview')}</h3>
           </div>
 
-          <div class="pop-col-02">
-            <div class="pop-card">
-              <div class="col-1-2">
-                <div>
-                  <div class="w-100">
-                    <img src="${imgPath}map.svg" class="icon-26" alt="map">
-                  </div>
-                  <h3 class="heading mb-20">Adresse</h3>
-                  <div class="color-dark-gray">
-                    ${job.companyname}<br>
-                    ${job.street} ${job.buildingnumber}<br>
-                    ${job.postalcode} ${job.city}<br>
-                    ${job.country}
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-1-2">
-                <div>
-                  <div class="w-100">
-                    <img src="${imgPath}account_circle.svg" class="icon-26" alt="circle">
-                  </div>
-                  <h3 class="heading mb-20">contactPerson</h3>
-                  ${job.recruiter_firstname} ${job.recruiter_lastname}
-                </div>
-              </div>
+          <div class="flex">
+            <div class="col-1-2">
+              <img src="${imgPath}work.svg" class="icon-26" alt="work">
+              <span class="color-dark-gray font-12 m-t-5">${_('category', 'Category')}:</span>
+              <span class="font-12 black"> ${job.categories ?? ''} </span>
             </div>
-
-            <div class="pop-card flex-col">
-              <div class="mb-20">
-                <h3 class="heading">JobOverview</h3>
-              </div>
-
-              <div class="flex">
-                <div class="col-1-2">
-                  <img src="${imgPath}work.svg" class="icon-26" alt="work-icon">
-                  <span class="color-dark-gray font-12 m-t-5">Scope:</span>
-                  <span class="font-12 black"> ${job.categories} </span>
-                </div>
-                <div class="col-1-2">
-                  <img src="${imgPath}layers.svg" class="icon-26" alt="icon">
-                  <span class="color-dark-gray font-12 m-t-5">Level:</span>
-                  <span class="font-12 black"> ${job.careerlevels} </span>
-                </div>
-              </div>
-
-              <div class="flex mt-20">
-                <div class="col-1-2">
-                  <img src="${imgPath}avg_pace.svg" class="icon-26" alt="work-icon">
-                  <span class="color-dark-gray font-12 m-t-5">Employment Form:</span>
-                  <span class="font-12 black"> ${job.employment_type} </span>
-                </div>
-                <div class="col-1-2">
-                  <img src="${imgPath}location_away.svg" class="icon-26" alt="work-icon">
-                  <span class="color-dark-gray font-12 m-t-5">Joblocation Type:</span>
-                  <span class="font-12 black"> ${job.joblocation_type} </span>
-                </div>
-              </div>
+            <div class="col-1-2">
+              <img src="${imgPath}layers.svg" class="icon-26" alt="level">
+              <span class="color-dark-gray font-12 m-t-5">${_('career-levels', 'Career levels')}:</span>
+              <span class="font-12 black"> ${job.careerlevels ?? ''} </span>
             </div>
+          </div>
 
-            <div class="pop-card border-top flex-col">
-              <div class="mb-20">
-                <h3 class="heading">Follow us</h3>
-              </div>
-              <div class="flex">
-                <a href="https://www.linkedin.com/company/hotels-by-hr-gmbh/mycompany/" target="_blank" rel="noopener" class="btn-social">
-                  <img src="${imgPath}icon_linkedin.png" class="icon-20" alt="icon linkedIn">
-                </a>
-                <a href="https://www.xing.com/pages/hrghotelsgmbh" target="_blank" rel="noopener" class="btn-social">
-                  <img src="${imgPath}icon_xing.png" class="icon-20" alt="icon xing">
-                </a>
-                <a href="https://www.facebook.com/HRGroup.Hotels" target="_blank" rel="noopener" class="btn-social">
-                  <img src="${imgPath}icon_facebook.png" class="icon-20" alt="icon facebook">
-                </a>
-                <a href="https://www.youtube.com/channel/UCUP45iVsv0K4ie7u5BqY_PQ" target="_blank" rel="noopener" class="btn-social">
-                  <img src="${imgPath}icon_youtube.png" class="icon-20" alt="icon youtube">
-                </a>
-                <a href="https://www.instagram.com/hrg.community/" target="_blank" rel="noopener" class="btn-social">
-                  <img src="${imgPath}icon_insta.png" class="icon-20" alt="icon instagram">
-                </a>
-                <a href="https://www.tiktok.com/@hrg.hotels" target="_blank" rel="noopener" class="btn-social">
-                  <img src="${imgPath}icon_tiktok.png" class="icon-20" alt="icon tiktok">
-                </a>
-              </div>
-
-              <div class="mb-20 mt-20">
-                <h3 class="heading">Hier Bewerben</h3>
-              </div>
-
-              <div class="apply-btn-wrap">
-                <div class="apply-item">
-                  <a class="fusion-button button-flat fusion-button-default-size button-custom fusion-button-default button-2 fusion-button-default-span fusion-button-default-type"
-                    target="_blank" rel="noopener nofollow" href="">apply!</a>
-                </div>
-                <div class="apply-item">
-                  <a href="https://of-hrg-hotels.pitchyou.de/go/${job.reference_id}" target="_blank" rel="noopener">
-                    <img src="${imgPath}icon_whatsapp.png" class="whatsapp-icon" alt="icon">
-                  </a>
-                </div>
-              </div>
+          <div class="flex mt-20">
+            <div class="col-1-2">
+              <img src="${imgPath}avg_pace.svg" class="icon-26" alt="employment">
+              <span class="color-dark-gray font-12 m-t-5">${_('employment-type', 'Employment type')}:</span>
+              <span class="font-12 black"> ${job.employment_type ?? ''} </span>
+            </div>
+            <div class="col-1-2">
+              <img src="${imgPath}location_away.svg" class="icon-26" alt="location type">
+              <span class="color-dark-gray font-12 m-t-5">${_('job-location-type', 'Job location type')}:</span>
+              <span class="font-12 black"> ${job.joblocation_type ?? ''} </span>
             </div>
           </div>
         </div>
-      </div> 
 
-    `;
+        <!-- Social + Apply -->
+        <div class="pop-card border-top flex-col">
+          <div class="mb-20">
+            <h3 class="heading">${_('follow-us', 'Follow us')}</h3>
+          </div>
+
+          <div class="flex">
+            <a href="https://www.linkedin.com/company/hotels-by-hr-gmbh/mycompany/" target="_blank" rel="noopener" class="btn-social">
+              <img src="${imgPath}icon_linkedin.png" class="icon-20" alt="LinkedIn">
+            </a>
+            <a href="https://www.xing.com/pages/hrghotelsgmbh" target="_blank" rel="noopener" class="btn-social">
+              <img src="${imgPath}icon_xing.png" class="icon-20" alt="Xing">
+            </a>
+            <a href="https://www.facebook.com/HRGroup.Hotels" target="_blank" rel="noopener" class="btn-social">
+              <img src="${imgPath}icon_facebook.png" class="icon-20" alt="Facebook">
+            </a>
+            <a href="https://www.youtube.com/channel/UCUP45iVsv0K4ie7u5BqY_PQ" target="_blank" rel="noopener" class="btn-social">
+              <img src="${imgPath}icon_youtube.png" class="icon-20" alt="YouTube">
+            </a>
+            <a href="https://www.instagram.com/hrg.community/" target="_blank" rel="noopener" class="btn-social">
+              <img src="${imgPath}icon_insta.png" class="icon-20" alt="Instagram">
+            </a>
+            <a href="https://www.tiktok.com/@hrg.hotels" target="_blank" rel="noopener" class="btn-social">
+              <img src="${imgPath}icon_tiktok.png" class="icon-20" alt="TikTok">
+            </a>
+          </div>
+
+          <div class="mb-20 mt-20">
+            <h3 class="heading">${_('apply-now', 'Apply now')}</h3>
+          </div>
+
+          <div class="apply-btn-wrap">
+            <div class="apply-item">
+              <a class="fusion-button button-flat fusion-button-default-size button-custom fusion-button-default button-2 fusion-button-default-span fusion-button-default-type"
+                 target="_blank" rel="noopener nofollow" href="${applyHref}">
+                ${_('apply-now', 'Apply now')}
+              </a>
+            </div>
+            <div class="apply-item">
+              <a href="https://of-hrg-hotels.pitchyou.de/go/${encodeURIComponent(job.reference_id || '')}" target="_blank" rel="noopener">
+                <img src="${imgPath}icon_whatsapp.png" class="whatsapp-icon" alt="WhatsApp">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div> <!-- /pop-col-02 -->
+    </div> <!-- /pop-content -->
+  </div>
+`;
   //append to current job
 
   jobListItem.appendChild(popUp);
@@ -1212,7 +1211,7 @@ function renderJobDetails(job, jobListItem) {
     }, "", newUrl);
     // ReferenceId im State zurücksetzen
     (0,_state__WEBPACK_IMPORTED_MODULE_2__.setReferenceId)("");
-    // generateDropdownOptions(); // optional, falls nötig
+    // generate dropdowns
     (0,_dropdowns__WEBPACK_IMPORTED_MODULE_3__.generateDropdownOptions)();
 
     // UI zurücksetzen

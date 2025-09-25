@@ -7,7 +7,8 @@ export function message() {
 const globalParams = getState().globalParams || {};
 const allJobs = getState().fetchedJobs || [];
 const resultLength = getState().resultJobArr.length || 0;
-console.log("globalParams in message", globalParams);
+// translations and paths
+const t = window.jobportalTranslations || {};
 
     $("#message-container").remove();
     $(".not-found-graphic").remove();
@@ -65,43 +66,43 @@ console.log("globalParams in message", globalParams);
                         </div>
 
                         <div class="result-title" id="title-country">
-                            <span class="txt-black">Country:</span>
+                            <span class="txt-black">${t.country}:</span>
                             <span class="txt-gray">${globalParams.country || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-city">
-                            <span class="txt-black">City:</span>
+                            <span class="txt-black">${t.city}:</span>
                             <span class="txt-gray">${globalParams.city || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-department">
-                            <span class="txt-black">Department:</span>
+                            <span class="txt-black">${t.department}:</span>
                             <span class="txt-gray">${globalParams.department || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-brand">
-                            <span class="txt-black">Brand:</span>
+                            <span class="txt-black">${t.brand}:</span>
                             <span class="txt-gray">${globalParams.brand || ''}</span>
                         </div>
 
                         <!-- Extended Filter -->
                         <div class="result-title" id="title-careerlevels">
-                            <span class="txt-black">Careerlevel:</span>
+                            <span class="txt-black">${t.careerLevels}:</span>
                             <span class="txt-gray">${globalParams.careerlevels || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-employment-type">
-                            <span class="txt-black">Employment Type:</span>
+                            <span class="txt-black">${t.employmentType}:</span>
                             <span class="txt-gray">${globalParams['employment-type'] || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-joblocation-type">
-                            <span class="txt-black">Joblocation Type:</span>
+                            <span class="txt-black">${t.jobLocationType}:</span>
                             <span class="txt-gray">${globalParams['joblocation-type'] || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-keywords">
-                            <span class="txt-black">Keywords:</span>
+                            <span class="txt-black">${t.keywords}:</span>
                             <span class="txt-gray">${globalParams.keyword ? globalParams.keyword.split(',').join(', ') : ''}</span>
                         </div>
 
@@ -109,7 +110,7 @@ console.log("globalParams in message", globalParams);
 
                         <div>
                         <p class="result-message">
-                            Search resulted in <span class="txt-black">${resultLength}</span> hits.
+                            <span class="txt-black">${resultLength}</span> ${t.openPositions}.
                         </p>
                         </div>
                     </div>
@@ -118,7 +119,7 @@ console.log("globalParams in message", globalParams);
                     
                     $("#message-wrapper").append(messageContainer);
                     if (resultLength === allJobs.length) { 
-                        $(".result-message").html(`<span class="heading black">${resultLength} offene Stellen</span>`);
+                        $(".result-message").html(`<span class="heading black">${resultLength} ${t.openPositions}</span>`);
                     }
                     updateMessageContainer();
                     }

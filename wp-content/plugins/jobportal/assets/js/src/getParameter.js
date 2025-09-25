@@ -74,12 +74,12 @@ console.log('paramssss:', params);
   }
   /** ---------------- State & Pipeline ---------------- */
 
-  setGlobalParams(params);
-    if (!params.reference_id) {
+  if (!params.reference_id) {
     setReferenceId("");
   } else {
     setReferenceId(params.reference_id);
   };
+  setGlobalParams(params);
   updateFilterCount($('#filter-count'));
   filterListByParams();
 }
