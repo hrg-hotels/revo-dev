@@ -21,7 +21,7 @@ class Settings_Debug_Tab_Dropin extends Dropin {
 
 	/** @inheritdoc */
 	public function loaded() {
-		add_action( 'admin_menu', array( $this, 'add_menu' ) );
+		add_action( 'admin_menu', array( $this, 'add_menu' ), 10 );
 		add_action( 'admin_menu', array( $this, 'add_tabs' ) );
 	}
 
@@ -43,7 +43,8 @@ class Settings_Debug_Tab_Dropin extends Dropin {
 			->set_menu_title( _x( 'Help & Support', 'settings menu name', 'simple-history' ) )
 			->set_icon( 'troubleshoot' )
 			->set_callback( [ $this, 'output_help_and_support_page' ] )
-			->set_redirect_to_first_child_on_load();
+			->set_redirect_to_first_child_on_load()
+			->set_order( 5 );
 
 		// Set different options depending on location.
 		if ( in_array( $admin_page_location, [ 'top', 'bottom' ], true ) ) {
@@ -59,6 +60,9 @@ class Settings_Debug_Tab_Dropin extends Dropin {
 		$debug_menu_page->add();
 	}
 
+	/**
+	 * Add tabs to the settings page.
+	 */
 	public function add_tabs() {
 		$menu_manager = $this->simple_history->get_menu_manager();
 
@@ -71,7 +75,7 @@ class Settings_Debug_Tab_Dropin extends Dropin {
 
 		if ( in_array( $admin_page_location, [ 'top', 'bottom' ], true ) ) {
 			// THIS WORKS.
-		
+
 			// Add first "Support" tab.
 			// This tab is not needed when inside tools or dashboard.
 			// User will be redirected to the next, first child tab.
@@ -94,7 +98,7 @@ class Settings_Debug_Tab_Dropin extends Dropin {
 				->set_menu_slug( self::SUPPORT_PAGE_GENERAL_TAB_SLUG )
 				->set_parent( self::SUPPORT_PAGE_GENERAL_TAB_SLUG )
 				->set_callback( [ $this, 'output_help_page' ] )
-				->add();	
+				->add();
 
 			// Add second "Debug" tab.
 			( new Menu_Page() )
@@ -118,7 +122,7 @@ class Settings_Debug_Tab_Dropin extends Dropin {
 				->set_order( 10 )
 				->set_redirect_to_first_child_on_load()
 				->add();
-			
+
 			// Add second "Debug" tab.
 			( new Menu_Page() )
 				->set_menu_title( _x( 'Debug', 'settings menu name', 'simple-history' ) )

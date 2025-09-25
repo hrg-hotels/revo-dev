@@ -40,7 +40,7 @@ class Admin_Pages extends Service {
 			->set_capability( Helpers::get_view_history_capability() )
 			->set_icon( $logo_icon )
 			->set_location( $admin_page_location )
-			->set_callback( [ $this, 'history_page_output' ] );
+			->set_order( 1 );
 
 		if ( in_array( $admin_page_location, [ 'top', 'bottom' ], true ) ) {
 			// Add "Event log" page that is the first submenu item.
@@ -54,7 +54,10 @@ class Admin_Pages extends Service {
 				->set_capability( Helpers::get_view_history_capability() )
 				->set_callback( [ $this, 'history_page_output' ] )
 				->set_location( 'submenu_default' )
+				->set_order( 2 )
 			);
+		} else {
+			$main_log_page->set_callback( [ $this, 'history_page_output' ] );
 		}
 
 		$main_log_page->add();
@@ -181,8 +184,15 @@ class Admin_Pages extends Service {
 			echo $main_subnav_html_output;
 			?>
 		</header>
-
+		
 		<?php
+		/**
+		 * Fires after the page header in Simple History admin pages.
+		 * Use this to output content right after the header.
+		 *
+		 * @since 5.9
+		 */
+		do_action( 'simple_history/admin_page/after_header' );
 
 		// Output sub nav items.
 		// Todo: this contains the full html output so it should not be in this header function.

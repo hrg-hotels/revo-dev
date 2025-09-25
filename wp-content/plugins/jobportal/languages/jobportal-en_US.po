@@ -1,0 +1,90 @@
+msgid "country"
+msgstr "Country"
+
+msgid "city"
+msgstr "City"
+
+msgid "brand"
+msgstr "Brand"
+
+msgid "category"
+msgstr "Category"
+
+
+msgid "no-result"
+msgstr "The search did not match any results"
+
+msgid "search-resultet"
+msgstr "The search resulted in"
+
+msgid "hits"
+msgstr "hits"
+
+msgid "area"
+msgstr "Conference space"
+
+msgid "people"
+msgstr "Number of participants"
+
+msgid "your-selection"
+msgstr "Your selection" 
+
+msgid "department"
+msgstr "Department"
+
+msgid "more-filters"
+msgstr "More filters"
+
+msgid "career-levels"
+msgstr "Career levels"
+
+msgid "employment-type"
+msgstr "Employment type"
+
+msgid "job-location-type"
+msgstr "Job location type"
+
+msgid "open-positions"
+msgstr "Open positions"
+
+msgid "apprenticeship"
+msgstr "Apprenticeship"
+
+msgid "student-jobs"
+msgstr "Student jobs"
+
+msgid "career-starters"
+msgstr "Career starters"
+
+msgid "experienced-professionals"
+msgstr "Experienced professionals"
+
+msgid "executive"
+msgstr "Executive"
+
+msgid "career-changer"
+msgstr "Career changer"
+
+msgid "part-time"
+msgstr "Part-time"
+
+msgid "full-time"
+msgstr "Full-time"
+
+msgid "hourly"
+msgstr "Hourly"
+
+msgid "contact-person"
+msgstr "Contact person"
+
+msgid "job-overview"
+msgstr "Job overview"
+
+msgid "follow-us"
+msgstr "Follow us"
+
+msgid "apply-now"
+msgstr "Apply now"
+
+msgid "address"
+msgstr "Address"

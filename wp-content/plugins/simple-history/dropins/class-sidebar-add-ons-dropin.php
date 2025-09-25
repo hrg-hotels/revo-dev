@@ -35,13 +35,13 @@ class Sidebar_Add_Ons_Dropin extends Dropin {
 		?>
 		<!-- 
 		Insert promo:
-		"Our New Year’s Sale is Here – 50% Off All Add-Ons 🙀".
-		Link to: https://simple-history.com/add-ons/?utm_source=wpadmin&utm_content=new-year-sale-sidebar
+		"Our New Year's Sale is Here - 50% Off All Add-Ons 🙀".
+		Link to: https://simple-history.com/add-ons/?utm_source=wordpress_admin&utm_content=new-year-sale-sidebar
 		-->
 		<div class="postbox">
 			<div class="inside" style="background-color: var(--sh-color-pink-light); padding: 1rem; margin-top: 0;">
 				<p style="margin: 0; font-size: 1rem; font-weight: bold;">
-					<?php esc_html_e( 'Our New Year’s Sale is Here – 50% Off All Add-Ons 🙀', 'simple-history' ); ?>
+					<?php esc_html_e( 'Our New Year\'s Sale is Here - 50% Off All Add-Ons 🙀', 'simple-history' ); ?>
 				</p>
 
 				<p>Hurry - this sale ends January 31.</p>
@@ -49,7 +49,7 @@ class Sidebar_Add_Ons_Dropin extends Dropin {
 				<p>
 					<a 
 						class="sh-PremiumFeaturesPostbox-button"
-						href="https://simple-history.com/add-ons/?utm_source=wpadmin&utm_content=new-year-sale-sidebar" 
+						href="https://simple-history.com/add-ons/?utm_source=wordpress_admin&utm_content=new-year-sale-sidebar" 
 						target="_blank"
 						>
 						<?php esc_html_e( 'Get Add-Ons Now', 'simple-history' ); ?>
@@ -88,6 +88,11 @@ class Sidebar_Add_Ons_Dropin extends Dropin {
 			return;
 		}
 
+		// Hide if Premium is installed, because one feature of premium is hiding promos.
+		if ( Helpers::is_premium_add_on_active() ) {
+			return;
+		}
+
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo self::get_woocommerce_logger_features_postbox_html();
 	}
@@ -101,6 +106,11 @@ class Sidebar_Add_Ons_Dropin extends Dropin {
 			return;
 		}
 
+		// Hide if Premium is installed, because one feature of premium is hiding promos.
+		if ( Helpers::is_premium_add_on_active() ) {
+			return;
+		}
+
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo self::get_debug_and_monitor_features_postbox_html();
 	}
@@ -111,7 +121,12 @@ class Sidebar_Add_Ons_Dropin extends Dropin {
 	 * @return string HTML
 	 */
 	public static function get_debug_and_monitor_features_postbox_html() {
-		$debug_and_monitor_url = 'https://simple-history.com/add-ons/debug-and-monitor/?utm_source=wpadmin&utm_content=debug-monitor-sidebar';
+		// Hide if Premium is installed, because one feature of premium is hiding promos.
+		if ( Helpers::is_premium_add_on_active() ) {
+			return;
+		}
+
+		$debug_and_monitor_url = 'https://simple-history.com/add-ons/debug-and-monitor/?utm_source=wordpress_admin&utm_medium=Simple_History&utm_campaign=premium_upsell&utm_content=debug-monitor-sidebar';
 
 		ob_start();
 		?>
@@ -157,7 +172,7 @@ class Sidebar_Add_Ons_Dropin extends Dropin {
 	 * @return string HTML
 	 */
 	public static function get_premium_features_postbox_html() {
-		$premium_url = 'https://simple-history.com/add-ons/premium/?utm_source=wpadmin&utm_content=premium-sidebar';
+		$premium_url = 'https://simple-history.com/add-ons/premium/?utm_source=wordpress_admin&utm_medium=Simple_History&utm_campaign=premium_upsell&utm_content=premium-sidebar';
 
 		ob_start();
 		?>
@@ -171,12 +186,22 @@ class Sidebar_Add_Ons_Dropin extends Dropin {
 				</h3>
 
 				<ul class="sh-PremiumFeaturesPostbox-featuresList">
+					<!-- Sticky events -->
 					<li class="sh-PremiumFeaturesPostbox-featuresList-item">
-						<?php esc_html_e( 'Add custom events manually', 'simple-history' ); ?>
+						<?php esc_html_e( 'Sticky events', 'simple-history' ); ?>
 
 						<span class="sh-PremiumFeatureBadge" style="--sh-badge-background-color: var(--sh-color-yellow);">
 							<strong><?php esc_html_e( 'New!', 'simple-history' ); ?></strong>
 						</span>
+
+						<em class="sh-PremiumFeaturesPostbox-featuresList-item-discrete">
+							<?php esc_html_e( 'Pin important log entries to the top of the log for easy access.', 'simple-history' ); ?>
+						</em>
+					</li>
+
+					<!-- Custom events -->
+					<li class="sh-PremiumFeaturesPostbox-featuresList-item">
+						<?php esc_html_e( 'Add custom events manually', 'simple-history' ); ?>
 
 						<em class="sh-PremiumFeaturesPostbox-featuresList-item-discrete">
 							<?php esc_html_e( "Document important changes by creating custom log entries for team actions, content updates, or system changes that aren't automatically tracked.", 'simple-history' ); ?>
@@ -185,10 +210,6 @@ class Sidebar_Add_Ons_Dropin extends Dropin {
 
 					<li class="sh-PremiumFeaturesPostbox-featuresList-item">
 						<?php esc_html_e( 'Stealth Mode', 'simple-history' ); ?>
-
-						<span class="sh-PremiumFeatureBadge" style="--sh-badge-background-color: var(--sh-color-yellow);">
-							<strong><?php esc_html_e( 'New!', 'simple-history' ); ?></strong>
-						</span>
 
 						<em class="sh-PremiumFeaturesPostbox-featuresList-item-discrete">
 							<?php esc_html_e( 'Allow only specified users to see Simple History in the WordPress admin.', 'simple-history' ); ?>
@@ -222,7 +243,7 @@ class Sidebar_Add_Ons_Dropin extends Dropin {
 	 * @return string HTML
 	 */
 	public static function get_woocommerce_logger_features_postbox_html() {
-		$woocommerce_logger_url = 'https://simple-history.com/add-ons/woocommerce/?utm_source=wpadmin&utm_content=wc-logger-sidebar';
+		$woocommerce_logger_url = 'https://simple-history.com/add-ons/woocommerce/?utm_source=wordpress_admin&utm_medium=Simple_History&utm_campaign=premium_upsell&utm_content=wc-logger-sidebar';
 
 		ob_start();
 		?>

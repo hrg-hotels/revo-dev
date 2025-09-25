@@ -1,36 +1,8 @@
-@import url(icons.css);
-
 /**
  * Use SuitCSS based classnames.
  */
-:root {
-	--sh-color-gray: #c3c4c7;
-	/* For dividers and similar, like "Item 1 | Item 2". */
-	--sh-color-gray-2: #a7aaad;
-	/* For smaller meta header text */
-	--sh-color-gray-3: rgb(137, 143, 156);
-	/* For discrete elements like skeleton loading background */
-	--sh-color-gray-4: #ededed;
-	--sh-color-green: #3f9349;
-	--sh-color-green-2: darkgreen;
 
-	/* Colors from Figma document 2025 */
-	--sh-color-black: #000000;
-	--sh-color-black-2: #666666;
-	--sh-color-white: #ffffff;
-	--sh-color-blue: #004cff;
-	--sh-color-green-mint: #12e2a3;
-	--sh-color-green-light: #b0f4e6;
-	--sh-color-cream: #fcf9ec;
-	--sh-color-pink-light: #ffcee4;
-	--sh-color-pink: #fb90b7;
-	--sh-color-yellow: #fcc72c;
-
-	/* Font sizes */
-	--sh-font-size-small: 0.75rem;
-	--sh-font-size-medium: 0.9rem;
-	--sh-font-size-large: 1.1rem;
-}
+@import './variables.css';
 
 /* clearfix */
 .SimpleHistory__cf:before,
@@ -115,8 +87,8 @@
 .SimpleHistoryLogitems {
 	margin: 0;
 	background: #fff;
-	border-top: 1px solid rgb(229, 229, 229);
-	border-bottom: 1px solid rgb(229, 229, 229);
+	/* border-top: 1px solid var(--sh-color-separator); */
+	border-bottom: 1px solid var(--sh-color-separator);
 	opacity: 1;
 	transition: all 0.25s ease-out;
 }
@@ -138,11 +110,18 @@
 	position: relative;
 	list-style-type: none;
 	margin: 0;
-	padding: 20px 20px 20px 16px;
+	/* padding: 20px 20px 20px 16px; */
+	padding: var(--sh-spacing-medium);
+	/* Margin top gets same height as separator */
+	/* margin-top: var(--sh-spacing-medium); */
+}
+
+.SimpleHistoryLogitem:hover {
+	background-color: var(--sh-color-item-hover);
 }
 
 /* add border below items */
-.SimpleHistoryLogitem::before {
+/* .SimpleHistoryLogitem::before {
 	content: "";
 	position: absolute;
 	bottom: 0;
@@ -150,7 +129,7 @@
 	height: 1px;
 	right: 0;
 	background: rgb(229, 229, 229);
-}
+} */
 
 .postbox .SimpleHistoryLogitem::before {
 	left: 0;
@@ -158,6 +137,56 @@
 
 .SimpleHistoryLogitem:last-of-type:before {
 	background: none;
+}
+
+/* Targets the element before a divider with a label. */
+.SimpleHistoryLogitem:has(
+		+ .SimpleHistoryLogitem .SimpleHistoryEventSeparator--hasLabel
+	) {
+	/* outline: 2px solid red; */
+	padding-bottom: calc(var(--sh-spacing-medium) * 3);
+}
+
+.SimpleHistoryEventSeparator {
+	width: calc(100% + var(--sh-spacing-medium) * 2);
+	margin-left: calc(var(--sh-spacing-medium) * -1);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-top: 1px solid var(--sh-color-separator);
+	margin-top: calc(var(--sh-spacing-medium) * -1);
+	min-height: 30px;
+	font-weight: 600;
+	/* outline: 1px dotted pink; */
+}
+
+/* Divider line, at middle of divider. */
+
+.SimpleHistoryEventSeparator__label {
+	padding: var(--sh-spacing-small) var(--sh-spacing-medium);
+	border-radius: 1rem;
+	line-height: 1;
+	background-color: var(--sh-color-white);
+	border: 1px solid var(--sh-color-separator);
+	font-size: var(--sh-font-size-small);
+	transform: translateY(-50%);
+	box-shadow: 0px 3px 3px 0px #f7f7f7;
+}
+
+/* Sticky events style */
+.SimpleHistoryLogitem--is-sticky {
+	/* background-color: var(--sh-color-cream); */
+}
+
+/* Text inside event, contains tooltip and SVG icon component */
+.SimpleHistoryLogitem--sticky {
+	display: inline-block;
+	line-height: 1;
+	vertical-align: middle;
+
+	> svg {
+		display: block;
+	}
 }
 
 /*
@@ -170,7 +199,6 @@ Tag = the pill with the log level.
 	font-size: 10px;
 	padding: 3px 4px;
 	border-radius: 3px;
-	/*opacity: .75;*/
 	vertical-align: 1px;
 	line-height: 1;
 }
@@ -316,10 +344,6 @@ Tag = the pill with the log level.
 	position: absolute;
 	top: 12px;
 	right: 12px;
-}
-
-.SimpleHistoryLogitem:hover {
-	background-color: #fafafa;
 }
 
 .SimpleHistoryLogitem__keyValueTable th,
@@ -885,12 +909,24 @@ Modal window with detailss
 }
 
 /**
- * span is used as tooltip.
+ * span is used as tooltip. The tooltip is text with dotted underline and the tooltip is shown on hover, using
+ * built in browser tooltip.
  */
-.SimpleHistoryQuickStats--totalLoggedEvents span {
+.sh-Tooltip {
 	text-decoration: dotted underline;
 	text-underline-offset: 2px;
 	cursor: help;
+}
+
+/**
+ * An icon that is used as tooltip.
+ */
+.sh-TooltipIcon {
+	--sh-icon-size: 1.2em;
+	cursor: help;
+	top: -0.1em;
+	margin-left: 0.25em;
+	opacity: 0.6;
 }
 
 /* if not hits when using filter function + if ajax error */
@@ -987,7 +1023,7 @@ Modal window with detailss
  */
 .sh-PageHeader {
 	margin: 0 0 0 -20px;
-	padding: 1.5rem;
+	padding: var(--sh-spacing-large);
 	background: #fff;
 	border-bottom: 1px solid var(--sh-color-gray);
 	display: flex;
@@ -1031,7 +1067,24 @@ so add some extra place then to make it look a bit less ugly.
 }
 
 .sh-PageHeader-settingsLinkIcon {
-	--icon-size: 25px;
+	--sh-icon-size: 25px;
+}
+
+.sh-NotificationBar {
+	position: relative;
+	text-align: center;
+	background-color: var(--sh-color-cream);
+	padding: var(--sh-spacing-small) var(--sh-spacing-large);
+	margin: 0 0 0 calc(var(--sh-spacing-large) * -1);
+	font-weight: 600;
+	border-bottom: 1px solid var(--sh-color-gray);
+	transition: background-color 0.125s ease-out;
+}
+
+.sh-NotificationBar-link::after {
+	content: "";
+	position: absolute;
+	inset: 0;
 }
 
 .sh-PremiumFeatureBadge {
@@ -1044,9 +1097,8 @@ so add some extra place then to make it look a bit less ugly.
 	align-items: center;
 	text-transform: uppercase;
 	font-size: 0.8em;
-	font-weight: normal;
+	font-weight: 600;
 	font-style: normal;
-	/* border: 1px solid var(--sh-color-green-2); */
 	border-radius: 4px;
 	padding: 0.25em 0.5em;
 	opacity: 0.75;
@@ -1059,6 +1111,7 @@ so add some extra place then to make it look a bit less ugly.
 	text-wrap-style: pretty;
 	padding: 1rem;
 	background-color: var(--box-bg-color);
+	border-radius: 10px;
 }
 
 .sh-PremiumFeaturesPostbox-preTitleFeaturesBadge {
@@ -1111,10 +1164,6 @@ so add some extra place then to make it look a bit less ugly.
 	font-size: var(--sh-font-size-small);
 	line-height: 1.4;
 	font-style: normal;
-}
-
-.sh-Page-content {
-	margin: 0 1rem;
 }
 
 .sh-PageNav {
@@ -1184,9 +1233,9 @@ so add some extra place then to make it look a bit less ugly.
 }
 
 .sh-SettingsPage-settingsSection-icon {
-	--icon-size: 24px;
-	width: var(--icon-size);
-	height: var(--icon-size);
+	--sh-icon-size: 24px;
+	width: var(--sh-icon-size);
+	height: var(--sh-icon-size);
 	/* background-image: url(./icons/info_FILL0_wght400_GRAD0_opsz48.svg); */
 	display: inline-block;
 	background-size: 100%;
@@ -1197,9 +1246,9 @@ so add some extra place then to make it look a bit less ugly.
 }
 
 .sh-SettingsPage-settingsField-icon {
-	--icon-size: 20px;
-	width: var(--icon-size);
-	height: var(--icon-size);
+	--sh-icon-size: 20px;
+	width: var(--sh-icon-size);
+	height: var(--sh-icon-size);
 	/* background-image: url(./icons/info_FILL0_wght400_GRAD0_opsz48.svg); */
 	display: inline-block;
 	background-size: 100%;
@@ -1211,9 +1260,9 @@ so add some extra place then to make it look a bit less ugly.
 }
 
 .sh-PageNav-icon {
-	--icon-size: 20px;
-	width: var(--icon-size);
-	height: var(--icon-size);
+	--sh-icon-size: 20px;
+	width: var(--sh-icon-size);
+	height: var(--sh-icon-size);
 	/* background-image: url(./icons/info_FILL0_wght400_GRAD0_opsz48.svg); */
 	display: inline-block;
 	background-size: 100%;
@@ -1517,8 +1566,9 @@ a.sh-SettingsTabs-link:hover {
 	max-height: 0;
 	overflow: hidden;
 	text-align: center;
-	background: white;
 	background: rgba(0, 255, 30, 0.15);
+	/* Make room for divider label that will overlap otherwise. */
+	border-bottom: 30px;
 	transition:
 		max-height 0.5s ease-out,
 		background 0s;
@@ -1583,4 +1633,47 @@ a.sh-SettingsTabs-link:hover {
 .SimpleHistory__modal {
 	min-width: 50vw;
 	min-height: 50vh;
+}
+
+.sh-PageHeader a,
+.sh-NotificationBar a,
+.sh-Page-content a {
+	text-underline-position: from-font;
+}
+
+/*
+Styles for plugin update details. Markup looks like this:
+
+<div class="sh-PluginUpdateDetails">
+    <h4 class="sh-PluginUpdateDetails-title">What's new in this version</h4>
+    <ul class="sh-PluginUpdateDetails-features">
+        <li class="sh-PluginUpdateDetails-feature">Feature 1</li>
+        <li class="sh-PluginUpdateDetails-feature">Feature 2</li>
+    </ul>
+    <p class="sh-PluginUpdateDetails-releaseLink">
+        <a href="..." target="_blank">Read full release notes</a>
+    </p>
+</div>
+*/
+
+.sh-PluginUpdateDetails {
+	margin-top: var(--sh-spacing-medium);
+	margin-bottom: var(--sh-spacing-medium);
+}
+
+.sh-PluginUpdateDetails-title {
+	font-size: var(--sh-font-size-medium);
+	font-weight: 600;
+	margin-bottom: var(--sh-spacing-small);
+}
+
+.sh-PluginUpdateDetails-features {
+	list-style: disc;
+	padding-left: var(--sh-spacing-medium);
+	margin: var(--sh-spacing-small) 0;
+}
+
+.SimpleHistoryLogitem__details .sh-PluginUpdateDetails-releaseLink {
+	margin-top: var(--sh-spacing-small);
+	margin-bottom: var(--sh-spacing-small);
 }

@@ -10,18 +10,17 @@
  * Domain Path: /languages
  */
 
-// Verhindere direkten Zugriff auf die Datei.
 defined('ABSPATH') or exit;
 
 /**
- * Konstanten definieren
+ * Konstanten
  */
 define('JOBPORTAL_VERSION', '1.0.0');
 define('JOBPORTAL_DIR', plugin_dir_path(__FILE__));
 define('JOBPORTAL_URL', plugin_dir_url(__FILE__));
 
 /**
- * Plugin-Deaktivierung.
+ * Deaktivierung
  */
 function jobportal_deactivate() {
     flush_rewrite_rules();
@@ -29,7 +28,7 @@ function jobportal_deactivate() {
 register_deactivation_hook(__FILE__, 'jobportal_deactivate');
 
 /**
- * Plugin-Initialisierung: Übersetzungen laden.
+ * Init: Textdomain laden
  */
 function jobportal_init() {
     load_plugin_textdomain('jobportal', false, dirname(plugin_basename(__FILE__)) . '/languages');
@@ -37,7 +36,7 @@ function jobportal_init() {
 add_action('init', 'jobportal_init');
 
 /**
- * Admin-Menü hinzufügen.
+ * Admin-Menü
  */
 function jobportal_add_admin_menu() {
     add_menu_page(
@@ -53,7 +52,7 @@ function jobportal_add_admin_menu() {
 add_action('admin_menu', 'jobportal_add_admin_menu');
 
 /**
- * Admin-Seiteninhalt.
+ * Admin-Seite
  */
 function jobportal_admin_page() {
     ?>
@@ -65,7 +64,44 @@ function jobportal_admin_page() {
 }
 
 /**
- * Sicherer AJAX-Handler zum Abrufen der Job-Daten.
+ * Helper: I18n-Map laden (aus ausgelagerter Datei) und um dynamische Werte ergänzen
+ */
+function jobportal_get_i18n_map() {
+    $map = [];
+
+    // Optional: ausgelagerte Liste mit vielen Keys
+    $map_file = JOBPORTAL_DIR . 'includes/i18n-map.php';
+    if (file_exists($map_file)) {
+        // i18n-map.php muss ein Array zurückgeben
+        $loaded = include $map_file;
+        if (is_array($loaded)) {
+            $map = $loaded;
+        }
+    }
+
+    // Fallback/Minimalwerte (nur als Beispiel — die meisten Keys sollten in i18n-map.php gepflegt werden)
+    $map = array_merge(
+        [
+            'country'       => ucfirst(__('country', 'jobportal')),
+            'city'          => ucfirst(__('city', 'jobportal')),
+            'brand'         => ucfirst(__('brand', 'jobportal')),
+            'category'      => ucfirst(__('category', 'jobportal')),
+            'noResult'      => ucfirst(__('no-result', 'jobportal')),
+            'searchResult'  => ucfirst(__('search-resultet', 'jobportal')),
+            'hits'          => ucfirst(__('hits', 'jobportal')),
+            'yourSelection' => ucfirst(__('your-selection', 'jobportal')),
+        ],
+        $map
+    );
+
+    // Laufzeit-Pfade/URLs ergänzen
+    $map['imgPath'] = esc_url(JOBPORTAL_URL . 'assets/img/');
+
+    return $map;
+}
+
+/**
+ * AJAX-Handler
  */
 function jobportal_fetch_data() {
     global $wpdb;
@@ -78,6 +114,7 @@ function jobportal_fetch_data() {
             h.channel, 
             h.title, 
             h.tasks, 
+            h.description,
             h.requirement_content, 
             h.offer, 
             COALESCE(ct.translation, h.location_countrycode, 'Unknown') AS country, 
@@ -125,61 +162,57 @@ add_action('wp_ajax_nopriv_jobportal_fetch', 'jobportal_fetch_data');
 
 
 /**
- * JavaScript und Styles sicher einbinden.
+ * Assets einbinden
  */
 function jobportal_enqueue_scripts() {
     if (is_page(array('jobs', 'jobportal'))) {
-
-        // CSS für das Template laden
+        // CSS
+        $css_path = JOBPORTAL_DIR . 'assets/css/dist/jobportal.css';
         wp_enqueue_style(
             'jobportal-style',
-            JOBPORTAL_URL . 'assets/jobportal-template.css',
-            array(),
-            JOBPORTAL_VERSION
+            JOBPORTAL_URL . 'assets/css/dist/jobportal.css',
+            [],
+            file_exists($css_path) ? filemtime($css_path) : JOBPORTAL_VERSION
         );
 
-        // CSS für die Filter-Funktionalitäten
-        wp_enqueue_style(
-            'jobportal-filter-style',
-            JOBPORTAL_URL . 'assets/jobfilter/jobfilter.css',
-            array(),
-            JOBPORTAL_VERSION
-        );
-        // jQuery als Abhängigkeit hinzufügen
+        // jQuery (WP liefert es; in Webpack als external konfiguriert)
         wp_enqueue_script('jquery');
 
-        // Haupt-JavaScript als Modul laden
+        // 1) I18n & Pfade als Inline-JS vor dem Bundle (ohne Extra-Request)
+        $i18n = jobportal_get_i18n_map();
+
+        // Leeres Script registrieren, damit wir Inline-JS sauber injizieren können
+        wp_register_script('jobportal-i18n', '', [], JOBPORTAL_VERSION, true);
+        wp_add_inline_script('jobportal-i18n', 'window.jobportalTranslations = ' . wp_json_encode($i18n, JSON_UNESCAPED_UNICODE) . ';', 'before');
+        wp_enqueue_script('jobportal-i18n');
+
+        // 2) Hauptbundle
+        $js_path = JOBPORTAL_DIR . 'assets/js/dist/jobportal.bundle.js';
         wp_enqueue_script(
-            'jobportal-main',
-            JOBPORTAL_URL . 'assets/jobportal-template.js',
-            array(),
-            null,
+            'jobportal-bundle',
+            JOBPORTAL_URL . 'assets/js/dist/jobportal.bundle.js',
+            ['jquery', 'jobportal-i18n'], // i18n muss vorher da sein
+            file_exists($js_path) ? filemtime($js_path) : JOBPORTAL_VERSION,
             true
         );
 
-        // AJAX-URL an JS übergeben
-        wp_localize_script('jobportal-main', 'jobPortal', array(
-            'ajaxurl' => admin_url('admin-ajax.php')
-        ));
-
-        // `type="module"` setzen
-        add_filter('script_loader_tag', function ($tag, $handle, $src) {
-            if ($handle === 'jobportal-main') {
-                return '<script type="module" src="' . esc_url($src) . '"></script>';
-            }
-            return $tag;
-        }, 10, 3);
+        // 3) ajaxurl vor dem Bundle verfügbar machen (falls du es brauchst)
+        wp_add_inline_script(
+            'jobportal-bundle',
+            'window.jobPortal = { ajaxurl: ' . wp_json_encode(admin_url('admin-ajax.php')) . ' };',
+            'before'
+        );
     }
 }
 add_action('wp_enqueue_scripts', 'jobportal_enqueue_scripts');
 
 
 /**
- * Shortcode für die Job-Grid-Anzeige mit Template-Einbindung.
+ * Shortcode
  */
 function jobportal_display_grid() {
     ob_start();
-    include JOBPORTAL_DIR . 'assets/jobportal-template.php';
+    include JOBPORTAL_DIR . '/jobportal-template.php';
     return ob_get_clean();
 }
 add_shortcode('jobportal', 'jobportal_display_grid');

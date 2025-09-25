@@ -17,7 +17,7 @@ class Setup_Settings_Page extends Service {
 	 * @inheritdoc
 	 */
 	public function loaded() {
-		add_action( 'admin_menu', [ $this, 'add_settings_admin_page' ] );
+		add_action( 'admin_menu', [ $this, 'add_settings_admin_page' ], 10 );
 		add_action( 'admin_menu', [ $this, 'add_settings_tabs' ] );
 
 		add_action( 'admin_menu', [ $this, 'add_settings' ], 10 );
@@ -134,7 +134,8 @@ class Setup_Settings_Page extends Service {
 				->set_menu_slug( Simple_History::SETTINGS_MENU_PAGE_SLUG )
 				->set_capability( Helpers::get_view_settings_capability() )
 				->set_callback( [ $this, 'settings_page_output' ] )
-				->set_redirect_to_first_child_on_load();
+				->set_redirect_to_first_child_on_load()
+				->set_order( 4 );
 
 		// Different setting depending on where main page is shown.
 		if ( in_array( $admin_page_location, [ 'top', 'bottom' ], true ) ) {

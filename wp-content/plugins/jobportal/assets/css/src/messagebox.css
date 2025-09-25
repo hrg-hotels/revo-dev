@@ -1,0 +1,39 @@
+#message{
+  display:none;
+}
+#message-container {
+    display: flex;
+    justify-content: flex-start;
+    background: #E9E9E9;
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 20px;
+    position: relative;
+}
+#message-wrapper{
+  margin-top:20px;
+  background: #E9E9E9;
+}
+
+.message-filter-result{
+  display:flex;
+  flex-direction:column;
+}
+.result-message{
+  margin-bottom:0 !important;
+}
+.result-title{
+    display:none;
+}
+
+
+.result-message{
+  line-height: 200%;
+}
+.nfg{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}

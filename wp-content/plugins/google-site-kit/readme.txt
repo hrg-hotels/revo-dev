@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 5.2
-Tested up to:      6.7
+Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.149.1
+Stable tag:        1.161.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -36,6 +36,7 @@ Site Kit shows key metrics and insights from different Google products:
 * **Tag Manager:** Use Site Kit to easily set up Tag Manager- no code editing required. Then, manage your tags in Tag Manager.
 
 == Installation ==
+
 **Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data.
 However, if you have a staging environment in addition to your production site, Site Kit can display data from your production site in the staging environment. Learn how to use [Site Kit with a staging environment](https://sitekit.withgoogle.com/documentation/using-site-kit/staging/).
 
@@ -45,7 +46,6 @@ However, if you have a staging environment in addition to your production site, 
 2. Search for **Site Kit by Google**.
 3. Install and activate the Site Kit by Google plugin.
 4. Connect Site Kit to your Google account. If there are multiple WordPress admins, keep in mind that each admin must connect their own Google account in order to access the plugin.
-
 
 = Manual installation =
 
@@ -109,10 +109,28 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.149.1 =
+= 1.161.0 =
+
+**Enhanced**
+
+* Add GTG key metrics tracking. See [#11412](https://github.com/google/site-kit-wp/issues/11412).
+* Update Partner Ads Experience to `1.1.10` and add `'site-kit'` identifier. See [#11399](https://github.com/google/site-kit-wp/issues/11399).
+* Add logo and GA events tracking to the AdSense server notifications. See [#11214](https://github.com/google/site-kit-wp/issues/11214).
+* Add integration for WooCommerce with Enhanced Conversions. See [#11006](https://github.com/google/site-kit-wp/issues/11006).
+* Update background colors of various UI elements to use a consistent, lighter gray. Props 10upsimon. See [#5579](https://github.com/google/site-kit-wp/issues/5579).
+
+**Changed**
+
+* Remove support for Analytics Pivot reports. Props 10upsimon. See [#10298](https://github.com/google/site-kit-wp/issues/10298).
 
 **Fixed**
 
-* Fix js error that appears on the dashboard when metric values are missing in report results. See [#10520](https://github.com/google/site-kit-wp/issues/10520).
+* Update the Google tag gateway for advertisers `measurement.php` proxy script to the latest version. See [#11389](https://github.com/google/site-kit-wp/issues/11389).
+* Update notification priorities to have more important permission-related notifications have higher priority. See [#11206](https://github.com/google/site-kit-wp/issues/11206).
+* Fix color issues for hX tags created by the `Typography` component. See [#11159](https://github.com/google/site-kit-wp/issues/11159).
+* Fix bug that caused the "Grant permission" button not to appear during failed plugin setup. See [#11063](https://github.com/google/site-kit-wp/issues/11063).
+* Fix a regression that caused the font size of the admin bar data block to appear too small. Props sudhanshugaikwad. See [#11041](https://github.com/google/site-kit-wp/issues/11041).
+* Fix bug that could cause odd error state when answering Key Metrics question about site goals. See [#10645](https://github.com/google/site-kit-wp/issues/10645).
+* Improve/consolidate permissions errors UI when setting up Site Kit. See [#10118](https://github.com/google/site-kit-wp/issues/10118).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

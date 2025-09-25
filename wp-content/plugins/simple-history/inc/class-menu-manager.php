@@ -57,11 +57,28 @@ class Menu_Manager {
 	}
 
 	/**
+	 * Get pages sorted by their order.
+	 */
+	public function get_pages_ordered() {
+		$pages = $this->get_pages();
+
+		// Sort pages by order.
+		usort(
+			$pages,
+			function ( $a, $b ) {
+				return $a->get_order() - $b->get_order();
+			}
+		);
+
+		return $pages;
+	}
+
+	/**
 	 * Register all menu pages with WordPress.
 	 * Called during admin_menu.
 	 */
 	public function register_pages() {
-		foreach ( $this->get_pages() as $page ) {
+		foreach ( $this->get_pages_ordered() as $page ) {
 			$location = $page->get_location();
 
 			switch ( $location ) {
@@ -271,12 +288,19 @@ class Menu_Manager {
 	/**
 	 * Get menu pages that are subpages to a tools, dashboard or options page.
 	 * I.e. the pages that are to be shown as main tabs.
+	 *
+	 * @return array<Menu_Page> Array of main tabs for page with tabs.
 	 */
 	public function get_main_tabs_for_page_with_tabs() {
 		$menu_page_location = Helpers::get_menu_page_location();
 		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : null;
 
 		$current_menu_page_root = $this->get_page_by_slug( $page );
+
+		// Bail if no menu page found.
+		if ( ! $current_menu_page_root ) {
+			return [];
+		}
 
 		// Skip if menu page object has it's location at top level, i.e. menu_bottom or menu_top.
 		if ( in_array( $current_menu_page_root->get_location(), [ 'menu_top', 'menu_bottom' ], true ) ) {
@@ -293,71 +317,14 @@ class Menu_Manager {
 		// Should this now just be the children of any page? Just as long as it has children.
 		$current_menu_page_root = $this->get_page_by_slug( $page );
 
-		$current_menu_page_root_children = $current_menu_page_root->get_children();
-		return $current_menu_page_root_children;
-
-		// Get the page for this menu.
-		$current_screen = get_current_screen();
-
-		// $current_screen->parent_base = 'tools' for pages inside tools.
-		// $current_screen->parent_base => 'options-general' for pages inside settings.
-		// [base] => tools_page_simple-history-tools-one sometimes too??
-
-		$screen_parent_bases_with_submenus = [ 'tools', 'options-general' ];
-		$screen_parent_base = $current_screen->parent_base;
-
-		// If $screen_parent_base does not contain $screen_parent_bases_with_submenus check for
-		// base that begins with tools_page_ or settings_page_.
-		if ( ! in_array( $screen_parent_base, $screen_parent_bases_with_submenus, true ) ) {
-			$screen_base = $current_screen->base;
-			if ( str_starts_with( $screen_base, 'tools_page_' ) ) {
-				$screen_parent_base = 'tools';
-			} elseif ( str_starts_with( $screen_base, 'settings_page_' ) ) {
-				$screen_parent_base = 'options-general';
-			}
-		}
-
-		$screen_base = $current_screen->base;
-		$can_contain_submenus = in_array( $screen_parent_base, $screen_parent_bases_with_submenus, true );
-
-		if ( ! $can_contain_submenus ) {
+		// Bail if no menu page found after potential page slug change.
+		if ( ! $current_menu_page_root ) {
 			return [];
 		}
 
-		// Find menu_pages that are children of this page.
-		// For settings pages, find pages with slug settings_page_<menu_page_slug>.
-		// For tools pages, find pages with slug tools_page_<menu_page_slug>.
-		$submenu_pages = [];
+		$current_menu_page_root_children = $current_menu_page_root->get_children();
 
-		$submenu_pages = array_filter(
-			$this->get_pages(),
-			function ( $menu_page ) use ( $screen_base, $screen_parent_base ) {
-				$base_prefix = '';
-				if ( $screen_parent_base === 'tools' ) {
-					$base_prefix = 'tools_page_';
-				} elseif ( $screen_parent_base === 'options-general' ) {
-					$base_prefix = 'settings_page_';
-				}
-
-				$page_is_submenu_of_current_base = false;
-				$parent_page = $menu_page->get_parent();
-
-				if ( ! $parent_page ) {
-					return false;
-				}
-
-				// Check for tools_page_<menu_page_slug> or settings_page_<menu_page_slug>.
-				if ( $screen_base === $base_prefix . $parent_page->get_menu_slug() ) {
-					$page_is_submenu_of_current_base = true;
-				}
-
-				if ( $page_is_submenu_of_current_base ) {
-					return true;
-				}
-			}
-		);
-
-		return $submenu_pages;
+		return $current_menu_page_root_children;
 	}
 
 	/**
@@ -368,15 +335,6 @@ class Menu_Manager {
 	public function get_main_subnav_html_output() {
 		// Output main nav link list with all sub menu pages.
 		$submenu_pages = $this->get_main_tabs_for_page_with_tabs();
-
-		// Debug slugs of pages.
-		// $submenu_pages_slugs = array_map(
-		// 	function ( $page ) {
-		// 		return $page->get_menu_slug();
-		// 	},
-		// 	$submenu_pages
-		// );
-		// sh_dd( '$submenu_pages_slugs', $submenu_pages_slugs );
 
 		$num_pages_class = 'sh-PageNav--count-' . count( $submenu_pages );
 
@@ -408,7 +366,16 @@ class Menu_Manager {
 						]
 					);
 					?>
-					<?php echo esc_html( $one_submenu_page->get_menu_title() ); ?>
+					<?php
+					echo wp_kses(
+						$one_submenu_page->get_menu_title(),
+						[
+							'span' => [
+								'class' => [],
+							],
+						]
+					);
+					?>
 				</a>
 				<?php
 			}
@@ -516,7 +483,7 @@ class Menu_Manager {
 
 		$page = sanitize_text_field( wp_unslash( $_GET['page'] ?? null ) );
 		$current_menu_page = $this->get_page_by_slug( $page );
-		
+
 		// Bail if page is not a Menu_Page instance.
 		if ( ! $current_menu_page instanceof Menu_Page ) {
 			return;
@@ -532,32 +499,12 @@ class Menu_Manager {
 		// Get first tab to redirect to.
 		$main_tabs = $this->get_main_tabs_for_page_with_tabs();
 
-		// Main tab slugs.
-		// $main_tabs_slugs = array_map(
-		// 	function ( $tab ) {
-		// 		return $tab->get_menu_slug();
-		// 	},
-		// 	$main_tabs
-		// );
-
-		#sh_dd( '$main_tabs_slugs', $main_tabs_slugs );
-
 		if ( empty( $main_tabs ) ) {
 			return;
 		}
 
 		$first_main_tab = reset( $main_tabs );
-
-		// sh_d( '$first_main_tab->slug', $first_main_tab->get_menu_slug() );
-		// sh_d( '$first_main_tab->location()', $first_main_tab->get_location() );
-		// sh_d( '$first_main_tab->parent()->slug', $first_main_tab->get_parent()->get_menu_slug() );
-		// sh_d( '$first_main_tab->parent()->location()', $first_main_tab->get_parent()->get_location() );
-
-		// This URL is wrong for debug page.
-		// Becomes: http://wordpress-stable-docker-mariadb.test:8282/wp-admin/admin.php?page=simple_history_admin_menu_page&selected-tab=simple_history_debug&selected-sub-tab=simple_history_help_support.
-		// So something is wrong in get_url ethod.
 		$first_main_tab_url = $first_main_tab->get_url();
-		// sh_dd( '$first_main_tab_url', $first_main_tab_url );
 
 		// Redirect to first main tab.
 		wp_safe_redirect( $first_main_tab_url );

@@ -1,0 +1,76 @@
+.job-list{
+width:100%;
+display: flex;
+    column-gap: 10px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.job-list-item {
+    background: white;
+    cursor: pointer;
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Two columns on tablet/desktop */
+@media (min-width: 768px) {
+  #jobportal-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.card-jp-icons{
+    display: flex;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.job-header{
+   margin-bottom:20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color:black;
+
+}
+
+.job-header h3:hover{
+    color:var(--awb-color5) !important;
+}
+.key-row{
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 10px;
+    flex-wrap: wrap;
+}
+.key-container{
+    text-align:center;
+    background: #F3E0DD;
+    padding: 4px 8px;
+    margin-right: 10px;
+    color: var(--awb-color5);
+    width: 46%;
+    margin: 5px;
+    border-radius: 3px;
+}
+.key-container p{
+    	font-size:12px;
+}
+.keywords-list-view{
+    background:none;
+    color:#737B7D;
+}
+@media only screen and (min-width: 768px) {
+        .badge{
+        width: 100%;
+    }
+        .key-row{
+            flex-direction:row;
+        }
+    .key-container{
+        width: auto;
+        }
+    .key-container:first-child{
+        margin-left: 0;
+    }
+}
