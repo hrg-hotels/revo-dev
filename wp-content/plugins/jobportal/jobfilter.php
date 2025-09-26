@@ -14,7 +14,7 @@ defined('ABSPATH') or die('No script kiddies please!');
             name="jobtitle"
             type="text"
             id="jobtitle-header"
-            placeholder="<?php echo esc_attr(ucfirst(__('More filters', 'jobportal'))); ?>"
+            placeholder="<?php echo esc_attr(ucfirst(__('jobtitle', 'jobportal'))); ?>"
             aria-label="<?php echo esc_attr(ucfirst(__('jobtitle', 'jobportal'))); ?>"
             autocomplete="off"
           />
