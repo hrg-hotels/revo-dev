@@ -7,7 +7,7 @@ include JOBPORTAL_DIR . 'extended-filter.php';
 
 <div id="jobportal-container">
   <div style="width:100%; text-align:center;">
-    <p>⏳ Jobs loading...</p>
+    <p>⏳ Jobs loading.....</p>
   </div>
 </div>
 

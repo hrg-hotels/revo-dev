@@ -34,6 +34,9 @@ msgstr "Abteilung"
 msgid "more-filters"
 msgstr "Weitere Filter"
 
+msgid "filters-set"
+msgstr "Filter gesetzt"
+
 msgid "career-levels"
 msgstr "Berufsstufen"
 
@@ -72,6 +75,9 @@ msgstr "Vollzeit"
 
 msgid "hourly"
 msgstr "Stundenweise"
+
+msgid "on-site"
+msgstr "Vor Ort"
 
 msgid "contact-person"
 msgstr "Kontaktperson"

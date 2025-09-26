@@ -706,6 +706,7 @@ function message() {
   if (resultLength === 0) {
     //clear job List
     (0,_render__WEBPACK_IMPORTED_MODULE_2__.clearJobList)();
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('.nfg').remove();
     //hide pagination
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(".portfolio-pagination").hide();
     //hide sort buttons
@@ -726,7 +727,7 @@ function message() {
       "color": "white"
     });
     messageContainer.html(`
-                        <div class="message-txt red">"No Result"</div>  
+                        <div class="message-txt">${t.noResult}</div>  
                     `);
     jquery__WEBPACK_IMPORTED_MODULE_0___default()("#message-wrapper").append(messageContainer);
     jquery__WEBPACK_IMPORTED_MODULE_0___default()("#message-wrapper").append(nfgDiv);
@@ -1082,7 +1083,7 @@ function renderJobDetails(job, jobListItem) {
               <div class="w-100">
                 <img src="${imgPath}map.svg" class="icon-26" alt="map">
               </div>
-              <h3 class="heading mb-20">${_('address', 'Address')}</h3>
+              <h3 class="heading mb-20">${t.address}</h3>
               <div class="color-dark-gray">
                 ${job.companyname ?? ''}<br>
                 ${job.location_streetname || job.street || ''} ${job.location_buildingnumber || job.buildingnumber || ''}<br>
@@ -1097,7 +1098,7 @@ function renderJobDetails(job, jobListItem) {
               <div class="w-100">
                 <img src="${imgPath}account_circle.svg" class="icon-26" alt="contact">
               </div>
-              <h3 class="heading mb-20">${_('contact-person', 'Contact person')}</h3>
+              <h3 class="heading mb-20">${t.contactPerson}</h3>
               ${job.recruiter_firstname || ''} ${job.recruiter_lastname || ''}
             </div>
           </div>
@@ -1106,7 +1107,7 @@ function renderJobDetails(job, jobListItem) {
         <!-- Job overview -->
         <div class="pop-card flex-col">
           <div class="mb-20">
-            <h3 class="heading">${_('job-overview', 'Job overview')}</h3>
+            <h3 class="heading">${t.jobOverview}</h3>
           </div>
 
           <div class="flex">
@@ -1139,7 +1140,7 @@ function renderJobDetails(job, jobListItem) {
         <!-- Social + Apply -->
         <div class="pop-card border-top flex-col">
           <div class="mb-20">
-            <h3 class="heading">${_('follow-us', 'Follow us')}</h3>
+            <h3 class="heading">${t.followUs}</h3>
           </div>
 
           <div class="flex">
@@ -1164,14 +1165,14 @@ function renderJobDetails(job, jobListItem) {
           </div>
 
           <div class="mb-20 mt-20">
-            <h3 class="heading">${_('apply-now', 'Apply now')}</h3>
+            <h3 class="heading">${t.applyNow}</h3>
           </div>
 
           <div class="apply-btn-wrap">
             <div class="apply-item">
               <a class="fusion-button button-flat fusion-button-default-size button-custom fusion-button-default button-2 fusion-button-default-span fusion-button-default-type"
                  target="_blank" rel="noopener nofollow" href="${applyHref}">
-                ${_('apply-now', 'Apply now')}
+                ${t.applyNow}
               </a>
             </div>
             <div class="apply-item">

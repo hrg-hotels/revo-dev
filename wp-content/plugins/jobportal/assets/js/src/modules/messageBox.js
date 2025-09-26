@@ -20,6 +20,7 @@ const t = window.jobportalTranslations || {};
                     if (resultLength === 0) {
                     //clear job List
                     clearJobList();
+                    $('.nfg').remove();
                     //hide pagination
                     $(".portfolio-pagination").hide();
                     //hide sort buttons
@@ -43,7 +44,7 @@ const t = window.jobportalTranslations || {};
                         "color": "white"
                     });
                     messageContainer.html(`
-                        <div class="message-txt red">"No Result"</div>  
+                        <div class="message-txt">${t.noResult}</div>  
                     `);
                     $("#message-wrapper").append(messageContainer);
                     $("#message-wrapper").append(nfgDiv);

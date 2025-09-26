@@ -11,6 +11,7 @@ return [
     'brand'          => __('brand', 'jobportal'),
     'category'       => __('category', 'jobportal'),
     'department'     => __('department', 'jobportal'),
+    'address'        => __('address', 'jobportal'),
 
     // UI Texte
     'noResult'       => __('no-result', 'jobportal'),

@@ -585,12 +585,17 @@ custom-black: var(--awb-text-color);
   cursor: default;
 }
 .close {
-    padding: 5px;
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    cursor: pointer;
-    font-size:30px;
+    opacity: 10 !important;
+    border: 0 none;
+    color: #fff !important;
+    font-weight: 100 !important;
+    line-height: 1;
+    background: var(--awb-color5) !important;
+    padding: 4px 10px !important;
+    font-size: 30px !important;
+}
+.close:hover {
+    background: #d8462c !important;
 }
 .layer {
     height: 180%;
