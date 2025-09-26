@@ -35,6 +35,9 @@ msgstr "Department"
 msgid "more-filters"
 msgstr "More filters"
 
+msgid "filters-set"
+msgstr "Filters set"
+
 msgid "career-levels"
 msgstr "Career levels"
 
@@ -67,6 +70,9 @@ msgstr "Career changer"
 
 msgid "part-time"
 msgstr "Part-time"
+
+msgid "on-site"
+msgstr "On-site"
 
 msgid "full-time"
 msgstr "Full-time"
