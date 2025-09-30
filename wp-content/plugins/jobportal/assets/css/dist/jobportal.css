@@ -292,11 +292,21 @@ custom-black: var(--awb-text-color);
     padding-left: 30px;
 }
 @media only screen and (min-width: 768px){
+  .selection-hr {
+    width: 30%;
+    margin-right:10px;
+  }
+  .row-search{
+    justify-content: flex-start;
+  }
+  .btn-wrapper{
+    width:31%;
+  }
   #btn-reset{
     width:auto;
-  }
-  .selection-hr {
-    width: 24%;
+    margin-top:0;
+    padding-top: 20px;
+    padding-bottom:3px;
   }
 }
 @media only screen and (min-width: 1280px){
@@ -318,12 +328,16 @@ custom-black: var(--awb-text-color);
   margin-right: 20px;
   }
   .selection-hr {
-    width: 20%;
+    width: 17%;
   }
 
   .btn-wrapper{
-    width:auto;
-    }
+    width:10%;
+   }
+  #btn-reset{
+    padding: 12px;
+    padding-right:0;
+  }
 }
 
 /*!************************************************************************************************************************************************************!*\
@@ -928,6 +942,7 @@ display: flex;
     background:none;
     color:#737B7D;
 }
+
 @media only screen and (min-width: 768px) {
         .badge{
         width: 100%;

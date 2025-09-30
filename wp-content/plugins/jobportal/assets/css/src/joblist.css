@@ -60,6 +60,7 @@ display: flex;
     background:none;
     color:#737B7D;
 }
+
 @media only screen and (min-width: 768px) {
         .badge{
         width: 100%;

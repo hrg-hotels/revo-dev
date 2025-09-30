@@ -9,6 +9,7 @@ const state = {
 
   selections: {
     city: "",
+    country: "",
     jobtitle: "",
     brand: "",
     department: ""

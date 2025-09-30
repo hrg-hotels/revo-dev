@@ -14,6 +14,7 @@ export function generateDropdownOptions() {
     const cities = getUniqueSortedValues('city');
     const brand = getUniqueSortedValues('companyname');
     const department = getUniqueSortedValues('department');
+    const country = getUniqueSortedValues('country');
 
     const populateDropdown = (id, values) => {
     const dropdown = document.getElementById(id);
@@ -29,6 +30,7 @@ export function generateDropdownOptions() {
 
     // Populiere Dropdowns
     populateDropdown("jobtitle-options", jobtitle);
+    populateDropdown("country-options", country);
     populateDropdown("city-options", cities);
     populateDropdown("brand-options", brand);
     populateDropdown("department-options", department);
@@ -88,6 +90,7 @@ export function setupDropdown(headerId, optionsId) {
 
 setupDropdown("jobtitle-header", "jobtitle-options");
 setupDropdown("city-header", "city-options");
+setupDropdown("country-header", "country-options");
 // setupDropdown("category-header", "category-options");
 setupDropdown("brand-header", "brand-options");
 setupDropdown("department-header", "department-options");
@@ -212,7 +215,7 @@ $(document).on('keypress', function (e) {
 });
 
 // Event Listener für Änderungen in den Input-Feldern (blur & change)
-$("#jobtitle-header, #city-header, #brand-header","#department-header")
+$("#jobtitle-header, #city-header, #brand-header","#department-header", "#country-header")
     .on("blur change", function () {
     if ($(this).val().trim() !== "") {
     // Setze den Wert und stelle sicher, dass das Feld editierbar bleibt

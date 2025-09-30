@@ -90,7 +90,7 @@ export function openJob(job, jobListItem) {
                 <img src="${imgPath}map.svg" class="icon-26" alt="map">
               </div>
               <h3 class="heading mb-20">${t.address}</h3>
-              <div class="color-dark-gray">
+              <div>
                 ${job.companyname ?? ''}<br>
                 ${(job.location_streetname || job.street || '')} ${(job.location_buildingnumber || job.buildingnumber || '')}<br>
                 ${(job.location_postalcode || job.postalcode || '')} ${(job.city || '')}<br>
@@ -119,26 +119,26 @@ export function openJob(job, jobListItem) {
           <div class="flex">
             <div class="col-1-2">
               <img src="${imgPath}work.svg" class="icon-26" alt="work">
-              <span class="color-dark-gray font-12 m-t-5">${_('category','Category')}:</span>
-              <span class="font-12 black"> ${job.categories ?? ''} </span>
+              <span>${_('category','Category')}:</span>
+              <span class="black"> ${job.categories ?? ''} </span>
             </div>
             <div class="col-1-2">
               <img src="${imgPath}layers.svg" class="icon-26" alt="level">
-              <span class="color-dark-gray font-12 m-t-5">${_('career-levels','Career levels')}:</span>
-              <span class="font-12 black"> ${job.careerlevels ?? ''} </span>
+              <span >${_('career-levels','Career levels')}:</span>
+              <span class="black"> ${job.careerlevels ?? ''} </span>
             </div>
           </div>
 
           <div class="flex mt-20">
             <div class="col-1-2">
               <img src="${imgPath}avg_pace.svg" class="icon-26" alt="employment">
-              <span class="color-dark-gray font-12 m-t-5">${_('employment-type','Employment type')}:</span>
-              <span class="font-12 black"> ${job.employment_type ?? ''} </span>
+              <span>${_('employment-type','Employment type')}:</span>
+              <span class="black"> ${job.employment_type ?? ''} </span>
             </div>
             <div class="col-1-2">
               <img src="${imgPath}location_away.svg" class="icon-26" alt="location type">
-              <span class="color-dark-gray font-12 m-t-5">${_('job-location-type','Job location type')}:</span>
-              <span class="font-12 black"> ${job.joblocation_type ?? ''} </span>
+              <span>${_('job-location-type','Job location type')}:</span>
+              <span class="black"> ${job.joblocation_type ?? ''} </span>
             </div>
           </div>
         </div>

@@ -17,6 +17,7 @@ console.log('paramssss:', params);
   /** ---------------- Inputs setzen ---------------- */
   $('.selection-hr input[name="jobtitle"]').val(params.jobtitle || '');
   $('.selection-hr input[name="city"]').val(params.city || '');
+  $('.selection-hr input[name="country"]').val(params.country || '');
   $('.selection-hr input[name="brand"]').val(params.brand || '');
   $('.selection-hr input[name="department"]').val(params.department || '');
 

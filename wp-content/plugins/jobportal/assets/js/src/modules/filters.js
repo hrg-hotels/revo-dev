@@ -13,6 +13,7 @@ export function filterListByParams() {
     let ok = true;
 
     if (params.city?.trim()       && !job.city?.toLowerCase().includes(params.city.trim().toLowerCase())) ok = false;
+    if (params.country?.trim()    && !job.country?.toLowerCase().includes(params.country.trim().toLowerCase())) ok = false;
     if (params.brand?.trim()      && !job.brand?.toLowerCase().includes(params.brand.trim().toLowerCase())) ok = false;
     if (params.department?.trim() && !job.department?.toLowerCase().includes(params.department.trim().toLowerCase())) ok = false;
     if (params.jobtitle?.trim()   && !job.title?.toLowerCase().includes(params.jobtitle.trim().toLowerCase())) ok = false;

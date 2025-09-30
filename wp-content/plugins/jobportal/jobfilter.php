@@ -23,6 +23,22 @@ defined('ABSPATH') or die('No script kiddies please!');
       </div>
     </div>
 
+        <!-- Country-->
+    <div class="selection-hr">
+      <div class="select-country" id="country-select">
+        <div class="select-header">
+          <input
+            name="country"
+            type="text"
+            id="country-header"
+            placeholder="<?php echo esc_attr(ucfirst(__('country', 'jobportal'))); ?>"
+            aria-label="<?php echo esc_attr(ucfirst(__('country', 'jobportal'))); ?>"
+            autocomplete="off"
+          />
+        </div>
+        <ul class="select-options" id="country-options" role="listbox" aria-labelledby="country-header"></ul>
+      </div>
+    </div>
     <!-- City -->
     <div class="selection-hr">
       <div class="select-city" id="city-select">
