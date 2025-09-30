@@ -744,48 +744,48 @@ function message() {
                         <div class="message-filter-result">
 
                         <div class="result-title" id="title-jobtitle">
-                            <span class="txt-black">Jobtitle:</span>
+                            <span class="black">Jobtitle:</span>
                             <span class="txt-gray">${globalParams.jobtitle || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-country">
-                            <span class="txt-black">${t.country}:</span>
+                            <span class="black">${t.country}:</span>
                             <span class="txt-gray">${globalParams.country || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-city">
-                            <span class="txt-black">${t.city}:</span>
+                            <span class="black">${t.city}:</span>
                             <span class="txt-gray">${globalParams.city || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-department">
-                            <span class="txt-black">${t.department}:</span>
+                            <span class="black">${t.department}:</span>
                             <span class="txt-gray">${globalParams.department || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-brand">
-                            <span class="txt-black">${t.brand}:</span>
+                            <span class="black">${t.brand}:</span>
                             <span class="txt-gray">${globalParams.brand || ''}</span>
                         </div>
 
                         <!-- Extended Filter -->
                         <div class="result-title" id="title-careerlevels">
-                            <span class="txt-black">${t.careerLevels}:</span>
+                            <span class="black">${t.careerLevels}:</span>
                             <span class="txt-gray">${globalParams.careerlevels || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-employment-type">
-                            <span class="txt-black">${t.employmentType}:</span>
+                            <span class="black">${t.employmentType}:</span>
                             <span class="txt-gray">${globalParams['employment-type'] || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-joblocation-type">
-                            <span class="txt-black">${t.jobLocationType}:</span>
+                            <span class="black">${t.jobLocationType}:</span>
                             <span class="txt-gray">${globalParams['joblocation-type'] || ''}</span>
                         </div>
 
                         <div class="result-title" id="title-keywords">
-                            <span class="txt-black">${t.keywords}:</span>
+                            <span class="black">${t.keywords}:</span>
                             <span class="txt-gray">${globalParams.keyword ? globalParams.keyword.split(',').join(', ') : ''}</span>
                         </div>
 
@@ -793,7 +793,7 @@ function message() {
 
                         <div>
                         <p class="result-message">
-                            <span class="txt-black">${resultLength}</span> ${t.openPositions}.
+                            <span class="black">${resultLength}</span> ${t.openPositions}.
                         </p>
                         </div>
                     </div>

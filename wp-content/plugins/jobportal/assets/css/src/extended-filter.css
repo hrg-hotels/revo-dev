@@ -27,11 +27,11 @@
     padding: 0.625em 0.625em 0.625em 2em;
     cursor: pointer;
     padding-left: 50px;
-    width:40%;
+    width:45%;
 }
 .extended-search{
     width:100%;
-    margin-bottom: 26px;
+    margin-bottom: 50px;
 }
 @media only screen and (min-width: 768px){
     .extended-search{
@@ -75,6 +75,10 @@
     padding: 30px 50px 30px 50px;
 
 }
+.filter-set{
+    display:flex;
+    width:48%;
+}
 @media only screen and (min-width: 768px){
     .accordion-content {
         display: flex;
@@ -82,11 +86,11 @@
         height: 360px;
         flex-direction: row;
     }
+    .filter-set{
+    width:50%;
+    }
 }
-.filter-set{
-    display:flex;
-    width:54%;
-}
+
 .acc-col{
     display:flex;
     flex-wrap:wrap;

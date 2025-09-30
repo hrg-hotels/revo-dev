@@ -358,11 +358,11 @@ custom-black: var(--awb-text-color);
     padding: 0.625em 0.625em 0.625em 2em;
     cursor: pointer;
     padding-left: 50px;
-    width:40%;
+    width:45%;
 }
 .extended-search{
     width:100%;
-    margin-bottom: 26px;
+    margin-bottom: 50px;
 }
 @media only screen and (min-width: 768px){
     .extended-search{
@@ -406,6 +406,10 @@ custom-black: var(--awb-text-color);
     padding: 30px 50px 30px 50px;
 
 }
+.filter-set{
+    display:flex;
+    width:48%;
+}
 @media only screen and (min-width: 768px){
     .accordion-content {
         display: flex;
@@ -413,11 +417,11 @@ custom-black: var(--awb-text-color);
         height: 360px;
         flex-direction: row;
     }
+    .filter-set{
+    width:50%;
+    }
 }
-.filter-set{
-    display:flex;
-    width:54%;
-}
+
 .acc-col{
     display:flex;
     flex-wrap:wrap;
@@ -570,7 +574,7 @@ custom-black: var(--awb-text-color);
 
 .pop-up {
   position: fixed;
-  top: 50%;
+  top: 62%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: #fff;
@@ -743,16 +747,16 @@ max-width:100%;
 }
 
 .btn-social {
-    margin-top: 0;
-    margin-right: 20px;
-    background: #E9E9E9;
-    padding: 10px;
-    align-content: center;
-    width: 45px;
-    height: 45px;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
+   margin-top: 0;    
+   margin-right: 5px;    
+   background: #E9E9E9;    
+   padding: 6px;    
+   align-content: center;   
+   width: 45px;    
+   height: 45px;    
+   display: flex;    
+   justify-content: center;    
+   flex-direction: column;
 }
 .pop-apply{
     position: fixed;
@@ -793,7 +797,7 @@ margin-bottom:15px;
     .pop-up{
         width: 90%;
         padding:50px;
-        top:57%;
+        top:60%;
         max-width:1500px;
         }
     .pop-header {
@@ -843,7 +847,9 @@ margin-bottom:15px;
     }
   }
 @media only screen and (min-width: 1280px){
-
+    .pop-up{
+        top:50%;
+        }
     .pop-header {
         justify-content: flex-start;
         }
@@ -853,6 +859,7 @@ margin-bottom:15px;
 
     .btn-social{
        margin-top:0;
+       padding:10px;
     }
 }
 /*!****************************************************************************************************************************************************!*\
