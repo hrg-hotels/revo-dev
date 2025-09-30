@@ -38,8 +38,8 @@ export function renderList(list = []) {
           </div>
           <h4 class="heading-small">${job.companyname ?? ''}</h4>
           <div class="card-jp-icons">
-            <img src="${imgPath}location_on.svg" alt="icon location" class="search-icon list-loc-icon">
-            <p class="line-hight-160 pd-cit">${job.city ?? ''}, ${job.city ?? ''}</p>
+            <img src="${imgPath}location_on.svg" alt="icon location" class="search-icon" style="margin-right:10px;">
+            <p>${job.city ?? ''}</p>
           </div>
         </div>
       </div>

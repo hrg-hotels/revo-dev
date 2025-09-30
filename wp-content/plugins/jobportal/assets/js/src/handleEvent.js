@@ -29,6 +29,7 @@ export function handleEvent(patch = {}) {
   // 2) Inputs übernehmen (leere Werte -> Key löschen)
   upsert(argObj, 'jobtitle',   $('#jobtitle-header').val());
   upsert(argObj, 'city',       $('#city-header').val());
+  upsert(argObj, 'country',   $('#country-header').val());
   upsert(argObj, 'department', $('#department-header').val());
   upsert(argObj, 'brand',      $('#brand-header').val());
 

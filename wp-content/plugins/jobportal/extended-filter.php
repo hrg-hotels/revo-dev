@@ -49,6 +49,9 @@
           <div class="badge careerlevels" name="quereinsteiger" role="checkbox" tabindex="0" aria-checked="false">
             <p><?php echo esc_attr(ucfirst(__('career-changer', 'jobportal'))); ?></p>
           </div>
+          <div class="badge badge-col-01 careerlevels" name="executive">
+            <p><?php echo esc_attr(ucfirst(__('executive', 'jobportal'))); ?></p>
+          </div>
         </div>
       </div>
 

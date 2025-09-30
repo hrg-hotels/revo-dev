@@ -118,6 +118,7 @@ function getParameter() {
   /** ---------------- Inputs setzen ---------------- */
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('.selection-hr input[name="jobtitle"]').val(params.jobtitle || '');
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('.selection-hr input[name="city"]').val(params.city || '');
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()('.selection-hr input[name="country"]').val(params.country || '');
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('.selection-hr input[name="brand"]').val(params.brand || '');
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('.selection-hr input[name="department"]').val(params.department || '');
 
@@ -218,6 +219,7 @@ function handleEvent(patch = {}) {
   // 2) Inputs übernehmen (leere Werte -> Key löschen)
   upsert(argObj, 'jobtitle', jquery__WEBPACK_IMPORTED_MODULE_0___default()('#jobtitle-header').val());
   upsert(argObj, 'city', jquery__WEBPACK_IMPORTED_MODULE_0___default()('#city-header').val());
+  upsert(argObj, 'country', jquery__WEBPACK_IMPORTED_MODULE_0___default()('#country-header').val());
   upsert(argObj, 'department', jquery__WEBPACK_IMPORTED_MODULE_0___default()('#department-header').val());
   upsert(argObj, 'brand', jquery__WEBPACK_IMPORTED_MODULE_0___default()('#brand-header').val());
 
@@ -262,6 +264,7 @@ function generateDropdownOptions() {
   const cities = getUniqueSortedValues('city');
   const brand = getUniqueSortedValues('companyname');
   const department = getUniqueSortedValues('department');
+  const country = getUniqueSortedValues('country');
   const populateDropdown = (id, values) => {
     const dropdown = document.getElementById(id);
     if (!dropdown) {
@@ -273,6 +276,7 @@ function generateDropdownOptions() {
 
   // Populiere Dropdowns
   populateDropdown("jobtitle-options", jobtitle);
+  populateDropdown("country-options", country);
   populateDropdown("city-options", cities);
   populateDropdown("brand-options", brand);
   populateDropdown("department-options", department);
@@ -329,6 +333,7 @@ function setupDropdown(headerId, optionsId) {
 }
 setupDropdown("jobtitle-header", "jobtitle-options");
 setupDropdown("city-header", "city-options");
+setupDropdown("country-header", "country-options");
 // setupDropdown("category-header", "category-options");
 setupDropdown("brand-header", "brand-options");
 setupDropdown("department-header", "department-options");
@@ -442,7 +447,7 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).on('keypress', function 
 });
 
 // Event Listener für Änderungen in den Input-Feldern (blur & change)
-jquery__WEBPACK_IMPORTED_MODULE_0___default()("#jobtitle-header, #city-header, #brand-header", "#department-header").on("blur change", function () {
+jquery__WEBPACK_IMPORTED_MODULE_0___default()("#jobtitle-header, #city-header, #brand-header", "#department-header", "#country-header").on("blur change", function () {
   if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).val().trim() !== "") {
     // Setze den Wert und stelle sicher, dass das Feld editierbar bleibt
     input.val(value).prop("readonly", false).prop("disabled", false);
@@ -648,6 +653,7 @@ function filterListByParams() {
   for (const job of fetchedJobs) {
     let ok = true;
     if (params.city?.trim() && !job.city?.toLowerCase().includes(params.city.trim().toLowerCase())) ok = false;
+    if (params.country?.trim() && !job.country?.toLowerCase().includes(params.country.trim().toLowerCase())) ok = false;
     if (params.brand?.trim() && !job.brand?.toLowerCase().includes(params.brand.trim().toLowerCase())) ok = false;
     if (params.department?.trim() && !job.department?.toLowerCase().includes(params.department.trim().toLowerCase())) ok = false;
     if (params.jobtitle?.trim() && !job.title?.toLowerCase().includes(params.jobtitle.trim().toLowerCase())) ok = false;
@@ -1084,7 +1090,7 @@ function renderJobDetails(job, jobListItem) {
                 <img src="${imgPath}map.svg" class="icon-26" alt="map">
               </div>
               <h3 class="heading mb-20">${t.address}</h3>
-              <div class="color-dark-gray">
+              <div>
                 ${job.companyname ?? ''}<br>
                 ${job.location_streetname || job.street || ''} ${job.location_buildingnumber || job.buildingnumber || ''}<br>
                 ${job.location_postalcode || job.postalcode || ''} ${job.city || ''}<br>
@@ -1113,26 +1119,26 @@ function renderJobDetails(job, jobListItem) {
           <div class="flex">
             <div class="col-1-2">
               <img src="${imgPath}work.svg" class="icon-26" alt="work">
-              <span class="color-dark-gray font-12 m-t-5">${_('category', 'Category')}:</span>
-              <span class="font-12 black"> ${job.categories ?? ''} </span>
+              <span>${_('category', 'Category')}:</span>
+              <span class="black"> ${job.categories ?? ''} </span>
             </div>
             <div class="col-1-2">
               <img src="${imgPath}layers.svg" class="icon-26" alt="level">
-              <span class="color-dark-gray font-12 m-t-5">${_('career-levels', 'Career levels')}:</span>
-              <span class="font-12 black"> ${job.careerlevels ?? ''} </span>
+              <span >${_('career-levels', 'Career levels')}:</span>
+              <span class="black"> ${job.careerlevels ?? ''} </span>
             </div>
           </div>
 
           <div class="flex mt-20">
             <div class="col-1-2">
               <img src="${imgPath}avg_pace.svg" class="icon-26" alt="employment">
-              <span class="color-dark-gray font-12 m-t-5">${_('employment-type', 'Employment type')}:</span>
-              <span class="font-12 black"> ${job.employment_type ?? ''} </span>
+              <span>${_('employment-type', 'Employment type')}:</span>
+              <span class="black"> ${job.employment_type ?? ''} </span>
             </div>
             <div class="col-1-2">
               <img src="${imgPath}location_away.svg" class="icon-26" alt="location type">
-              <span class="color-dark-gray font-12 m-t-5">${_('job-location-type', 'Job location type')}:</span>
-              <span class="font-12 black"> ${job.joblocation_type ?? ''} </span>
+              <span>${_('job-location-type', 'Job location type')}:</span>
+              <span class="black"> ${job.joblocation_type ?? ''} </span>
             </div>
           </div>
         </div>
@@ -1288,8 +1294,8 @@ function renderList(list = []) {
           </div>
           <h4 class="heading-small">${job.companyname ?? ''}</h4>
           <div class="card-jp-icons">
-            <img src="${imgPath}location_on.svg" alt="icon location" class="search-icon list-loc-icon">
-            <p class="line-hight-160 pd-cit">${job.city ?? ''}, ${job.city ?? ''}</p>
+            <img src="${imgPath}location_on.svg" alt="icon location" class="search-icon" style="margin-right:10px;">
+            <p>${job.city ?? ''}</p>
           </div>
         </div>
       </div>
@@ -1367,6 +1373,7 @@ const state = {
   reference_id: "",
   selections: {
     city: "",
+    country: "",
     jobtitle: "",
     brand: "",
     department: ""
