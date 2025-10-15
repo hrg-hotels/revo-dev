@@ -144,6 +144,7 @@ custom-black: var(--awb-text-color);
   }
 
  
+
 /*!******************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./node_modules/postcss-loader/dist/cjs.js!./assets/css/src/dropdowns.css ***!
   \******************************************************************************************************************************************************/
@@ -239,7 +240,9 @@ custom-black: var(--awb-text-color);
 .clear-button{
   background: transparent;
   border: none;
+  cursor: pointer;
 }
+
 .btn-wrapper{
   display: flex;
   justify-content: space-between;
@@ -510,6 +513,14 @@ custom-black: var(--awb-text-color);
 #message-wrapper{
   margin-top:20px;
   background: #E9E9E9;
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap-reverse;
+}
+@media (min-width: 768px) {
+  #message-wrapper{
+    flex-direction: column-reverse;
+  }
 }
 
 .message-filter-result{
@@ -956,6 +967,43 @@ display: flex;
     .key-container:first-child{
         margin-left: 0;
     }
+}
+/*!********************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./node_modules/postcss-loader/dist/cjs.js!./assets/css/src/sortButtons.css ***!
+  \********************************************************************************************************************************************************/
+/*****Sort Buttons******/
+ .sort-container {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 10px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.btn-sort {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--awb-color5);
+  border: none;
+  border-radius: 4px;
+  padding: 1px 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-sort:hover {
+  background-color: #F3E0DD;
+}
+.btn-sort.active {
+  background-color: #dcd7d7;
+}
+@media (min-width: 768px) {
+  .sort-container {
+    width: 30%;
+    justify-content: flex-end;
+    margin-right: 20px;
+  }
 }
 /*!**************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./node_modules/postcss-loader/dist/cjs.js!./assets/css/src/index.css ***!

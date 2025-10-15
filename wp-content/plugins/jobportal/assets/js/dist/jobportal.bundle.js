@@ -745,7 +745,7 @@ function message() {
     //message text
 
     messageContainer.html(`
-                    <div class="message-txt green">
+                    <div>
                         <h3 id="message-headline" class="heading black">Your Selection:</h3>
                         <div class="message-filter-result">
 
@@ -1317,6 +1317,73 @@ function renderList(list = []) {
 
 /***/ }),
 
+/***/ "./assets/js/src/modules/sortButtons.js":
+/*!**********************************************!*\
+  !*** ./assets/js/src/modules/sortButtons.js ***!
+  \**********************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   initSortButtons: function() { return /* binding */ initSortButtons; }
+/* harmony export */ });
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "jquery");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _sort__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sort */ "./assets/js/src/sort.js");
+// assets/js/src/modules/sortButtons.js
+
+
+
+/**
+ * Initialisiert die Sortier-Buttons (nach Datum & alphabetisch)
+ * Fügt Icons, aktive Zustände und Toggle-Funktionalität hinzu.
+ */
+function initSortButtons() {
+  const wrapper = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#message-wrapper');
+  if (!wrapper.length || jquery__WEBPACK_IMPORTED_MODULE_0___default()('#sort-date-btn').length) return; // schon vorhanden?
+
+  // Sortierstatus speichern
+  let dateAscending = false;
+  let alphaAscending = true;
+
+  // === Buttons erstellen ===
+  const sortContainer = jquery__WEBPACK_IMPORTED_MODULE_0___default()('<div class="sort-container"></div>');
+  const sortDateBtn = jquery__WEBPACK_IMPORTED_MODULE_0___default()(`
+    <button id="sort-date-btn" class="btn btn-sort" title="Sort by date">
+      <img src="${imgPath}calendar_today.png" alt="Sort by date" class="icon-20">
+      <span class="sort-label">Date ↓</span>
+    </button>
+  `);
+  const sortAlphaBtn = jquery__WEBPACK_IMPORTED_MODULE_0___default()(`
+    <button id="sort-alpha-btn" class="btn btn-sort" title="Sort alphabetically">
+      <img src="${imgPath}icon_abc.svg" alt="Sort alphabetically" class="icon-20" style="width:22px;">
+      <span class="sort-label">A–Z</span>
+    </button>
+  `);
+  sortContainer.append(sortDateBtn, sortAlphaBtn);
+  wrapper.append(sortContainer); // Buttons in Message-Wrapper einfügen
+
+  // === Eventlistener ===
+  sortDateBtn.on('click', () => {
+    dateAscending = !dateAscending;
+    (0,_sort__WEBPACK_IMPORTED_MODULE_1__.sortByDate)(dateAscending);
+    const arrow = dateAscending ? '↑' : '↓';
+    sortDateBtn.find('.sort-label').text(`Date ${arrow}`);
+    sortAlphaBtn.removeClass('active');
+    sortDateBtn.addClass('active');
+  });
+  sortAlphaBtn.on('click', () => {
+    alphaAscending = !alphaAscending;
+    (0,_sort__WEBPACK_IMPORTED_MODULE_1__.sortAlphabetically)(alphaAscending);
+    const label = alphaAscending ? 'A–Z' : 'Z–A';
+    sortAlphaBtn.find('.sort-label').text(label);
+    sortDateBtn.removeClass('active');
+    sortAlphaBtn.addClass('active');
+  });
+}
+
+/***/ }),
+
 /***/ "./assets/js/src/pushArgToURL.js":
 /*!***************************************!*\
   !*** ./assets/js/src/pushArgToURL.js ***!
@@ -1343,6 +1410,57 @@ function pushArgToURL(argObj) {
 
   // pull parameters from URL and call filterListByParams
   (0,_checkParams__WEBPACK_IMPORTED_MODULE_0__.checkParams)();
+}
+
+/***/ }),
+
+/***/ "./assets/js/src/sort.js":
+/*!*******************************!*\
+  !*** ./assets/js/src/sort.js ***!
+  \*******************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   sortAlphabetically: function() { return /* binding */ sortAlphabetically; },
+/* harmony export */   sortByDate: function() { return /* binding */ sortByDate; }
+/* harmony export */ });
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state */ "./assets/js/src/state.js");
+/* harmony import */ var _modules_pagination__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/pagination */ "./assets/js/src/modules/pagination.js");
+// assets/js/src/modules/sort.js
+
+
+
+/**
+ * Sortiert die Jobs nach Veröffentlichungsdatum (published_at oder published_iso)
+ * @param {boolean} ascending - true = älteste zuerst, false = neueste zuerst
+ */
+function sortByDate(ascending = false) {
+  let jobs = [...(0,_state__WEBPACK_IMPORTED_MODULE_0__.getState)().resultJobArr];
+  jobs.sort((a, b) => {
+    const dateA = new Date(a.published_iso || a.published_at || 0);
+    const dateB = new Date(b.published_iso || b.published_at || 0);
+    return ascending ? dateA - dateB : dateB - dateA;
+  });
+  (0,_state__WEBPACK_IMPORTED_MODULE_0__.setResultJobs)(jobs);
+  (0,_modules_pagination__WEBPACK_IMPORTED_MODULE_1__.splittArray)(); // neu rendern
+}
+
+/**
+ * Sortiert alphabetisch nach Jobtitel
+ * @param {boolean} ascending - true = A→Z, false = Z→A
+ */
+function sortAlphabetically(ascending = true) {
+  let jobs = [...(0,_state__WEBPACK_IMPORTED_MODULE_0__.getState)().resultJobArr];
+  jobs.sort((a, b) => {
+    const nameA = (a.title || '').toUpperCase();
+    const nameB = (b.title || '').toUpperCase();
+    if (nameA < nameB) return ascending ? -1 : 1;
+    if (nameA > nameB) return ascending ? 1 : -1;
+    return 0;
+  });
+  (0,_state__WEBPACK_IMPORTED_MODULE_0__.setResultJobs)(jobs);
+  (0,_modules_pagination__WEBPACK_IMPORTED_MODULE_1__.splittArray)(); // neu rendern
 }
 
 /***/ }),
@@ -1585,7 +1703,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_extended_filter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/extended-filter */ "./assets/js/src/modules/extended-filter.js");
 /* harmony import */ var _ui_helper__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ui-helper */ "./assets/js/src/ui-helper.js");
 /* harmony import */ var _css_src_index_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../css/src/index.css */ "./assets/css/src/index.css");
+/* harmony import */ var _modules_sortButtons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/sortButtons */ "./assets/js/src/modules/sortButtons.js");
 /* provided dependency */ var jQuery = __webpack_require__(/*! jquery */ "jquery");
+
 
 
 
@@ -1598,6 +1718,7 @@ __webpack_require__.r(__webpack_exports__);
   document.addEventListener("DOMContentLoaded", function () {
     (0,_modules_extended_filter__WEBPACK_IMPORTED_MODULE_3__.initAccordion)();
     (0,_ui_helper__WEBPACK_IMPORTED_MODULE_4__.initUIHelpers)();
+    (0,_modules_sortButtons__WEBPACK_IMPORTED_MODULE_6__.initSortButtons)();
     $('#extended-filter').insertBefore('#message-wrapper');
 
     // Prüfen, ob "/de/" in der URL enthalten ist

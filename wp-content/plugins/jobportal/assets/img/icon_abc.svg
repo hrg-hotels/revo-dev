@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 20 20">
+  <!-- Generator: Adobe Illustrator 29.7.0, SVG Export Plug-In . SVG Version: 2.1.1 Build 138)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: none;
+        stroke: #e56a54;
+        stroke-miterlimit: 10;
+        stroke-width: 2px;
+      }
+
+      .st1 {
+        display: none;
+      }
+
+      .st2 {
+        fill: #e56a54;
+      }
+    </style>
+  </defs>
+  <g id="Ebene_1" class="st1">
+    <rect x="0" width="20" height="20"/>
+  </g>
+  <g id="Ebene_2">
+    <g>
+      <path class="st2" d="M6.2,10l-.8,2.3h-1l2.5-7.3h1.1l2.5,7.3h-1l-.8-2.3h-2.6ZM8.6,9.3l-.7-2.1c-.2-.5-.3-.9-.4-1.3h0c-.1.4-.2.9-.4,1.3l-.7,2.1h2.2Z"/>
+      <path class="st2" d="M10.1,14.4l4.1-6h0s-3.7,0-3.7,0v-.8h5v.6l-4,5.9h0s4.1,0,4.1,0v.8h-5.4v-.6Z"/>
+    </g>
+    <rect class="st0" x="1" y=".9" width="18" height="18"/>
+  </g>
+</svg>
