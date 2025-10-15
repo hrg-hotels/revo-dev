@@ -85,7 +85,9 @@
 .clear-button{
   background: transparent;
   border: none;
+  cursor: pointer;
 }
+
 .btn-wrapper{
   display: flex;
   justify-content: space-between;

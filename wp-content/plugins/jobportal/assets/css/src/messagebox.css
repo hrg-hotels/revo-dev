@@ -14,6 +14,14 @@
 #message-wrapper{
   margin-top:20px;
   background: #E9E9E9;
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap-reverse;
+}
+@media (min-width: 768px) {
+  #message-wrapper{
+    flex-direction: column-reverse;
+  }
 }
 
 .message-filter-result{

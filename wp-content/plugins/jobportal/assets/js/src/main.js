@@ -5,13 +5,15 @@ import { checkParams } from "./checkParams";
 import { initAccordion } from './modules/extended-filter';
 import { initUIHelpers } from './ui-helper';
 import '../../css/src/index.css';
+import { initSortButtons } from './modules/sortButtons';
 
 (function($) {
   "use strict";
 
   document.addEventListener("DOMContentLoaded", function () {
     initAccordion();
-    initUIHelpers();    
+    initUIHelpers(); 
+     initSortButtons();   
     $('#extended-filter').insertBefore('#message-wrapper');
  
     // Prüfen, ob "/de/" in der URL enthalten ist

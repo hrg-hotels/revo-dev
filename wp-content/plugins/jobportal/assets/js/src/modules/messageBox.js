@@ -57,7 +57,7 @@ const t = window.jobportalTranslations || {};
                     //message text
                 
                   messageContainer.html(`
-                    <div class="message-txt green">
+                    <div>
                         <h3 id="message-headline" class="heading black">Your Selection:</h3>
                         <div class="message-filter-result">
 
