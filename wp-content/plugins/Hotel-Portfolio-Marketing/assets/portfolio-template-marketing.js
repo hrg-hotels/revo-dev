@@ -721,10 +721,22 @@
                           matchesHotel = false;
                       }
 
-                      // Check brand parameter is set and matches
-                      if (params.brand?.toLowerCase() && !hotel.brand.toLowerCase().includes(params.brand.toLowerCase())) {
+                    // Brand check with exception for "Holiday Inn" and "Holiday Inn Express"
+                    if (params.brand?.toLowerCase()) {
+                      const brandParam = params.brand.toLowerCase();
+                      const hotelBrand = hotel.brand.toLowerCase();
+
+                      // Marken, die exakt übereinstimmen müssen
+                      const exactMatchBrands = ["holiday inn", "holiday inn express"];
+
+                      if (exactMatchBrands.includes(brandParam)) {
+                        if (hotelBrand !== brandParam) {
                           matchesHotel = false;
+                        }
+                      } else if (!hotelBrand.includes(brandParam)) {
+                        matchesHotel = false;
                       }
+                    }
 
                       // Check offer parameter is set and matches
                       if (params.offer?.toLowerCase() && !(
