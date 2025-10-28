@@ -752,56 +752,84 @@ function filterMarkers() {
 
     toggleAreaAndPeopleInputs();
 
-    const filtered = allHotels.filter(hotel => {
-        // Safe property access
-        const hotelCountry = (hotel.country || "").toLowerCase();
-        const hotelCity = (hotel.city || "").toLowerCase();
-        const hotelCountyTown = (hotel.county_town || "").toLowerCase();
-        const hotelBrand = (hotel.brand || "").toLowerCase();
-        const hotelParentBrand = (hotel.parent_brand || "").toLowerCase();
-        const hotelArea = (hotel.area || "").trim();
-        const hotelPeople = (hotel.people || "").trim();
+const filtered = allHotels.filter(hotel => {
+  // Safe property access
+  const hotelCountry = (hotel.country || "").toLowerCase();
+  const hotelCity = (hotel.city || "").toLowerCase();
+  const hotelCountyTown = (hotel.county_town || "").toLowerCase();
+  const hotelBrand = (hotel.brand || "").toLowerCase();
+  const hotelParentBrand = (hotel.parent_brand || "").toLowerCase();
+  const hotelArea = (hotel.area || "").trim();
+  const hotelPeople = (hotel.people || "").trim();
 
-        const matchCountry = !countryFilter || hotelCountry.includes(countryFilter);
-        const matchCity = !cityFilter || hotelCity.includes(cityFilter) || hotelCountyTown.includes(cityFilter);
-        const matchBrand = !brandFilter || hotelBrand.includes(brandFilter);
-        const matchParentBrand = !parentBrandFilter || hotelParentBrand.includes(parentBrandFilter);
+  // 🔹 Exact-match lists
+  const exactMatchCities = ["erding"];
+  const exactMatchBrands = ["holiday inn", "holiday inn express"];
 
-        // 🔹 Neue Logik für "area"
-        let matchArea = true;
-        if (areaFilter) {
-            if (areaFilter === "<100") {
-                matchArea = true;
-            } else if (areaFilter === "100-500") {
-                matchArea = hotelArea === "100-500" || hotelArea === "500-1000" || hotelArea === "1000+";
-            } else if (areaFilter === "500-1000") {
-                matchArea = hotelArea === "500-1000" || hotelArea === "1000+";
-            } else if (areaFilter === "1000+") {
-                matchArea = hotelArea === "1000+";
-            } else {
-                matchArea = false;
-            }
-        }
+  // 🔹 Country filter
+  const matchCountry = !countryFilter || hotelCountry.includes(countryFilter);
 
-        // 🔹 Neue Logik für "people"
-            let matchPeople = true;
-            if (peopleFilter) {
-            if (peopleFilter === "<150") {
-                matchPeople = true;
-            } else if (peopleFilter === "150-300") {
-                matchPeople = hotelPeople === "150-300" || hotelPeople === "300-500" || hotelPeople === "500-1000" || hotelPeople === "1000+";
-            } else if (peopleFilter === "300-500") {
-                matchPeople = hotelPeople === "300-500" || hotelPeople === "500-1000" || hotelPeople === "1000+";
-            } else if (peopleFilter === "500-1000") {
-                matchPeople = hotelPeople === "500-1000" || hotelPeople === "1000+";
-            } else if (peopleFilter === "1000+") {
-                matchPeople = hotelPeople === "1000+";
-            } else {
-                matchPeople = false;
-            }
-        }
-        return matchCountry && matchCity && matchBrand && matchParentBrand && matchArea && matchPeople;
-    });
+  // 🔹 City filter with exception logic
+  let matchCity = true;
+  if (cityFilter) {
+    const cityParam = cityFilter.toLowerCase();
+    if (exactMatchCities.includes(cityParam)) {
+      matchCity = hotelCity === cityParam || hotelCountyTown === cityParam;
+    } else {
+      matchCity = hotelCity.includes(cityParam) || hotelCountyTown.includes(cityParam);
+    }
+  }
+
+  // 🔹 Brand filter with exception logic
+  let matchBrand = true;
+  if (brandFilter) {
+    const brandParam = brandFilter.toLowerCase();
+    if (exactMatchBrands.includes(brandParam)) {
+      matchBrand = hotelBrand === brandParam;
+    } else {
+      matchBrand = hotelBrand.includes(brandParam);
+    }
+  }
+
+  // 🔹 Parent brand filter
+  const matchParentBrand = !parentBrandFilter || hotelParentBrand.includes(parentBrandFilter);
+
+  // 🔹 Area filter
+  let matchArea = true;
+  if (areaFilter) {
+    if (areaFilter === "<100") {
+      matchArea = true;
+    } else if (areaFilter === "100-500") {
+      matchArea = hotelArea === "100-500" || hotelArea === "500-1000" || hotelArea === "1000+";
+    } else if (areaFilter === "500-1000") {
+      matchArea = hotelArea === "500-1000" || hotelArea === "1000+";
+    } else if (areaFilter === "1000+") {
+      matchArea = hotelArea === "1000+";
+    } else {
+      matchArea = false;
+    }
+  }
+
+  // 🔹 People filter
+  let matchPeople = true;
+  if (peopleFilter) {
+    if (peopleFilter === "<150") {
+      matchPeople = true;
+    } else if (peopleFilter === "150-300") {
+      matchPeople = ["150-300", "300-500", "500-1000", "1000+"].includes(hotelPeople);
+    } else if (peopleFilter === "300-500") {
+      matchPeople = ["300-500", "500-1000", "1000+"].includes(hotelPeople);
+    } else if (peopleFilter === "500-1000") {
+      matchPeople = ["500-1000", "1000+"].includes(hotelPeople);
+    } else if (peopleFilter === "1000+") {
+      matchPeople = hotelPeople === "1000+";
+    } else {
+      matchPeople = false;
+    }
+  }
+
+  return matchCountry && matchCity && matchBrand && matchParentBrand && matchArea && matchPeople;
+});
 
     console.log('Filtered Hotels:', filtered);
     renderMarkers(filtered); // Your rendering logic
