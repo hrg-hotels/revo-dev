@@ -630,16 +630,22 @@
                       matchesHotel = false;
                   }
 
-                  // Check city or county_town match
-                  if (
-                      params.city?.toLowerCase() && 
-                      !(
-                          hotel.city?.toLowerCase().includes(params.city.toLowerCase()) || 
-                          hotel.county_town?.toLowerCase().includes(params.city.toLowerCase())
-                      )
-                  ) {
-                      matchesHotel = false;
-                  }
+                      // City or county_town check with exceptions
+                      if (params.city?.toLowerCase()) {
+                        const exactMatchCities = ["erding"];
+                        const cityParam = params.city.toLowerCase();
+                        const hotelCity = hotel.city?.toLowerCase() || "";
+                        const hotelCounty = hotel.county_town?.toLowerCase() || "";
+
+                        // If the city is in the exact-match list, require exact match
+                        if (exactMatchCities.includes(cityParam)) {
+                          if (hotelCity !== cityParam && hotelCounty !== cityParam) {
+                            matchesHotel = false;
+                          }
+                        } else if (!(hotelCity.includes(cityParam) || hotelCounty.includes(cityParam))) {
+                          matchesHotel = false;
+                        }
+                      }
 
                     // Brand check with exception for "Holiday Inn" and "Holiday Inn Express"
                     if (params.brand?.toLowerCase()) {
