@@ -1,18 +1,7 @@
-# Wordpress - ignore core, configuration, examples, uploads and logs.
-# https://github.com/github/gitignore/blob/main/WordPress.gitignore
-
-# Core
-#
-# Note: if you want to stage/commit WP core files
-# you can delete this whole section/until Configuration.
+# =========================
+# WordPress Core
+# =========================
 /wp-admin/
-/.unlighthouse
-/AA_local_temp_files/
-/wp-content/index.php
-/wp-content/languages
-/wp-content/updraft
-/wp-content/plugins/index.php
-/wp-content/themes/index.php
 /wp-includes/
 /index.php
 /license.txt
@@ -20,32 +9,70 @@
 /wp-*.php
 /xmlrpc.php
 
+# =========================
 # Configuration
+# =========================
 wp-config.php
 
-# Example themes
-/wp-content/themes/twenty*/
-
-# Example plugin
-/wp-content/plugins/hello.php
-
-# Uploads
-/wp-content/uploads/
-
-# Log files
-*.log
-
+# =========================
+# Project specific
+# =========================
+/.unlighthouse
+/AA_local_temp_files/
+/wordfence-waf.php
 # htaccess
 /.htaccess
+# =========================
+# wp-content structure
+# =========================
+/wp-content/index.php
+/wp-content/languages
+/wp-content/updraft
+/wp-content/wflogs/*
+/wp-content/wflogs/config-synced.php
+/wp-content/wflogs/template.php
+/wp-content/backups-dup-lite/*
 
-# All plugins
-#
-# Note: If you wish to whitelist plugins,
-# uncomment the next line
-#/wp-content/plugins
+# =========================
+# Uploads & generated data
+# =========================
+/wp-content/uploads/
+/wp-content/cache/
+/wp-content/upgrade/
+/wp-content/backups/
 
-# All themes
-#
-# Note: If you wish to whitelist themes,
-# uncomment the next line
-#/wp-content/themes
+# =========================
+# Ignore all plugins except custom ones
+# =========================
+/wp-content/plugins/*
+!/wp-content/themes/Hotel-Portfolio
+!/wp-content/themes/Hotel-Portfolio-api
+!/wp-content/themes/Hotel-Portfolio-Marketing
+!/wp-content/themes/MICE-Hotels
+!/wp-content/themes/jobportal
+!/wp-content/themes/revo-hotels-maps
+
+# =========================
+# Ignore all themes except custom ones
+# =========================
+/wp-content/themes/*
+
+# Keep index files ignored
+/wp-content/plugins/index.php
+/wp-content/themes/index.php
+
+# =========================
+# Logs & system
+# =========================
+*.log
+.DS_Store
+node_modules
+vendor
+.env
+
+# =========================
+# Build files (optional)
+# =========================
+dist
+build
+*.map
