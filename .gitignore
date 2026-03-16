@@ -12,26 +12,27 @@
 # =========================
 # Configuration
 # =========================
-wp-config.php
+/wp-config.php
 
 # =========================
 # Project specific
 # =========================
-/.unlighthouse
+/.unlighthouse/
 /AA_local_temp_files/
 /wordfence-waf.php
-# htaccess
 /.htaccess
+
 # =========================
 # wp-content structure
 # =========================
 /wp-content/index.php
-/wp-content/languages
-/wp-content/updraft
-/wp-content/wflogs/*
-/wp-content/wflogs/config-synced.php
-/wp-content/wflogs/template.php
+/wp-content/languages/
+/wp-content/updraft/
 /wp-content/backups-dup-lite/*
+/wp-content/wflogs/
+/wp-content/wflogs/**
+/wp-content/mu-plugins/
+/wp-content/mu-plugins/**
 
 # =========================
 # Uploads & generated data
@@ -42,23 +43,27 @@ wp-config.php
 /wp-content/backups/
 
 # =========================
-# Ignore all plugins except custom ones
+# Ignore all plugins except approved custom ones
 # =========================
 /wp-content/plugins/*
-!/wp-content/themes/Hotel-Portfolio
-!/wp-content/themes/Hotel-Portfolio-api
-!/wp-content/themes/Hotel-Portfolio-Marketing
-!/wp-content/themes/MICE-Hotels
-!/wp-content/themes/jobportal
-!/wp-content/themes/revo-hotels-maps
+!/wp-content/plugins/Hotel-Portfolio/
+!/wp-content/plugins/Hotel-Portfolio/**
+!/wp-content/plugins/Hotel-Portfolio-Marketing/
+!/wp-content/plugins/Hotel-Portfolio-Marketing/**
+!/wp-content/plugins/MICE-Hotels/
+!/wp-content/plugins/MICE-Hotels/**
+!/wp-content/plugins/jobportal/
+!/wp-content/plugins/jobportal/**
+!/wp-content/plugins/revo-hotels-maps/
+!/wp-content/plugins/revo-hotels-maps/**
+
+# Keep plugin index ignored
+/wp-content/plugins/index.php
 
 # =========================
-# Ignore all themes except custom ones
+# Ignore all themes
 # =========================
 /wp-content/themes/*
-
-# Keep index files ignored
-/wp-content/plugins/index.php
 /wp-content/themes/index.php
 
 # =========================
@@ -66,13 +71,13 @@ wp-config.php
 # =========================
 *.log
 .DS_Store
-node_modules
-vendor
+/node_modules/
+/vendor/
 .env
 
 # =========================
-# Build files (optional)
+# Build files
 # =========================
-dist
-build
+/dist/
+/build/
 *.map
