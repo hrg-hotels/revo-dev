@@ -15,6 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: staging
 
+    env:
+      SSH_HOST: ssh.altgemeinde.project.host
+      SSH_PORT: "22"
+      SSH_USER: "ssh-ryxesg@a-mu83q2"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,9 +29,6 @@ jobs:
         run: |
           set -euo pipefail
 
-          test -n "${{ secrets.SSH_HOST }}"
-          test -n "${{ secrets.SSH_PORT }}"
-          test -n "${{ secrets.SSH_USER }}"
           test -n "${{ secrets.SSH_PRIVATE_KEY }}"
           test -n "${{ secrets.DEPLOY_PATH }}"
 
@@ -38,27 +40,32 @@ jobs:
               ;;
           esac
 
-      - name: Start SSH agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Write SSH key
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
 
       - name: Add server to known_hosts
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p ~/.ssh
-          ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
       - name: Verify remote staging installation
         shell: bash
         run: |
           set -euo pipefail
-          ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
             set -e
-            test -d '${{ secrets.DEPLOY_PATH }}'
-            test -d '${{ secrets.DEPLOY_PATH }}/wp-content'
-            test -d '${{ secrets.DEPLOY_PATH }}/wp-content/plugins'
+            echo 'DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}'
+            pwd
+            ls -la '${{ secrets.DEPLOY_PATH }}' || { echo 'DEPLOY_PATH not found'; exit 1; }
+            ls -la '${{ secrets.DEPLOY_PATH }}/wp-content' || { echo 'wp-content not found'; exit 1; }
+            ls -la '${{ secrets.DEPLOY_PATH }}/wp-content/plugins' || { echo 'plugins not found'; exit 1; }
             case '${{ secrets.DEPLOY_PATH }}' in
               *revo-hos-staging*) ;;
               *)
@@ -72,7 +79,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
             mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins'
           "
 
@@ -83,6 +90,6 @@ jobs:
           rsync -az \
             --exclude='.git/' \
             --exclude='.github/' \
-            -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -p $SSH_PORT" \
             "wp-content/plugins/" \
-            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/"
+            "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/"
