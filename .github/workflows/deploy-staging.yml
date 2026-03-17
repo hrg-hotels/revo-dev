@@ -1,0 +1,88 @@
+name: deploy-staging
+
+on:
+  push:
+    branches:
+      - dev
+
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: deploy-staging
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate secrets and target path
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -n "${{ secrets.SSH_HOST }}"
+          test -n "${{ secrets.SSH_PORT }}"
+          test -n "${{ secrets.SSH_USER }}"
+          test -n "${{ secrets.SSH_PRIVATE_KEY }}"
+          test -n "${{ secrets.DEPLOY_PATH }}"
+
+          case "${{ secrets.DEPLOY_PATH }}" in
+            *revo-hos-staging*) ;;
+            *)
+              echo "Refusing to deploy: DEPLOY_PATH does not point to staging."
+              exit 1
+              ;;
+          esac
+
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Verify remote staging installation
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
+            set -e
+            test -d '${{ secrets.DEPLOY_PATH }}'
+            test -d '${{ secrets.DEPLOY_PATH }}/wp-content'
+            test -d '${{ secrets.DEPLOY_PATH }}/wp-content/plugins'
+            case '${{ secrets.DEPLOY_PATH }}' in
+              *revo-hos-staging*) ;;
+              *)
+                echo 'Remote path is not staging.'
+                exit 1
+                ;;
+            esac
+          "
+
+      - name: Ensure plugin root exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
+            mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins'
+          "
+
+      - name: Deploy tracked plugins to staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -az \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            "wp-content/plugins/" \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/"
