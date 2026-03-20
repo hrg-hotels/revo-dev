@@ -1,0 +1,93 @@
+name: deploy-production
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: deploy-production
+    runs-on: ubuntu-latest
+    environment: production
+
+    env:
+      SSH_HOST: ssh.altgemeinde.project.host
+      SSH_PORT: "22"
+      SSH_USER: "ssh-key5dn@a-ywigtc"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate secrets and target path
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -n "${{ secrets.SSH_PRIVATE_KEY }}"
+          test -n "${{ secrets.DEPLOY_PATH }}"
+
+          case "${{ secrets.DEPLOY_PATH }}" in
+            *revo-hospitality-gro*) ;;
+            *)
+              echo "Refusing to deploy: DEPLOY_PATH does not point to live."
+              exit 1
+              ;;
+          esac
+
+      - name: Write SSH key
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Add server to known_hosts
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Verify remote live installation
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
+            set -e
+            test -d '${{ secrets.DEPLOY_PATH }}'
+            test -d '${{ secrets.DEPLOY_PATH }}/wp-content'
+            test -d '${{ secrets.DEPLOY_PATH }}/wp-content/plugins'
+            case '${{ secrets.DEPLOY_PATH }}' in
+              *revo-hospitality-gro*) ;;
+              *)
+                echo 'Remote path is not live.'
+                exit 1
+                ;;
+            esac
+          "
+
+      - name: Ensure plugin root exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
+            mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins'
+          "
+
+      - name: Deploy tracked plugins to live
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -az \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p $SSH_PORT" \
+            "wp-content/plugins/" \
+            "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/"
