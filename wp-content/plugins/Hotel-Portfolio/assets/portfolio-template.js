@@ -120,7 +120,7 @@
                     // "Keine Ergebnisse" anzeigen, wenn keine Treffer vorhanden sind
                     if (visibleOptions.length === 0) {
                       if (!options.find(".no-results").length) {
-                          options.append('<li class="no-results!">Keine Ergebnisse gefunden</li>');
+                          options.append('<li class="no-results!">Keine Ergebnisse gefunden!</li>');
                       }
                     } else {
                       options.find(".no-results").remove();
