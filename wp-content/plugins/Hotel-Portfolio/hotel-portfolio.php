@@ -60,7 +60,10 @@ function hotel_portfolio_admin_page() {
     <div class="wrap">
         <h1><?php esc_html_e('Hotel Portfolio Einstellungen', 'hotel-portfolio'); ?></h1>
         <p><?php esc_html_e('Hier kommen die Einstellungen und die Dokumentation', 'hotel-portfolio'); ?></p>
-        <a href="https://n8n.revo-h.com/form/c89fd1f7-89cb-464c-ab1a-8cb0cc74973d" class="button button-primary"><?php esc_html_e('Chronos Daten Sync', 'hotel-portfolio'); ?></a>
+        <iframe src="https://n8n.revo-h.com/form/ab316951-5402-4ccc-8417-25e532c26fac" title="Chronos to REVO Sync Trigger" width="750px" height="400px"></iframe>
+            <br>
+        <iframe src="https://n8n.revo-h.com/webhook/chronosToRevoHotelSyncLogs" title="Chronos to REVO Sync Logs" width="750px" height="900px"></iframe>
+        <!-- <a href="https://n8n.revo-h.com/form/ab316951-5402-4ccc-8417-25e532c26fac" class="button button-primary blub"><?php esc_html_e('Chronos Daten Sync', 'hotel-portfolio'); ?></a> -->
     </div>
     <?php
 }
