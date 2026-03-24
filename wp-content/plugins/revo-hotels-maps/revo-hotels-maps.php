@@ -38,17 +38,7 @@ add_action('admin_menu', function() {
     );
 });
 
-function revo_hotels_maps_admin_page() {
-    ?>
-    <div class="wrap">
-        <h1><?php esc_html_e('Revo Hotels Maps Settings', 'revo-hotels-maps'); ?></h1>
-        <p><?php esc_html_e('Here you can manage settings and view documentation for the Revo Hotels Maps plugin.', 'revo-hotels-maps'); ?></p>
-        <a href="https://client-hrg-hotels-staging.wemakefuture.com/form/c89fd1f7-89cb-464c-ab1a-8cb0cc74973d" class="button button-primary" target="_blank">
-            <?php esc_html_e('Chronos Data Sync', 'revo-hotels-maps'); ?>
-        </a>
-    </div>
-    <?php
-}
+
 
 // Enqueue assets (CSS + JS)
 add_action('wp_enqueue_scripts', function() {

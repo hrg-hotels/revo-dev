@@ -115,7 +115,7 @@ function loadGoogleMapsAPI(callback) {
         // Use Avada's privacy API to load the script
         AvadaPrivacy.registerScript({
             type: 'gmaps',
-            src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBrGUx-sWW3nkDEL0CRoUYvA0MS95VCMlY&callback=initRevoHotelsMap&libraries=marker',
+            src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDMhjtJKVkQN6D1Lme60gjL_u-DO5aMTiQ&callback=initRevoHotelsMap&libraries=marker',
             id: 'google-maps-api-js',
             async: true,
             defer: true
@@ -123,7 +123,7 @@ function loadGoogleMapsAPI(callback) {
     } else {
         // Directly load Google Maps API if Avada Privacy is not active
         const script = document.createElement('script');
-        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBrGUx-sWW3nkDEL0CRoUYvA0MS95VCMlY&callback=' + callback.name + '&libraries=marker';
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDMhjtJKVkQN6D1Lme60gjL_u-DO5aMTiQ&callback=' + callback.name + '&libraries=marker';
         script.id = 'google-maps-api-js';
         script.async = true;
         script.defer = true;
