@@ -62,7 +62,6 @@
 
 # =========================
 # Ignore all themes
-# =========================
 /wp-content/themes/*
 /wp-content/themes/index.php
 

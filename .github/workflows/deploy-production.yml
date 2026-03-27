@@ -28,7 +28,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           test -n "${{ secrets.SSH_PRIVATE_KEY }}"
           test -n "${{ secrets.DEPLOY_PATH }}"
 
@@ -73,15 +72,19 @@ jobs:
             esac
           "
 
-      - name: Ensure plugin root exists
+      - name: Ensure whitelisted plugin directories exist
         shell: bash
         run: |
           set -euo pipefail
           ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
-            mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins'
+            mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins/Hotel-Portfolio'
+            mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins/Hotel-Portfolio-Marketing'
+            mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins/MICE-Hotels'
+            mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins/jobportal'
+            mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins/revo-hotels-maps'
           "
 
-      - name: Deploy tracked plugins to live
+      - name: Deploy Hotel-Portfolio
         shell: bash
         run: |
           set -euo pipefail
@@ -89,5 +92,49 @@ jobs:
             --exclude='.git/' \
             --exclude='.github/' \
             -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p $SSH_PORT" \
-            "wp-content/plugins/" \
-            "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/"
+            "wp-content/plugins/Hotel-Portfolio/" \
+            "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/Hotel-Portfolio/"
+
+      - name: Deploy Hotel-Portfolio-Marketing
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -az \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p $SSH_PORT" \
+            "wp-content/plugins/Hotel-Portfolio-Marketing/" \
+            "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/Hotel-Portfolio-Marketing/"
+
+      - name: Deploy MICE-Hotels
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -az \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p $SSH_PORT" \
+            "wp-content/plugins/MICE-Hotels/" \
+            "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/MICE-Hotels/"
+
+      - name: Deploy jobportal
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -az \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p $SSH_PORT" \
+            "wp-content/plugins/jobportal/" \
+            "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/jobportal/"
+
+      - name: Deploy revo-hotels-maps
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -az \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p $SSH_PORT" \
+            "wp-content/plugins/revo-hotels-maps/" \
+            "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/revo-hotels-maps/"
