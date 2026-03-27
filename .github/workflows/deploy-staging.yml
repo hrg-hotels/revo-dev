@@ -28,10 +28,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
           test -n "${{ secrets.SSH_PRIVATE_KEY }}"
           test -n "${{ secrets.DEPLOY_PATH }}"
 
@@ -62,11 +58,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-<<<<<<< HEAD
           ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
-=======
-          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
->>>>>>> origin/main
             set -e
             test -d '${{ secrets.DEPLOY_PATH }}'
             test -d '${{ secrets.DEPLOY_PATH }}/wp-content'
@@ -80,7 +72,6 @@ jobs:
             esac
           "
 
-<<<<<<< HEAD
       - name: Ensure whitelisted plugin directories exist
         shell: bash
         run: |
@@ -94,24 +85,12 @@ jobs:
           "
 
       - name: Deploy Hotel-Portfolio
-=======
-      - name: Ensure plugin root exists
-        shell: bash
-        run: |
-          set -euo pipefail
-          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
-            mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins'
-          "
-
-      - name: Deploy tracked plugins to staging
->>>>>>> origin/main
         shell: bash
         run: |
           set -euo pipefail
           rsync -az \
             --exclude='.git/' \
             --exclude='.github/' \
-<<<<<<< HEAD
             -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p $SSH_PORT" \
             "wp-content/plugins/Hotel-Portfolio/" \
             "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/Hotel-Portfolio/"
@@ -159,8 +138,3 @@ jobs:
             -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p $SSH_PORT" \
             "wp-content/plugins/revo-hotels-maps/" \
             "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/revo-hotels-maps/"
-=======
-            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -p $SSH_PORT" \
-            "wp-content/plugins/" \
-            "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/"
->>>>>>> origin/main
