@@ -138,3 +138,4 @@ jobs:
             -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p $SSH_PORT" \
             "wp-content/plugins/revo-hotels-maps/" \
             "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/revo-hotels-maps/"
+            
