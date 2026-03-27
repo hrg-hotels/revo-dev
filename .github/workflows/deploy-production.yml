@@ -28,10 +28,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
           test -n "${{ secrets.SSH_PRIVATE_KEY }}"
           test -n "${{ secrets.DEPLOY_PATH }}"
 
@@ -76,16 +72,11 @@ jobs:
             esac
           "
 
-<<<<<<< HEAD
       - name: Ensure whitelisted plugin directories exist
-=======
-      - name: Ensure plugin root exists
->>>>>>> origin/main
         shell: bash
         run: |
           set -euo pipefail
           ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
-<<<<<<< HEAD
             mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins/Hotel-Portfolio'
             mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins/Hotel-Portfolio-Marketing'
             mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins/MICE-Hotels'
@@ -94,12 +85,6 @@ jobs:
           "
 
       - name: Deploy Hotel-Portfolio
-=======
-            mkdir -p '${{ secrets.DEPLOY_PATH }}/wp-content/plugins'
-          "
-
-      - name: Deploy tracked plugins to live
->>>>>>> origin/main
         shell: bash
         run: |
           set -euo pipefail
@@ -107,7 +92,6 @@ jobs:
             --exclude='.git/' \
             --exclude='.github/' \
             -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p $SSH_PORT" \
-<<<<<<< HEAD
             "wp-content/plugins/Hotel-Portfolio/" \
             "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/Hotel-Portfolio/"
 
@@ -154,7 +138,3 @@ jobs:
             -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p $SSH_PORT" \
             "wp-content/plugins/revo-hotels-maps/" \
             "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/revo-hotels-maps/"
-=======
-            "wp-content/plugins/" \
-            "$SSH_USER@$SSH_HOST:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/"
->>>>>>> origin/main
